@@ -13,19 +13,14 @@
 }
 
 .column {
-  display: flex;
-  flex-direction: column;
-  width: 50%;
-  height: calc(100% - 40px);
-  gap: 24px;
-  margin: 20px;
+  /* filepath: c:\Users\olgav\Projects\openai\app\examples\weather\page.module.css */
 }
 
 .column > * {
   border-radius: 20px;
   overflow: hidden;
   width: 100%;
-  flex: 1;
+  height: 50%;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   background-color: white;
