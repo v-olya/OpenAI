@@ -21,6 +21,10 @@
     "typescript": "5.4.5"
   },
   "prettier": {
-    "singleQuote": false
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": true,
+    "jsxSingleQuote": true
   }
 }
