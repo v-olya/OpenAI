@@ -83,6 +83,8 @@ export async function POST(request: Request) {
                             );
                         }
                     }
+                    // Close the stream after all chunks are sent
+                    controller.close();
                 } catch (err) {
                     console.error('Error in chat stream:', err);
                     controller.error(err);
