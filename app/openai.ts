@@ -45,7 +45,7 @@ export async function* createChatCompletion(
 
     let functionCall: { name: string; arguments: string } | null = null;
 
-    let accumulatedContent = '';
+    // ...existing code...
 
     try {
         for await (const chunk of response) {
