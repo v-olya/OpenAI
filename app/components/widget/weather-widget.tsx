@@ -51,7 +51,10 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
                 <div className={styles.weatherWidgetData}>
                     <h2>Enter a city</h2>
                     <p>to see the local weather, e.g.</p>
-                    <p><br />&apos;What is the weather like in London?&apos;</p>
+                    <p>
+                        <br />
+                        &apos;What is the weather like in London?&apos;
+                    </p>
                 </div>
             </div>
         );
@@ -65,17 +68,27 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
             </div>
         );
     }
-    const conditions = typeof weather.weathercode === 'number' ? weatherCodeMap[weather.weathercode] : '';
+    const conditions =
+        typeof weather.weathercode === 'number'
+            ? weatherCodeMap[weather.weathercode]
+            : '';
     return (
         <div className={styles.weatherWidget}>
             <div className={styles.weatherWidgetData}>
                 <h2>{weather.location || 'Unknown location'}</h2>
                 {typeof weather.temperature === 'number' && (
-                    <h3 className={styles.weatherWidgetTemp}>{weather.temperature}°C</h3>
+                    <h3 className={styles.weatherWidgetTemp}>
+                        {weather.temperature}°C
+                    </h3>
                 )}
                 <p>
-                    {weather.windspeed !== undefined && (<span>Windspeed: {weather.windspeed} km/h<br /></span>)}
-                    {conditions && (<span>{conditions}</span>)}
+                    {weather.windspeed !== undefined && (
+                        <span>
+                            Windspeed: {weather.windspeed} km/h
+                            <br />
+                        </span>
+                    )}
+                    {conditions && <span>{conditions}</span>}
                 </p>
             </div>
         </div>
