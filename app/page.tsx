@@ -6,8 +6,7 @@ import styles from './page.module.css';
 const Home = () => {
     const categories = {
         Chat: 'basic-chat',
-        Function: 'function-calling',
-        '2-in-1': 'all',
+        Weather: 'weather',
     };
 
     return (

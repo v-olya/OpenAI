@@ -1,21 +1,16 @@
-// filepath: c:\Users\olgav\Projects\openai\app\examples\weather\page.tsx
-
-import React from 'react';
-
+'use client';
 import styles from './page.module.css';
 import { Chat } from '../../components/chat/chat';
 import WeatherWidget from '../../components/widget/weather-widget';
-
-const AllFeatures = () => {
-    const [weatherData, setWeatherData] = React.useState(null);
+import { useState, useEffect } from 'react';
+const WeatherDemo = () => {
+    const [weatherData, setWeatherData] = useState(null);
 
     const handleWeatherUpdate = (data: any) => {
         setWeatherData(data);
     };
 
-    React.useEffect(() => {
-        // ...existing code...
-    }, [weatherData]);
+    useEffect(() => {}, [weatherData]);
 
     return (
         <main className={styles.main}>
@@ -33,4 +28,4 @@ const AllFeatures = () => {
     );
 };
 
-export default AllFeatures;
+export default WeatherDemo;
