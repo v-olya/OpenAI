@@ -8,7 +8,7 @@ export async function POST(request: Request) {
         messages: Message[];
     };
 
-    // Always enable functions as we want to support weather queries
+    // Stream OpenAI responses and handle function calls for weather lookup
     const stream = createChatCompletion(messages, true);
 
     return new Response(
@@ -18,58 +18,42 @@ export async function POST(request: Request) {
                 try {
                     for await (const chunk of stream) {
                         if (chunk.type === 'function_call') {
-                            const {
-                                function: { name, arguments: args },
-                            } = chunk;
-
+                            const { name, arguments: args } = chunk.function;
                             if (name === 'get_weather') {
                                 const params = JSON.parse(args);
-                                const weatherData = getWeather(params.location);
-
-                                // Send weather data back as a message
+                                const weatherData = await getWeather(
+                                    params.location
+                                );
+                                // No logs
+                                // Normalize weather data for frontend compatibility
+                                const weatherDataOut = {
+                                    location: weatherData.location ?? '',
+                                    temperature: weatherData.temperature ?? 0,
+                                    unit: weatherData.unit ?? 'C',
+                                    weathercode:
+                                        weatherData.weathercode ?? undefined,
+                                    windspeed:
+                                        weatherData.windspeed ?? undefined,
+                                    error: weatherData.error ?? undefined,
+                                };
                                 controller.enqueue(
                                     encoder.encode(
                                         JSON.stringify({
                                             type: 'weather_data',
-                                            data: weatherData,
+                                            data: weatherDataOut,
                                         }) + '\n'
                                     )
                                 );
-
-                                // Continue with a new chat completion to handle the weather data
-                                const functionMessages = [...messages];
-                                functionMessages.push({
-                                    role: 'assistant',
-                                    content: null,
-                                    function_call: {
-                                        name: 'get_weather',
-                                        arguments: args,
-                                    },
-                                } as Message);
-                                functionMessages.push({
-                                    role: 'function',
-                                    name: 'get_weather',
-                                    content: JSON.stringify(weatherData),
-                                } as Message);
-
-                                const functionStream = createChatCompletion(
-                                    functionMessages,
-                                    true
-                                );
-
-                                // Stream the response that includes the weather data
-                                for await (const functionChunk of functionStream) {
-                                    if (functionChunk.type === 'content') {
-                                        controller.enqueue(
-                                            encoder.encode(
-                                                JSON.stringify({
-                                                    type: 'content',
-                                                    content:
-                                                        functionChunk.content,
-                                                }) + '\n'
-                                            )
-                                        );
-                                    }
+                                if (weatherData.error) {
+                                    controller.enqueue(
+                                        encoder.encode(
+                                            JSON.stringify({
+                                                type: 'error',
+                                                content: `Error: ${weatherData.error}`,
+                                            }) + '\n'
+                                        )
+                                    );
+                                    return;
                                 }
                             }
                         } else if (chunk.type === 'content') {
@@ -83,12 +67,17 @@ export async function POST(request: Request) {
                             );
                         }
                     }
-                    // Close the stream after all chunks are sent
-                    controller.close();
                 } catch (err) {
-                    console.error('Error in chat stream:', err);
-                    controller.error(err);
+                    controller.enqueue(
+                        encoder.encode(
+                            JSON.stringify({
+                                type: 'error',
+                                content: 'An error occurred in the backend.',
+                            }) + '\n'
+                        )
+                    );
                 }
+                controller.close();
             },
         })
     );
