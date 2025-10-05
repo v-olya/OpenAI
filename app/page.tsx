@@ -12,7 +12,7 @@ const Home = () => {
     return (
         <main className={styles.main}>
             <div className={styles.title}>
-                A sample apps built with OpenAI API
+                Example of an app built with OpenAI API
             </div>
             <div className={styles.container}>
                 {Object.entries(categories).map(([name, url]) => (

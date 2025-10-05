@@ -46,6 +46,7 @@ interface WeatherData {
     windspeed?: number;
     unit?: string;
     error?: string;
+    timezone_offset?: number;
 }
 
 interface StreamResponse {
@@ -58,14 +59,12 @@ interface StreamResponse {
 interface ChatProps {
     onWeatherUpdate?: (data: WeatherData) => void;
     onWeatherRequest?: () => void;
-    onSentimentUpdate?: (sentiment: string) => void;
 }
 
 export function Chat({
     onWeatherUpdate,
-    // onWeatherRequest,
-    onSentimentUpdate,
-}: ChatProps) {
+}: // onWeatherRequest,
+ChatProps) {
     const [userInput, setUserInput] = useState('');
     const [messages, setMessages] = useState<DisplayMessage[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -85,29 +84,6 @@ export function Chat({
         error?: boolean
     ) => {
         setMessages((prev) => [...prev, { role, text, error }]);
-        // Run sentiment server-side for assistant messages (with local fallback)
-        if (role === 'assistant' && onSentimentUpdate) {
-            (async () => {
-                try {
-                    const res = await fetch('/api/sentiment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text }),
-                    });
-                    if (res.ok) {
-                        const j = await res.json();
-                        if (j?.sentiment) {
-                            onSentimentUpdate(j.sentiment);
-                            return;
-                        }
-                    }
-                } catch {
-                    // ignore, fallback
-                }
-                // fallback to local heuristic
-                onSentimentUpdate(analyzeSentiment(text));
-            })();
-        }
         scrollToBottom();
     };
 
@@ -121,78 +97,10 @@ export function Chat({
             };
             return [...prev.slice(0, -1), updatedLastMessage];
         });
-        // Re-run sentiment detection when assistant content is appended
-        if (onSentimentUpdate) {
-            // best-effort: use the last message after update via a small timeout to read state
-            setTimeout(() => {
-                // const el = messagesEndRef.current?.previousElementSibling as HTMLElement | undefined;
-                // fallback: analyze the aggregated text we were given
-                try {
-                    // We don't have direct access to latest messages variable here synchronously,
-                    // so use the provided 'text' chunk to refine sentiment.
-                    (async () => {
-                        try {
-                            const res = await fetch('/api/sentiment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ text }),
-                            });
-                            if (res.ok) {
-                                const j = await res.json();
-                                if (j?.sentiment) {
-                                    onSentimentUpdate(j.sentiment);
-                                    return;
-                                }
-                            }
-                        } catch {
-                            /* ignore */
-                        }
-                        onSentimentUpdate(analyzeSentiment(text));
-                    })();
-                } catch {
-                    /* ignore */
-                }
-            }, 0);
-        }
         scrollToBottom();
     };
 
-    // Simple heuristic to determine sentiment from text
-    const analyzeSentiment = (text: string) => {
-        if (!text) return 'Neutral';
-        const lower = text.toLowerCase();
-        const positive = [
-            'good',
-            'great',
-            'excellent',
-            'happy',
-            'love',
-            'wonderful',
-            'awesome',
-            'amazing',
-        ];
-        const negative = [
-            'bad',
-            'sad',
-            'terrible',
-            'awful',
-            'hate',
-            'angry',
-            'disappointing',
-            'problem',
-        ];
-        const posCount = positive.reduce(
-            (acc, w) => acc + (lower.includes(w) ? 1 : 0),
-            0
-        );
-        const negCount = negative.reduce(
-            (acc, w) => acc + (lower.includes(w) ? 1 : 0),
-            0
-        );
-        if (posCount > negCount) return 'Positive';
-        if (negCount > posCount) return 'Negative';
-        return 'Neutral';
-    };
+    // ...existing code...
 
     const processStreamResponse = async (response: Response) => {
         if (!response.body) {
