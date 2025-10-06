@@ -7,6 +7,7 @@ const Home = () => {
     const categories = {
         Chat: 'basic-chat',
         Weather: 'weather',
+        Search: '/search',
     };
 
     return (
@@ -19,7 +20,7 @@ const Home = () => {
                     <a
                         key={name}
                         className={`${styles.category} link-base`}
-                        href={`/examples/${url}`}
+                        href={url.startsWith('/') ? url : `/examples/${url}`}
                     >
                         {name}
                     </a>

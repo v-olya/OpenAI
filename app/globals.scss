@@ -111,6 +111,7 @@ a.home-link:active {
     padding: 4px 8px;
     border-radius: 7px;
     text-decoration: none;
+    /* Use 1.5px here so hover/active visuals match other components and avoid layout shift */
     border: 1.5px solid rgba(90, 140, 200, 0.16);
     box-shadow: 0 1px 4px rgba(90, 140, 200, 0.04);
     transition: box-shadow 0.12s ease, background 0.12s ease;
@@ -130,8 +131,136 @@ a.home-link:active {
     outline-offset: 2px;
 }
 
+/* Unified hover/active styles for link-like UI elements.
+   Keep this rule as the single source of truth for hover/active visuals
+   (background, border-color, subtle elevation). Components should not
+   duplicate these styles; instead they should use `.link-base` or
+   `.home-link` on anchors to inherit this behavior. */
+.link-base:hover,
+.home-link:hover,
+.category:hover,
+.chatContainer .homeLink:hover {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e8f1fc 100%);
+    border-color: #c5ddf5;
+    box-shadow: 0 2px 8px rgba(107, 155, 209, 0.12);
+    text-decoration: none;
+}
+
+.link-base:active,
+.home-link:active,
+.category:active,
+.chatContainer .homeLink:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 155, 209, 0.25);
+}
+
 ul,
 ol {
     padding-left: 24px;
     margin: 12px 0;
+}
+
+/* Layout utilities used by error/not-found pages and smaller components */
+.page-center {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 6rem;
+    padding: 24px;
+    text-align: center;
+    background: transparent;
+    color: var(--text-color);
+}
+
+.heading-lg {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.heading-xl {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.muted {
+    color: #555;
+    margin-bottom: 18px;
+}
+
+.spaced-top {
+    margin-top: 20px;
+}
+
+.pre-error {
+    text-align: left;
+    background: #f6f8fa;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    color: #b91c1c;
+}
+
+.btn-small {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #111;
+    color: #fff;
+}
+
+.flex-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.flex-row-gap-12 {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.select-compact {
+    padding: 6px 8px;
+    border-radius: 6px;
+}
+
+.preview-list {
+    margin-top: 12px;
+}
+
+.preview-image {
+    width: 140px;
+    height: 140px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.preview-title {
+    font-size: 15px;
+    color: #111;
+    font-weight: 700;
+}
+
+.preview-summary {
+    font-size: 14px;
+    color: #555;
+    margin-top: 6px;
+}
+
+.msg-error {
+    color: red;
+}
+
+.ml-8 {
+    margin-left: 8px;
+}
+
+.label-compact {
+    font-size: 13px;
+    color: #374151;
 }

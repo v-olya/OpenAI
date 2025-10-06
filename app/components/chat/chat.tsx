@@ -89,19 +89,20 @@ export function Chat({ onWeatherUpdate }: ChatProps) {
                 >
                     Home
                 </Link>
-                {messages.map((msg, index) => (
-                    <div
-                        key={index}
-                        className={
-                            msg.role === 'user'
-                                ? styles.userMessage
-                                : styles.assistantMessage
-                        }
-                        style={msg.error ? { color: 'red' } : {}}
-                    >
-                        {msg.text}
-                    </div>
-                ))}
+                {messages.map((msg, index) => {
+                    const baseClass =
+                        msg.role === 'user'
+                            ? styles.userMessage
+                            : styles.assistantMessage;
+                    const combined = msg.error
+                        ? `${baseClass} msg-error`
+                        : baseClass;
+                    return (
+                        <div key={index} className={combined}>
+                            {msg.text}
+                        </div>
+                    );
+                })}
                 <div ref={messagesEndRef} />
             </div>
             <form onSubmit={handleSubmit} className={styles.inputForm}>

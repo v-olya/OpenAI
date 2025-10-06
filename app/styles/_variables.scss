@@ -26,6 +26,26 @@ $card-size: 120px !default;
     }
 }
 
+/* Reusable interactive hover/active styles for buttons/links */
+@mixin interactive-hover(
+    $bg-start: #f0f7ff,
+    $bg-end: #e8f1fc,
+    $border: #c5ddf5
+) {
+    transition: all 0.25s ease;
+    &:hover {
+        background: linear-gradient(135deg, $bg-start 0%, $bg-end 100%);
+        /* use consistent 1.5px border on hover to match base border and avoid layout shift */
+        border: 1.5px solid $border;
+        box-shadow: 0 2px 8px rgba(107, 155, 209, 0.12);
+        text-decoration: none;
+    }
+    &:active {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(107, 155, 209, 0.25);
+    }
+}
+
 @mixin white-text-shadow($size: small) {
     @if $size == small {
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3),

@@ -31,14 +31,17 @@ const weatherFunction = {
 
 export async function* createChatCompletion(
     messages: Message[],
-    enableFunctions = false
+    enableFunctions = false,
+    functions?: unknown[]
 ): AsyncGenerator<StreamResponse> {
     const response = await openai.chat.completions.create({
         model: 'gpt-4.1',
         messages,
         stream: true,
         ...(enableFunctions && {
-            functions: [weatherFunction],
+            // cast to any to satisfy the OpenAI client types in this demo
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            functions: (functions ?? [weatherFunction]) as any,
             function_call: 'auto',
         }),
     });
