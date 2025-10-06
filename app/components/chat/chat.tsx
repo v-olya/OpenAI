@@ -1,5 +1,6 @@
 ﻿'use client';
 
+import Link from 'next/link';
 import { useState, useRef } from 'react';
 import styles from './chat.module.scss';
 import { ChatProps, MessageType } from '@/app/types';
@@ -81,6 +82,13 @@ export function Chat({ onWeatherUpdate }: ChatProps) {
     return (
         <div className={styles.chatContainer}>
             <div className={styles.messages}>
+                <Link
+                    href='/'
+                    className={`${styles.homeLink} home-link link-base`}
+                    aria-label='Home'
+                >
+                    Home
+                </Link>
                 {messages.map((msg, index) => (
                     <div
                         key={index}

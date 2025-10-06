@@ -18,7 +18,7 @@ const Home = () => {
                 {Object.entries(categories).map(([name, url]) => (
                     <a
                         key={name}
-                        className={styles.category}
+                        className={`${styles.category} link-base`}
                         href={`/examples/${url}`}
                     >
                         {name}
