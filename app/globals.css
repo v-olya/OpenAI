@@ -8,7 +8,7 @@
     --primary-color: #6b9bd1;
     --text-color: #2c3e50;
     --bg-color: #fafafa;
-    --breakpoint-mobile: 960px;
+    --breakpoint-mobile: 900px;
 }
 
 * {
@@ -59,39 +59,8 @@ a:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.logo {
-    width: 32px;
-    height: 32px;
-    position: absolute;
-    margin: 16px;
-    top: 0;
-    right: 0;
-    transition: transform 0.2s ease;
-}
-
-.logo:hover {
-    transform: scale(1.05);
-}
-
-@media (max-width: 1100px) {
-    .logo {
-        display: none;
-    }
-}
-
 ul,
 ol {
     padding-left: 24px;
     margin: 12px 0;
-}
-
-pre {
-    margin: -4px -16px;
-    padding: 20px;
-    white-space: pre-wrap;
-    background-color: #f0f0f0;
-    color: var(--text-color);
-    border-radius: 12px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
