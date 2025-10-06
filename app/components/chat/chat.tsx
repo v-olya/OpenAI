@@ -2,26 +2,10 @@
 
 import { useState, useRef } from 'react';
 import styles from './chat.module.css';
+import { ChatProps, MessageType } from '@/app/types';
 
-type WeatherData = {
-    location: string;
-    temperature: number;
-    windspeed: number;
-    weathercode: number;
-    error?: string;
-    conditions: string;
-    unit: string;
-    timezone_offset?: number;
-};
-
-export function Chat({
-    onWeatherUpdate,
-}: {
-    onWeatherUpdate?: (data: WeatherData) => void;
-}) {
-    const [messages, setMessages] = useState<
-        { role: 'user' | 'assistant'; text: string; error?: boolean }[]
-    >([]);
+export function Chat({ onWeatherUpdate }: ChatProps) {
+    const [messages, setMessages] = useState<MessageType[]>([]);
     const [userInput, setUserInput] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);

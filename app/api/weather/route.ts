@@ -25,14 +25,31 @@ function isTextOutput(item: unknown): item is { text: string } {
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { getWeather } from '@/app/utils/weather';
+import { ErrorMessages } from '@/app/types';
 
 // Weather function for OpenAI function calling
 async function get_weather({ location }: { location: string }) {
     const weather = await getWeather(location);
-    // Add localtime (for demo, UTC)
+    // Add localtime for the actual location's timezone
+    let localtime = new Date().toLocaleString('en-US', { timeZone: 'UTC' });
+
+    if (weather.timezone) {
+        try {
+            localtime = new Date().toLocaleString('en-US', {
+                timeZone: weather.timezone,
+            });
+        } catch {
+            console.warn(
+                'Invalid timezone:',
+                weather.timezone,
+                'falling back to UTC'
+            );
+        }
+    }
+
     return {
         ...weather,
-        localtime: new Date().toLocaleString('en-US', { timeZone: 'UTC' }),
+        localtime,
     };
 }
 
@@ -57,7 +74,7 @@ export async function GET(request: Request) {
     const query = searchParams.get('q');
     if (typeof query !== 'string' || query.trim().length === 0) {
         return NextResponse.json(
-            { error: 'Query parameter "q" must be a non-empty string.' },
+            { error: ErrorMessages.INVALID_QUERY },
             { status: 400 }
         );
     }
@@ -115,7 +132,7 @@ export async function GET(request: Request) {
                 } catch (err) {
                     return NextResponse.json(
                         {
-                            error: 'Failed to parse function arguments or fetch weather.',
+                            error: ErrorMessages.FUNCTION_PARSE_ERROR,
                             details: String(err),
                         },
                         { status: 500 }
@@ -152,7 +169,7 @@ export async function GET(request: Request) {
         ) {
             return NextResponse.json(
                 {
-                    error: 'Weather assistant error',
+                    error: ErrorMessages.GENERAL_API_ERROR,
                     details: (error as { response: { data: unknown } }).response
                         .data,
                 },
@@ -160,7 +177,7 @@ export async function GET(request: Request) {
             );
         }
         return NextResponse.json(
-            { error: 'Weather assistant error', details: String(error) },
+            { error: ErrorMessages.GENERAL_API_ERROR, details: String(error) },
             { status: 500 }
         );
     }
