@@ -3,10 +3,12 @@ import styles from './page.module.css';
 import { Chat } from '../../components/chat/chat';
 import WeatherWidget from '../../components/widget/weather-widget';
 import { useState, useEffect } from 'react';
-const WeatherDemo = () => {
-    const [weatherData, setWeatherData] = useState(null);
+import { WeatherData } from '@/app/types';
 
-    const handleWeatherUpdate = (data: any) => {
+const WeatherDemo = () => {
+    const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+
+    const handleWeatherUpdate = (data: WeatherData) => {
         setWeatherData(data);
     };
 
