@@ -7,7 +7,6 @@ export async function POST(request: Request) {
         messages: Message[];
     };
 
-    // Stream OpenAI responses and handle function calls for weather lookup
     const stream = createChatCompletion(messages, true);
 
     return new Response(
@@ -17,7 +16,6 @@ export async function POST(request: Request) {
                 try {
                     for await (const chunk of stream) {
                         if (chunk.type === 'function_call') {
-                            // If function_call, just pass through or handle as needed
                             controller.enqueue(
                                 encoder.encode(
                                     JSON.stringify({

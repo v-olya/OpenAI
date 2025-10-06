@@ -1,25 +1,28 @@
+@import './styles/_breakpoints';
+
 .main {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100dvh;
     background: linear-gradient(135deg, #fafafa 0%, #f0f4f8 100%);
 }
 
 .title {
-    font-size: 1.6em;
+    font-size: clamp(1.15rem, 4vw, 1.6rem);
     margin-bottom: 32px;
     font-weight: 600;
     color: #2c3e50;
     letter-spacing: -0.02em;
+    text-align: center;
 }
 
 .container {
     display: flex;
     flex-direction: row;
     gap: 24px;
-    max-width: 1200px;
+    max-width: var(--max-width);
     width: 100%;
     padding: 24px;
     box-sizing: border-box;
@@ -37,14 +40,15 @@
     text-align: center;
     background: linear-gradient(135deg, #ffffff 0%, #f7f7f7 100%);
     cursor: pointer;
-    max-width: 600px;
-    width: 120px;
-    height: 120px;
+    max-width: var(--max-width);
+    width: var(--card-size);
+    height: var(--card-size);
     padding: 20px;
     transition: all 0.3s ease;
     font-weight: 500;
     border: 2px solid #eaeaea;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    text-decoration: none;
 }
 
 .category:hover {
@@ -52,6 +56,7 @@
     border-color: #c5ddf5;
     transform: translateY(-4px);
     box-shadow: 0 6px 20px rgba(107, 155, 209, 0.2);
+    text-decoration: none;
 }
 
 .category:active {
@@ -59,24 +64,13 @@
     box-shadow: 0 4px 12px rgba(107, 155, 209, 0.25);
 }
 
-/* Remove anchor underline */
-.category {
-    text-decoration: none;
-}
-.category:hover {
-    text-decoration: none;
-}
-
-/* Single mobile breakpoint tuning (matches mq-mobile: 900px) */
-@media (max-width: 900px) {
+@include mq-mobile {
     .main {
         padding: 20px 12px;
         height: 100dvh;
     }
     .title {
-        font-size: clamp(1.1rem, 4vw, 1.4rem);
         margin-bottom: 14px;
-        text-align: center;
     }
     .container {
         flex-direction: column;

@@ -1,4 +1,5 @@
 @import '../../styles/_breakpoints';
+@import '../../styles/_variables';
 
 .main {
     display: flex;
@@ -15,46 +16,39 @@
     gap: 24px;
     padding: 24px;
     box-sizing: border-box;
-    min-height: 0; /* allow children to size/scroll without forcing page scroll */
+    min-height: 0;
 }
 
 .column {
     width: 300px;
     flex-shrink: 0;
-    display: flex; /* allow child to stretch full height */
+    display: flex;
 }
 
+.surface,
 .column > * {
-    border-radius: 20px;
+    @include surface($bg: white, $radius: 20px);
     width: 100%;
-    min-height: 320px;
-    height: 100%; /* desktop/base: fill column height */
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    background-color: white;
 }
 
+.surface:hover,
 .column > *:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    @include hover-elevate;
 }
 
 .chatContainer {
     flex: 1;
-    min-height: 320px;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-    border-radius: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    min-height: 0; /* allow inner .chat to manage scroll without growing page */
+    min-height: 0;
 }
 
 .chat {
-    max-width: 600px;
+    max-width: var(--max-width);
     width: 100%;
-    min-height: 120px;
+    min-height: var(--card-size);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -79,19 +73,16 @@
     }
     .column > * {
         margin-top: 10px;
-        height: auto; /* height defined by child component (widget) */
-        min-height: 0; /* allow child to control its height */
+        height: auto;
+        min-height: 0;
         margin-bottom: 0;
         flex-shrink: 0;
-        border-radius: 20px;
-        width: 100%;
     }
     .chatContainer {
         min-height: 200px;
         margin-bottom: 10px;
         flex: 1;
         min-height: 0;
-        border-radius: 20px;
     }
     .chat {
         min-height: 80px;

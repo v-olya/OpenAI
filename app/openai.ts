@@ -45,8 +45,6 @@ export async function* createChatCompletion(
 
     let functionCall: { name: string; arguments: string } | null = null;
 
-    // ...existing code...
-
     try {
         for await (const chunk of response) {
             const delta = chunk.choices[0]?.delta;

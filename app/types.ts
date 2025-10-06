@@ -1,6 +1,5 @@
 import type { ChatCompletionMessage } from 'openai/resources/chat';
 
-// Define our simplified message type
 export type Message = {
     role: 'user' | 'assistant' | 'system' | 'function';
     content: string | null;
@@ -11,14 +10,12 @@ export type Message = {
     };
 };
 
-// Type guard to ensure message is compatible with OpenAI's API
 export function isValidMessage(
     message: Message
 ): message is ChatCompletionMessage {
     return true;
 }
 
-// Weather data type used across components and API
 export type WeatherData = {
     location?: string;
     temperature?: number;
@@ -30,9 +27,7 @@ export type WeatherData = {
     timezone_offset?: number;
 };
 
-// Standardized error types and messages
 export const ErrorMessages = {
-    // User-facing messages (shown in chat and widget)
     LOCATION_NOT_FOUND:
         "Sorry, I couldn't find that city. Please check the spelling or try another location.",
     WEATHER_API_ERROR:
@@ -41,7 +36,6 @@ export const ErrorMessages = {
     GENERAL_API_ERROR:
         'Something went wrong while getting the weather. Please try again in a moment.',
 
-    // Internal technical messages (API validation, not shown to users directly)
     INVALID_QUERY: 'Query parameter must be a non-empty string.',
     FUNCTION_PARSE_ERROR:
         'Failed to parse function arguments or fetch weather.',

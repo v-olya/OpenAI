@@ -6,7 +6,7 @@ import {
     formatLocalTime,
     getWeatherIconName,
 } from '@/app/utils/weather';
-// No need for useEffect here
+
 const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     if (!weather) {
         return (
@@ -45,7 +45,6 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     return (
         <div className={styles.weatherWidget}>
             <div className={styles.weatherWidgetData}>
-                {/* Show location, then local time below */}
                 <h2>{weather.location || 'Unknown location'}</h2>
                 <div className={styles.weatherLocalTime}>
                     <span>Local time:</span> {formatLocalTime()}

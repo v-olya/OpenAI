@@ -1,0 +1,40 @@
+// Shared design tokens and mixins for small components
+$surface-radius: 20px !default;
+$surface-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !default;
+$surface-hover-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !default;
+$font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    sans-serif !default;
+$white: #ffffff !default;
+
+// Project-wide design tokens
+$max-width: 600px !default;
+$card-size: 120px !default;
+
+@mixin surface($bg: null, $radius: $surface-radius) {
+    border-radius: $radius;
+    box-shadow: $surface-shadow;
+    transition: all 0.3s ease;
+    @if $bg {
+        background: $bg;
+    }
+}
+
+@mixin hover-elevate {
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $surface-hover-shadow;
+    }
+}
+
+@mixin white-text-shadow($size: small) {
+    @if $size == small {
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3),
+            0 0 8px rgba(255, 255, 255, 0.2);
+    } @else if $size == medium {
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), 0 3px 6px rgba(0, 0, 0, 0.3),
+            0 0 10px rgba(255, 255, 255, 0.25);
+    } @else if $size == large {
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4),
+            0 0 12px rgba(255, 255, 255, 0.3);
+    }
+}

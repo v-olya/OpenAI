@@ -1,6 +1,5 @@
 import { ErrorMessages } from '@/app/types';
 
-// Time and weather utility functions
 export const isNightTime = (hour?: number): boolean => {
     const currentHour = hour ?? new Date().getHours();
     return currentHour >= 20 || currentHour < 6;
@@ -31,34 +30,34 @@ export const getWeatherIconName = (weathercode?: number): string => {
 
 // Weather code mappings for displaying weather conditions and icons
 export const weatherIconMap: Record<number, string> = {
-    0: 'sun', // Clear
-    1: 'sun', // Mainly clear
-    2: 'cloudy', // Partly cloudy
-    3: 'cloudy', // Overcast
-    45: 'cloudy', // Fog
-    48: 'cloudy', // Depositing rime fog
-    51: 'rain', // Light drizzle
-    53: 'rain', // Moderate drizzle
-    55: 'rain', // Dense drizzle
-    56: 'rain', // Light freezing drizzle
-    57: 'rain', // Dense freezing drizzle
-    61: 'rain', // Slight rain
-    63: 'rain', // Moderate rain
-    65: 'rain', // Heavy rain
-    66: 'rain', // Light freezing rain
-    67: 'rain', // Heavy freezing rain
-    71: 'snow', // Slight snow fall
-    73: 'snow', // Moderate snow fall
-    75: 'snow', // Heavy snow fall
-    77: 'snow', // Snow grains
-    80: 'rain', // Slight rain showers
-    81: 'rain', // Moderate rain showers
-    82: 'rain', // Violent rain showers
-    85: 'snow', // Slight snow showers
-    86: 'snow', // Heavy snow showers
-    95: 'thunder', // Thunderstorm
-    96: 'thunder', // Thunderstorm with slight hail
-    99: 'thunder', // Thunderstorm with heavy hail
+    0: 'sun',
+    1: 'sun',
+    2: 'cloudy',
+    3: 'cloudy',
+    45: 'cloudy',
+    48: 'cloudy',
+    51: 'rain',
+    53: 'rain',
+    55: 'rain',
+    56: 'rain',
+    57: 'rain',
+    61: 'rain',
+    63: 'rain',
+    65: 'rain',
+    66: 'rain',
+    67: 'rain',
+    71: 'snow',
+    73: 'snow',
+    75: 'snow',
+    77: 'snow',
+    80: 'rain',
+    81: 'rain',
+    82: 'rain',
+    85: 'snow',
+    86: 'snow',
+    95: 'thunder',
+    96: 'thunder',
+    99: 'thunder',
 };
 
 export const weatherCodeMap: Record<number, string> = {

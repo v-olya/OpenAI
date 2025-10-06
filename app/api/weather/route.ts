@@ -27,10 +27,9 @@ import OpenAI from 'openai';
 import { getWeather } from '@/app/utils/weather';
 import { ErrorMessages } from '@/app/types';
 
-// Weather function for OpenAI function calling
 async function get_weather({ location }: { location: string }) {
     const weather = await getWeather(location);
-    // Add localtime for the actual location's timezone
+
     let localtime = new Date().toLocaleString('en-US', { timeZone: 'UTC' });
 
     if (weather.timezone) {
@@ -53,7 +52,6 @@ async function get_weather({ location }: { location: string }) {
     };
 }
 
-// Tool definition for OpenAI Assistant
 export const weatherTool = {
     name: 'get_weather',
     description: 'Get the current weather and local time for a city',
@@ -79,8 +77,6 @@ export async function GET(request: Request) {
         );
     }
 
-    // Debug: Log entry into API route
-    console.log('Weather API route called with query:', query);
     const openai = new OpenAI();
     try {
         console.log('Calling OpenAI responses.create...');
