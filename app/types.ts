@@ -1,4 +1,5 @@
 import type { ChatCompletionMessage } from 'openai/resources/chat';
+import React from 'react';
 
 export type Message = {
     role: 'user' | 'assistant' | 'system' | 'function';
@@ -27,6 +28,14 @@ export type WeatherData = {
     timezone_offset?: number;
 };
 
+export type NewsPreview = {
+    title: string;
+    summary: string;
+    sources?: { domain?: string; url?: string }[];
+    url: string;
+    image: string;
+};
+
 export const ErrorMessages = {
     LOCATION_NOT_FOUND:
         "Sorry, I couldn't find that city. Please check the spelling or try another location.",
@@ -51,6 +60,11 @@ export type ApiErrorResponse = {
 // Component prop interfaces
 export interface ChatProps {
     onWeatherUpdate?: (data: WeatherData) => void;
+    chatType?: 'weather' | 'news';
+    placeholder?: string;
+    onNewsResults?: (previews: NewsPreview[]) => void;
+    children?: React.ReactNode;
+    controlBar?: React.ReactNode;
 }
 
 export interface WeatherWidgetProps {

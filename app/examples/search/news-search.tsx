@@ -193,7 +193,7 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
     };
 
     return (
-        <div>
+        <div className='page-chat'>
             {/* Control bar: testing utilities placed outside the chat container */}
             <div className={styles.controlBar + ' flex-row-gap-12'}>
                 <div className='flex-row'>

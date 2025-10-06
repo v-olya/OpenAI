@@ -37,7 +37,9 @@
 .chatContainer {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    /* let the chat container grow to fill available space in the page wrapper */
+    flex: 1 1 auto;
+    min-height: 0; /* allow children (messages) to shrink and scroll */
     width: 100%;
     position: relative; /* allow absolute children inside chat container */
 }
