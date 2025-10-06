@@ -33,7 +33,7 @@
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: var(--breakpoint-mobile)) {
     .weatherWidget {
         width: 100vw;
         min-width: 0;
