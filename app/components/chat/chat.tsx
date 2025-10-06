@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useState, useRef } from 'react';
-import styles from './chat.module.css';
+import styles from './chat.module.scss';
 import { ChatProps, MessageType } from '@/app/types';
 
 export function Chat({ onWeatherUpdate }: ChatProps) {
@@ -40,7 +40,6 @@ export function Chat({ onWeatherUpdate }: ChatProps) {
                 appendMessage('assistant', data.error, true);
                 return;
             }
-            // ...existing code...
             appendMessage(
                 'assistant',
                 'Weather data received and displayed in the widget.'
@@ -97,17 +96,14 @@ export function Chat({ onWeatherUpdate }: ChatProps) {
                 ))}
                 <div ref={messagesEndRef} />
             </div>
-            <form
-                onSubmit={handleSubmit}
-                className={`${styles.inputForm} ${styles.clearfix}`}
-            >
+            <form onSubmit={handleSubmit} className={styles.inputForm}>
                 <input
                     type='text'
                     className={styles.input}
                     value={userInput}
                     onChange={(e) => setUserInput(e.target.value)}
                     placeholder={
-                        isProcessing ? 'Processing...' : 'Enter your question'
+                        isProcessing ? 'Processing...' : 'Your question'
                     }
                     disabled={isProcessing}
                 />

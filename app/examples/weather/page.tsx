@@ -1,5 +1,5 @@
 'use client';
-import styles from './page.module.css';
+import styles from './page.module.scss';
 import { Chat } from '../../components/chat/chat';
 import WeatherWidget from '../../components/widget/weather-widget';
 import { useState, useEffect } from 'react';

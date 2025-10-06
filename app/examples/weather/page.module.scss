@@ -1,30 +1,34 @@
+@import '../../styles/_breakpoints';
+
 .main {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    height: 100dvh;
     background: linear-gradient(135deg, #fafafa 0%, #f0f4f8 100%);
 }
 
 .container {
     display: flex;
     width: 100%;
-    min-height: 100vh;
+    height: 100%;
     gap: 24px;
     padding: 24px;
     box-sizing: border-box;
+    min-height: 0; /* allow children to size/scroll without forcing page scroll */
 }
 
 .column {
     width: 300px;
     flex-shrink: 0;
+    display: flex; /* allow child to stretch full height */
 }
 
 .column > * {
     border-radius: 20px;
-    overflow: hidden;
     width: 100%;
     min-height: 320px;
+    height: 100%; /* desktop/base: fill column height */
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     background-color: white;
@@ -44,6 +48,7 @@
     background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
     border-radius: 20px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    min-height: 0; /* allow inner .chat to manage scroll without growing page */
 }
 
 .chat {
@@ -54,33 +59,38 @@
     display: flex;
     flex-direction: column;
 }
-@media (max-width: var(--breakpoint-mobile)) {
+
+@include mq-mobile {
     .main {
         flex-direction: column;
         align-items: stretch;
-        min-height: 100vh;
+        height: 100dvh;
         padding: 8px;
     }
     .container {
         flex-direction: column;
-        min-height: calc(100vh - 16px);
-        height: calc(100vh - 16px);
-        display: flex;
-        padding: 0;
+        padding: 0 8px;
         gap: 8px;
+        height: 100%;
+        min-height: 0;
+    }
+    .column {
+        width: 100%;
     }
     .column > * {
-        min-height: 200px;
-        height: 200px;
+        margin-top: 10px;
+        height: auto; /* height defined by child component (widget) */
+        min-height: 0; /* allow child to control its height */
         margin-bottom: 0;
         flex-shrink: 0;
         border-radius: 20px;
+        width: 100%;
     }
     .chatContainer {
         min-height: 200px;
-        height: calc(100vh - 224px);
-        margin-bottom: 0;
+        margin-bottom: 10px;
         flex: 1;
+        min-height: 0;
         border-radius: 20px;
     }
     .chat {

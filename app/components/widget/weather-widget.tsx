@@ -1,4 +1,4 @@
-import styles from './weather-widget.module.css';
+import styles from './weather-widget.module.scss';
 import Image from 'next/image';
 import { WeatherWidgetProps } from '@/app/types';
 import {

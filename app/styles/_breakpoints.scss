@@ -1,0 +1,7 @@
+$mobile: 900px;
+
+@mixin mq-mobile {
+    @media (max-width: $mobile) {
+        @content;
+    }
+}
