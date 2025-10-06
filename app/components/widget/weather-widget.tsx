@@ -12,8 +12,8 @@ export type WeatherData = {
 };
 
 const weatherIconMap: Record<number, string> = {
-    0: 'globe', // Clear
-    1: 'globe', // Mainly clear
+    0: 'sun', // Clear
+    1: 'sun', // Mainly clear
     2: 'cloudy', // Partly cloudy
     3: 'cloudy', // Overcast
     45: 'cloudy', // Fog
@@ -118,7 +118,8 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
         weatherIconMap[weather.weathercode]
             ? weatherIconMap[weather.weathercode]
             : 'unknown';
-    // Show night icon for clear weather at night
+    // No need for cloudy override; weatherIconMap already maps cloudy codes to 'cloudy'.
+    // Show clear-night icon for clear weather at night
     if (isNight && (weather.weathercode === 0 || weather.weathercode === 1)) {
         iconName = 'clear-night';
     }
@@ -164,7 +165,12 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
                     >
                         <Image
                             src={`/weather-icons/${iconName}.svg`}
-                            alt={conditions || 'Unknown weather'}
+                            alt={
+                                conditions ||
+                                (iconName === 'cloudy'
+                                    ? 'Cloudy'
+                                    : 'Unknown weather')
+                            }
                             width={64}
                             height={64}
                         />

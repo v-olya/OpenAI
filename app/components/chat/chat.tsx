@@ -1,82 +1,30 @@
 ﻿'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import styles from './chat.module.css';
-import Markdown from 'react-markdown';
-import type { Message } from '@/app/openai';
 
-type DisplayMessage = {
-    role: 'user' | 'assistant';
-    text: string;
-    error?: boolean;
-};
-
-const UserMessage = ({ text }: { text: string }) => (
-    <div className={styles.userMessage}>{text}</div>
-);
-
-const AssistantMessage = ({
-    text,
-    error,
-}: {
-    text: string;
-    error?: boolean;
-}) => (
-    <div className={`${styles.assistantMessage} ${error ? styles.error : ''}`}>
-        <Markdown>{text}</Markdown>
-    </div>
-);
-
-const Message = ({ role, text, error }: DisplayMessage) => {
-    switch (role) {
-        case 'user':
-            return <UserMessage text={text} />;
-        case 'assistant':
-            return <AssistantMessage text={text} error={error} />;
-        default:
-            return null;
-    }
-};
-
-interface WeatherData {
+type WeatherData = {
     location: string;
     temperature: number;
+    windspeed: number;
+    weathercode: number;
+    error?: string;
     conditions: string;
-    weathercode?: number;
-    windspeed?: number;
-    unit?: string;
-    error?: string;
+    unit: string;
     timezone_offset?: number;
-}
-
-interface StreamResponse {
-    type: 'content' | 'weather_data' | 'error';
-    content?: string;
-    data?: WeatherData;
-    error?: string;
-}
-
-interface ChatProps {
-    onWeatherUpdate?: (data: WeatherData) => void;
-    onWeatherRequest?: () => void;
-}
+};
 
 export function Chat({
     onWeatherUpdate,
-}: // onWeatherRequest,
-ChatProps) {
+}: {
+    onWeatherUpdate?: (data: WeatherData) => void;
+}) {
+    const [messages, setMessages] = useState<
+        { role: 'user' | 'assistant'; text: string; error?: boolean }[]
+    >([]);
     const [userInput, setUserInput] = useState('');
-    const [messages, setMessages] = useState<DisplayMessage[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const appendMessage = (
         role: 'user' | 'assistant',
@@ -84,189 +32,47 @@ ChatProps) {
         error?: boolean
     ) => {
         setMessages((prev) => [...prev, { role, text, error }]);
-        scrollToBottom();
-    };
-
-    const appendToLastMessage = (text: string, error?: boolean) => {
-        setMessages((prev) => {
-            const lastMessage = prev[prev.length - 1];
-            const updatedLastMessage = {
-                ...lastMessage,
-                text: lastMessage.text + text,
-                error: lastMessage.error || error,
-            };
-            return [...prev.slice(0, -1), updatedLastMessage];
-        });
-        scrollToBottom();
-    };
-
-    // ...existing code...
-
-    const processStreamResponse = async (response: Response) => {
-        if (!response.body) {
-            throw new Error('No response body received');
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-
-        try {
-            appendMessage('assistant', '');
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                const chunk = decoder.decode(value);
-                buffer += chunk;
-
-                while (buffer.includes('\n')) {
-                    const newlineIndex = buffer.indexOf('\n');
-                    const line = buffer.slice(0, newlineIndex);
-                    buffer = buffer.slice(newlineIndex + 1);
-
-                    if (!line.trim()) continue;
-
-                    try {
-                        const data = JSON.parse(line) as StreamResponse;
-
-                        switch (data.type) {
-                            case 'weather_data':
-                                if (onWeatherUpdate && data.data) {
-                                    // Convert weathercode to conditions string
-                                    const weatherCodeMap: Record<
-                                        number,
-                                        string
-                                    > = {
-                                        0: 'Clear',
-                                        1: 'Mainly clear',
-                                        2: 'Partly cloudy',
-                                        3: 'Overcast',
-                                        45: 'Fog',
-                                        48: 'Depositing rime fog',
-                                        51: 'Light drizzle',
-                                        53: 'Moderate drizzle',
-                                        55: 'Dense drizzle',
-                                        56: 'Light freezing drizzle',
-                                        57: 'Dense freezing drizzle',
-                                        61: 'Slight rain',
-                                        63: 'Moderate rain',
-                                        66: 'Light freezing rain',
-                                        67: 'Heavy freezing rain',
-                                        71: 'Slight snow fall',
-                                        73: 'Moderate snow fall',
-                                        75: 'Heavy snow fall',
-                                        77: 'Snow grains',
-                                        80: 'Slight rain showers',
-                                        81: 'Moderate rain showers',
-                                        82: 'Violent rain showers',
-                                        85: 'Slight snow showers',
-                                        86: 'Heavy snow showers',
-                                        95: 'Thunderstorm',
-                                        96: 'Thunderstorm with slight hail',
-                                        99: 'Thunderstorm with heavy hail',
-                                    };
-                                    const normalized = {
-                                        location: data.data.location,
-                                        temperature: data.data.temperature,
-                                        conditions:
-                                            typeof data.data.weathercode ===
-                                            'number'
-                                                ? weatherCodeMap[
-                                                      data.data.weathercode
-                                                  ]
-                                                : '',
-                                        weathercode: data.data.weathercode,
-                                        windspeed: data.data.windspeed,
-                                        error: data.data.error,
-                                    };
-                                    onWeatherUpdate(normalized);
-                                }
-                                // Optionally, display weather info in chat as well:
-                                if (data.data) {
-                                    // Only show the update phrase, not duplicated weather details
-                                    appendToLastMessage(
-                                        `The widget has been updated with the weather conditions in ${data.data.location}.\n`,
-                                        false
-                                    );
-                                }
-                                break;
-                            case 'content':
-                                if (data.content) {
-                                    appendToLastMessage(data.content);
-                                }
-                                break;
-                            case 'error':
-                                appendToLastMessage(
-                                    "Sorry, I couldn't find a city in your message. Please ask about the weather in a specific city.",
-                                    true
-                                );
-                                break;
-                            default:
-                            //
-                        }
-                    } catch {
-                        if (line.trim()) {
-                            appendToLastMessage(line + '\n');
-                        }
-                    }
-                }
-
-                if (buffer.trim() && !buffer.includes('{')) {
-                    appendToLastMessage(buffer);
-                    buffer = '';
-                }
-            }
-            // Ensure function returns after stream ends
-            return;
-        } catch (error) {
-            console.error('Error processing stream:', error);
-            appendToLastMessage(
-                '\nAn error occurred while processing the response.\n',
-                true
-            );
-        }
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     const sendMessage = async (text: string) => {
         try {
-            // Send full user message to backend for city detection
-
-            // Only proceed to chat response after weather is fetched (or no city found)
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    messages: [
-                        ...messages.map((msg) => ({
-                            role: msg.role === 'user' ? 'user' : 'assistant',
-                            content: msg.text,
-                        })),
-                        {
-                            role: 'user',
-                            content: text,
-                        },
-                    ] as Message[],
-                }),
-            });
-
+            const response = await fetch(
+                `/api/weather?q=${encodeURIComponent(text)}`
+            );
             if (!response.ok) {
-                // Try to parse error message from backend
                 let errorMsg = 'An error occurred. Please try again.';
                 try {
                     const errorData = await response.json();
-                    if (errorData && errorData.content) {
-                        errorMsg = errorData.content;
+                    if (errorData && errorData.error) {
+                        errorMsg = errorData.error;
                     }
                 } catch {}
                 appendMessage('assistant', errorMsg, true);
                 return;
             }
-
-            await processStreamResponse(response);
+            const data = await response.json();
+            if (data.error) {
+                appendMessage('assistant', data.error, true);
+                return;
+            }
+            // ...existing code...
+            appendMessage(
+                'assistant',
+                'Weather data received and displayed in the widget.'
+            );
+            if (onWeatherUpdate) {
+                onWeatherUpdate({
+                    location: data.location,
+                    temperature: data.temperature,
+                    windspeed: data.windspeed,
+                    weathercode: data.weathercode,
+                    error: data.error,
+                    conditions: '',
+                    unit: 'C',
+                    timezone_offset: undefined,
+                });
+            }
         } catch (error) {
             appendMessage(
                 'assistant',
@@ -282,9 +88,7 @@ ChatProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const trimmedInput = userInput.trim();
-
         if (!trimmedInput || isProcessing) return;
-
         setUserInput('');
         setIsProcessing(true);
         appendMessage('user', trimmedInput);
@@ -295,12 +99,17 @@ ChatProps) {
         <div className={styles.chatContainer}>
             <div className={styles.messages}>
                 {messages.map((msg, index) => (
-                    <Message
+                    <div
                         key={index}
-                        role={msg.role}
-                        text={msg.text}
-                        error={msg.error}
-                    />
+                        className={
+                            msg.role === 'user'
+                                ? styles.userMessage
+                                : styles.assistantMessage
+                        }
+                        style={msg.error ? { color: 'red' } : {}}
+                    >
+                        {msg.text}
+                    </div>
                 ))}
                 <div ref={messagesEndRef} />
             </div>
@@ -324,7 +133,6 @@ ChatProps) {
                     disabled={isProcessing}
                     aria-label={isProcessing ? 'Processing' : 'Send message'}
                 >
-                    {/* Visible text is hidden for visual users; screen readers will read aria-label. */}
                     <span className={styles.buttonLabel}>
                         {isProcessing ? '...' : 'Send'}
                     </span>

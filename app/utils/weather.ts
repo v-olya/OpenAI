@@ -1,51 +1,43 @@
 const getWeather = async (location: string) => {
     try {
-        // Use absolute URL for server-side fetch
-        let baseUrl = '';
-        if (typeof window === 'undefined') {
-            // Node.js: build absolute URL from env or default
-            baseUrl =
-                process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        }
-        const url = `${baseUrl}/api/weather?city=${encodeURIComponent(
-            location
-        )}`;
-        const res = await fetch(url);
-        if (!res.ok) {
-            let errorMsg = `Weather API error: ${res.status}`;
-            try {
-                const errData = await res.json();
-                if (errData.error) errorMsg = errData.error;
-            } catch {}
+        // Geocode location to get lat/lon
+        const geoRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+                location
+            )}`
+        );
+        const geoData = await geoRes.json();
+        if (!Array.isArray(geoData) || geoData.length === 0) {
             return {
                 location,
-                error: errorMsg,
+                error: "Sorry, I couldn't find that city. Please check the spelling or try another location.",
             };
         }
-        const data = await res.json();
-        if (data.error || !data.current_weather) {
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
+        // Fetch weather from Open-Meteo
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+        const weatherRes = await fetch(weatherUrl);
+        if (!weatherRes.ok) {
             return {
                 location,
-                temperature: undefined,
-                unit: 'C',
-                weathercode: undefined,
-                windspeed: undefined,
-                error: data.error || 'No weather data',
+                error: `Weather API error: ${weatherRes.status}`,
             };
+        }
+        const weatherData = await weatherRes.json();
+        if (!weatherData.current_weather) {
+            return { location, error: 'No weather data' };
         }
         return {
             location,
-            temperature: data.current_weather.temperature,
+            temperature: weatherData.current_weather.temperature,
             unit: 'C',
-            weathercode: data.current_weather.weathercode,
-            windspeed: data.current_weather.windspeed,
+            weathercode: weatherData.current_weather.weathercode,
+            windspeed: weatherData.current_weather.windspeed,
             error: undefined,
         };
     } catch (error) {
-        return {
-            location,
-            error: String(error),
-        };
+        return { location, error: String(error) };
     }
 };
 
