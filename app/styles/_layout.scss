@@ -1,43 +1,7 @@
 $layout-gap: 16px;
 
-.layout-column {
-    flex: 0 0 clamp(260px, 20vw, 340px);
-    display: flex;
-    flex-direction: column;
-    justify-content: stretch;
-    min-width: 200px;
-}
-
-.layout-chat-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    min-height: 0;
-}
-
-.layout-chat {
-    max-width: var(--max-width);
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    min-height: 0;
-}
-
-.layout-chat-messages {
-    flex: 1 1 auto;
-    overflow-y: auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    white-space: pre-wrap;
-    min-height: 0;
-}
-
 .layout-chat-wrapper {
     display: flex;
-
     flex-direction: row;
     align-items: stretch;
     justify-content: center;
@@ -60,7 +24,7 @@ $layout-gap: 16px;
     );
 }
 
-.layout-chat-wrapper .chat-container {
+.layout-chat-wrapper .chat {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -69,45 +33,6 @@ $layout-gap: 16px;
     box-sizing: border-box;
     min-height: 0;
     overflow: hidden;
-}
-
-.layout-chat-messages img,
-.layout-chat-messages picture,
-.layout-chat-messages canvas,
-.layout-chat-messages svg,
-.layout-chat-messages iframe {
-    max-width: 100%;
-    height: auto !important;
-    display: block;
-    object-fit: contain;
-}
-
-.layout-chat-messages .chart,
-.layout-chat-messages .chart-container,
-.layout-chat-messages .chart-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: 100% !important;
-}
-
-.layout-chat-messages canvas[width],
-.layout-chat-messages canvas[height] {
-    width: 100% !important;
-    height: auto !important;
-}
-
-.layout-chat-messages > *[class*='weather-widget'],
-.layout-chat-messages > .widget,
-.layout-chat-messages > .card {
-    /* allow widgets/cards to size naturally within messages (flex grow) */
-    height: auto;
-    min-height: 0;
-    max-height: none;
-    flex: 1 1 auto;
-    align-self: stretch;
-    width: 100%;
-    box-sizing: border-box;
 }
 
 .centered-container {

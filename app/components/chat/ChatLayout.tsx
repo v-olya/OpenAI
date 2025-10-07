@@ -12,23 +12,19 @@ interface ChatLayoutProps {
 
 export function ChatLayout({ children, messages, inputForm }: ChatLayoutProps) {
     return (
-        <div className='layout-chat'>
-            <div
-                className={`${chatStyles['chat-container']} layout-chat-container`}
+        <div className={chatStyles.chat}>
+            <Link
+                href='/'
+                className={`${chatStyles['home-link']} home-link link-base`}
+                aria-label='Home'
             >
-                <Link
-                    href='/'
-                    className={`${chatStyles['home-link']} home-link link-base`}
-                    aria-label='Home'
-                >
-                    Home
-                </Link>
-                <div className={`${chatStyles.messages} layout-chat-messages`}>
-                    {messages}
-                    {children}
-                </div>
-                {inputForm}
+                Home
+            </Link>
+            <div className={chatStyles.messages}>
+                {messages}
+                {children}
             </div>
+            {inputForm}
         </div>
     );
 }

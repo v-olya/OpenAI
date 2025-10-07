@@ -32,8 +32,6 @@
     @include hover-elevate;
 }
 
-// layout provided via utility classes in markup (layout-column, layout-chat-container, layout-chat)
-
 @include mq-mobile {
     .main {
         flex-direction: column;
@@ -60,18 +58,9 @@
         margin-bottom: 0;
     }
 
-    .chat-container {
+    .chat {
         min-height: 200px;
         margin-bottom: 10px;
-        flex: 1 1 auto;
-    }
-
-    .chat {
-        min-height: 80px;
-        display: flex;
-        flex-direction: column;
-        max-width: none;
-        width: 100%;
         flex: 1 1 auto;
     }
 
