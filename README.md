@@ -48,8 +48,8 @@ A Next.js application demonstrating OpenAI's Chat Completions API and Responses 
 ### Routes
 
 -   **Home**: [http://localhost:3000](http://localhost:3000) - Main navigation page
--   **Weather Demo**: [/examples/weather](http://localhost:3000/examples/weather) - Chat interface with weather widget
--   **Basic Chat**: [/examples/basic-chat](http://localhost:3000/examples/basic-chat) - Simple chat interface
+-   **Weather Demo**: [/pages/weather](http://localhost:3000/pages/weather) - Chat interface with weather widget
+-   **Basic Chat**: [/pages/basic-chat](http://localhost:3000/pages/basic-chat) - Simple chat interface
 
 ## Architecture
 

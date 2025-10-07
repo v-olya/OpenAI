@@ -74,41 +74,41 @@ const SearchExample = () => {
         </div>
     );
 
+    const leftControl = (
+        <div className='side-column control-bar'>
+            <button
+                className='control-button'
+                onClick={() => runTestCase('valid')}
+            >
+                Get Valid
+            </button>
+        </div>
+    );
+
+    const rightControl = (
+        <div className='side-column control-bar'>
+            <button
+                className='control-button'
+                onClick={() => runTestCase('invalid')}
+            >
+                Get Invalid
+            </button>
+        </div>
+    );
+
     return (
         <main className='page-centered-with-controls'>
             <div className='centered-container'>
-                {/* Left test button */}
-                <div className='side-column'>
-                    <button
-                        onClick={() => runTestCase('valid')}
-                        className='control-button'
-                    >
-                        Get Valid
-                    </button>
-                </div>
-
-                {/* Centered chat */}
-                <div className='center-column'>
-                    <div className='center-content'>
-                        <Chat
-                            chatType='news'
-                            placeholder='Search news...'
-                            onNewsResults={handleNewsResults}
-                        >
-                            {previewsContent}
-                        </Chat>
-                    </div>
-                </div>
-
-                {/* Right test button */}
-                <div className='side-column'>
-                    <button
-                        onClick={() => runTestCase('invalid')}
-                        className='control-button'
-                    >
-                        Get Invalid
-                    </button>
-                </div>
+                {/* left control rendered outside the chat container via Chat props */}
+                <Chat
+                    chatType='news'
+                    placeholder='Search news...'
+                    onNewsResults={handleNewsResults}
+                    controlBarLeft={leftControl}
+                    controlBarRight={rightControl}
+                >
+                    {previewsContent}
+                </Chat>
             </div>
         </main>
     );

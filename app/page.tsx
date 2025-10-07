@@ -1,13 +1,12 @@
 'use client';
 
-import React from 'react';
 import styles from './page.module.scss';
 
 const Home = () => {
     const categories = {
         Chat: 'basic-chat',
         Weather: 'weather',
-        Search: '/search',
+        Search: 'search',
     };
 
     return (
@@ -20,7 +19,7 @@ const Home = () => {
                     <a
                         key={name}
                         className={`${styles.category} link-base`}
-                        href={url.startsWith('/') ? url : `/examples/${url}`}
+                        href={`/pages/${url}`}
                     >
                         {name}
                     </a>
