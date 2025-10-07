@@ -128,14 +128,10 @@
 
 @include mq-mobile {
     .weather-widget {
-        width: 100%;
-        min-width: 0;
-        max-width: 100%;
         min-height: 220px;
         font-weight: 600;
         padding: 14px 10px;
         border-radius: 12px;
-        box-sizing: border-box;
     }
 
     .weather-widget-data {

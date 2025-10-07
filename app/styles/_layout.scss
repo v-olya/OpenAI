@@ -38,7 +38,6 @@ $layout-gap: 16px;
 .layout-chat-wrapper {
     display: flex;
 
-    /* desktop layout: row with stretched items; mobile overrides apply in mq-mobile */
     flex-direction: row;
     align-items: stretch;
     justify-content: center;
@@ -47,7 +46,7 @@ $layout-gap: 16px;
     box-sizing: border-box;
 }
 
-.layout-centered-with-controls {
+.layout-with-controls {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -59,15 +58,6 @@ $layout-gap: 16px;
         var(--background) 0%,
         var(--background-secondary) 100%
     );
-}
-
-.layout-centered-with-controls .layout-chat-wrapper {
-    height: auto;
-    min-height: 0;
-}
-
-.layout-centered-with-controls .chat-container {
-    box-shadow: none;
 }
 
 .layout-chat-wrapper .chat-container {
@@ -164,10 +154,9 @@ $layout-gap: 16px;
 }
 
 @include mq-mobile {
-    .layout-centered-with-controls {
+    .layout-with-controls {
         flex-direction: column;
         align-items: stretch;
-        height: 100dvh;
         padding: 8px;
     }
 
@@ -200,7 +189,6 @@ $layout-gap: 16px;
     .center-content {
         min-height: 80px;
         height: 100%;
-        display: flex;
         flex-direction: column;
         max-width: none;
         width: 100%;
