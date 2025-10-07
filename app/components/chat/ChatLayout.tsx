@@ -8,23 +8,43 @@ interface ChatLayoutProps {
     children?: ReactNode;
     messages: ReactNode;
     inputForm: ReactNode;
-    controlBar?: ReactNode;
+    /** optional left-side control area rendered outside the chat container */
+    controlBarLeft?: ReactNode;
+    /** optional right-side control area rendered outside the chat container */
+    controlBarRight?: ReactNode;
 }
 
-export function ChatLayout({ children, messages, inputForm, controlBar }: ChatLayoutProps) {
+export function ChatLayout({
+    children,
+    messages,
+    inputForm,
+    controlBarLeft,
+    controlBarRight,
+}: ChatLayoutProps) {
     return (
-        <div className="page-chat">
-            {controlBar}
-            <div className={chatStyles.chatContainer}>
-                <Link href='/' className={`${chatStyles.homeLink} home-link link-base`} aria-label='Home'>
+        <div className='layout-chat'>
+            {/* left control bar (e.g. Get Valid) */}
+            {controlBarLeft}
+
+            <div
+                className={`${chatStyles['chat-container']} layout-chat-container`}
+            >
+                <Link
+                    href='/'
+                    className={`${chatStyles['home-link']} home-link link-base`}
+                    aria-label='Home'
+                >
                     Home
                 </Link>
-                <div className={chatStyles.messages}>
+                <div className={`${chatStyles.messages} layout-chat-messages`}>
                     {messages}
                     {children}
                 </div>
                 {inputForm}
             </div>
+
+            {/* right control bar (e.g. Get Invalid) */}
+            {controlBarRight}
         </div>
     );
 }

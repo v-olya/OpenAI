@@ -10,8 +10,8 @@ import {
 const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     if (!weather) {
         return (
-            <div className={styles.weatherWidget}>
-                <div className={styles.weatherWidgetData}>
+            <div className={styles['weather-widget']}>
+                <div className={styles['weather-widget-data']}>
                     <h2>Enter a city</h2>
                     <p>to see the local weather:</p>
                     <p>
@@ -29,8 +29,8 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     }
     if (weather.error) {
         return (
-            <div className={styles.weatherWidget}>
-                <div className={styles.weatherWidgetData}>
+            <div className={styles['weather-widget']}>
+                <div className={styles['weather-widget-data']}>
                     <p>Error: {weather.error}</p>
                 </div>
             </div>
@@ -43,19 +43,19 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     const iconName = getWeatherIconName(weather.weathercode);
 
     return (
-        <div className={styles.weatherWidget}>
-            <div className={styles.weatherWidgetData}>
+        <div className={styles['weather-widget']}>
+            <div className={styles['weather-widget-data']}>
                 <h2>{weather.location || 'Unknown location'}</h2>
                 <div className={styles.weatherLocalTime}>
                     <span>Local time:</span> {formatLocalTime()}
                 </div>
                 {typeof weather.temperature === 'number' && (
-                    <h3 className={styles.weatherWidgetTemp}>
+                    <h3 className={styles['weather-widget-temp']}>
                         {weather.temperature}°C
                     </h3>
                 )}
-                <div className={styles.weatherIconContainer}>
-                    <div className={styles.weatherIconWrapper}>
+                <div className={styles['weather-icon-container']}>
+                    <div className={styles['weather-icon-wrapper']}>
                         <Image
                             src={`/weather-icons/${iconName}.svg`}
                             alt={
@@ -69,7 +69,7 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
                         />
                     </div>
                 </div>
-                <div className={styles.weatherInfo}>
+                <div className={styles['weather-info']}>
                     <p>{conditions && <span>{conditions}</span>}</p>
                     <p>
                         {weather.windspeed !== undefined && (

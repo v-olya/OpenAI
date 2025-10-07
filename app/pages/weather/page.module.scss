@@ -1,8 +1,7 @@
 @import '../../styles/_breakpoints';
 @import '../../styles/_variables';
+@import '../../styles/_layout';
 
-/* Weather example page layout - keep the page within the viewport and
-     let inner chat/messages scroll when necessary. */
 .main {
     display: flex;
     justify-content: center;
@@ -13,30 +12,18 @@
         var(--background) 0%,
         var(--background-secondary) 100%
     );
-    box-sizing: border-box;
 }
 
 .container {
-    display: flex;
-    width: 100%;
-    height: 100%; /* fill the main area */
-    gap: 16px;
+    gap: $layout-gap;
     padding: 12px;
-    box-sizing: border-box;
     min-height: 0;
-}
-
-.column {
-    width: 300px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: stretch;
 }
 
 .surface,
 .column > * {
     @include surface($bg: white, $radius: 20px);
+
     width: 100%;
 }
 
@@ -45,21 +32,7 @@
     @include hover-elevate;
 }
 
-.chatContainer {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    min-height: 0;
-}
-
-.chat {
-    max-width: var(--max-width);
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
+// layout provided via utility classes in markup (layout-column, layout-chat-container, layout-chat)
 
 @include mq-mobile {
     .main {
@@ -68,6 +41,7 @@
         height: 100dvh;
         padding: 8px;
     }
+
     .container {
         flex-direction: column;
         padding: 0 8px;
@@ -75,56 +49,33 @@
         height: 100%;
         min-height: 0;
     }
+
     .column {
         width: 100%;
     }
+
     .column > * {
         margin-top: 10px;
         height: auto;
-        min-height: 0;
         margin-bottom: 0;
-        flex-shrink: 0;
     }
-    .chatContainer {
+
+    .chat-container {
         min-height: 200px;
         margin-bottom: 10px;
-        flex: 1;
-        min-height: 0;
+        flex: 1 1 auto;
     }
+
     .chat {
         min-height: 80px;
-        height: 100%;
         display: flex;
         flex-direction: column;
         max-width: none;
         width: 100%;
+        flex: 1 1 auto;
     }
 
-    /* mobile: widget fixed size */
-    .column > * {
-        height: auto;
-    }
-    .column .weatherWidget {
+    .column .weather-widget {
         height: 260px;
-    }
-}
-
-@media (min-width: 900px) {
-    /* desktop: horizontal layout, widget and chat fill height */
-    .container {
-        flex-direction: row;
-    }
-    .column {
-        width: 340px;
-        flex: 0 0 340px;
-    }
-    .column > * {
-        height: 100%;
-    }
-    .chatContainer {
-        height: 100%;
-    }
-    .column .weatherWidget {
-        height: 100%;
     }
 }

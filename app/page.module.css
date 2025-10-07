@@ -1,11 +1,4 @@
-.main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #fafafa 0%, #f0f4f8 100%);
-}
+/* legacy CSS removed — use SCSS modules instead */
 
 .title {
     font-size: 1.6em;
@@ -35,7 +28,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: linear-gradient(135deg, #ffffff 0%, #f7f7f7 100%);
+    background: linear-gradient(135deg, #fff 0%, #f7f7f7 100%);
     cursor: pointer;
     max-width: 600px;
     width: 120px;
@@ -44,49 +37,15 @@
     transition: all 0.3s ease;
     font-weight: 500;
     border: 1.5px solid #eaeaea;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.category:hover {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e8f1fc 100%);
-    border-color: #c5ddf5;
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(107, 155, 209, 0.2);
-}
-
-.category:active {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(107, 155, 209, 0.25);
-}
-
-/* Remove anchor underline */
-.category {
-    text-decoration: none;
-}
-.category:hover {
-    text-decoration: none;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
 }
 
 /* Single mobile breakpoint tuning (matches mq-mobile: 900px) */
-@media (max-width: 900px) {
-    .main {
-        padding: 20px 12px;
-        height: 100dvh;
-    }
-    .title {
-        font-size: clamp(1.1rem, 4vw, 1.4rem);
-        margin-bottom: 14px;
-        text-align: center;
-    }
-    .container {
-        flex-direction: column;
-        gap: 14px;
-        padding: 12px;
-    }
-    .category {
-        width: 100%;
-        max-width: none;
-        height: auto;
-        padding: 16px;
-    }
+
+/* This file was replaced by `page.module.scss` which uses the project's
+   SCSS breakpoint mixins (`mq-mobile` / `mq-desktop`).
+   Keep this file minimal to avoid duplicate raw @media rules. */
+
+.replaced-by-scss {
+    display: none;
 }

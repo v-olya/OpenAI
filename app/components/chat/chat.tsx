@@ -11,8 +11,10 @@ export function Chat({
     placeholder,
     onNewsResults,
     children,
-    controlBar,
-}: ChatProps) {
+    controlBarLeft,
+    controlBarRight,
+}: // new optional side controls
+ChatProps) {
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [userInput, setUserInput] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -176,8 +178,8 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
             {messages.map((msg, index) => {
                 const baseClass =
                     msg.role === 'user'
-                        ? styles.userMessage
-                        : styles.assistantMessage;
+                        ? styles['user-message']
+                        : styles['assistant-message'];
                 const combined = msg.error
                     ? `${baseClass} msg-error`
                     : baseClass;
@@ -192,7 +194,7 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
     );
 
     const inputFormContent = (
-        <form onSubmit={handleSubmit} className={styles.inputForm}>
+        <form onSubmit={handleSubmit} className={styles['input-form']}>
             <input
                 type='text'
                 className={styles.input}
@@ -207,11 +209,11 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
             />
             <button
                 type='submit'
-                className={`${styles.button} ${styles.buttonArrow}`}
+                className={`${styles.button} ${styles['button-arrow']}`}
                 disabled={isProcessing}
                 aria-label={isProcessing ? 'Processing' : 'Send message'}
             >
-                <span className={styles.buttonLabel}>
+                <span className={styles['button-label']}>
                     {isProcessing ? '...' : 'Send'}
                 </span>
             </button>
@@ -222,7 +224,8 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
         <ChatLayout
             messages={messagesContent}
             inputForm={inputFormContent}
-            controlBar={controlBar}
+            controlBarLeft={controlBarLeft}
+            controlBarRight={controlBarRight}
         >
             {children}
         </ChatLayout>

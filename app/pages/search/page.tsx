@@ -41,8 +41,8 @@ const SearchExample = () => {
     const previewsContent = previews && (
         <div className='preview-list'>
             {previews.map((preview, i) => (
-                <div key={i} className={styles.previewCard}>
-                    <div className={styles.previewImage}>
+                <div key={i} className={styles['preview-card']}>
+                    <div className={styles['preview-image']}>
                         <Image
                             src={preview.image}
                             alt={preview.title}
@@ -51,10 +51,10 @@ const SearchExample = () => {
                             className='preview-image'
                         />
                     </div>
-                    <div className={styles.previewContent}>
+                    <div className={styles['preview-content']}>
                         <div className='preview-title'>{preview.title}</div>
                         <div className='preview-summary'>{preview.summary}</div>
-                        <div className={styles.sourceCloud}>
+                        <div className={styles['source-cloud']}>
                             {Array.isArray(preview.sources) &&
                                 preview.sources.map((source, idx) => (
                                     <a
@@ -62,7 +62,7 @@ const SearchExample = () => {
                                         href={source.url}
                                         target='_blank'
                                         rel='noreferrer'
-                                        className={styles.sourceBadge}
+                                        className={styles['source-badge']}
                                     >
                                         {source.domain || source.url}
                                     </a>
@@ -97,7 +97,7 @@ const SearchExample = () => {
     );
 
     return (
-        <main className='page-centered-with-controls'>
+        <main className='layout-centered-with-controls'>
             <div className='centered-container'>
                 {/* left control rendered outside the chat container via Chat props */}
                 <Chat

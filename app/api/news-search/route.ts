@@ -323,10 +323,23 @@ export async function POST(request: Request) {
                     let imageUrl = p.image || null;
                     if (!imageUrl && p.imagePrompt) {
                         try {
-                            // Try calling image generation (if available in the client)
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            const imgResp: any = await (
-                                openai as any
+                            // Try calling image generation (if available in the client).
+                            // Use a narrow local interface to avoid explicit `any` casts.
+                            type OpenAIImagesClient = {
+                                images: {
+                                    generate: (opts: {
+                                        prompt: string;
+                                        size?: string;
+                                    }) => Promise<{
+                                        data?: Array<{
+                                            url?: string;
+                                            b64_json?: string;
+                                        }>;
+                                    }>;
+                                };
+                            };
+                            const imgResp = await (
+                                openai as unknown as OpenAIImagesClient
                             ).images.generate({
                                 prompt: p.imagePrompt,
                                 size: '1024x512',

@@ -15,7 +15,7 @@ export default function ErrorView({
     children?: React.ReactNode;
 }) {
     return (
-        <main className='page-center'>
+        <main className='layout-centered'>
             <h1 className='heading-lg'>{title}</h1>
             {message ? <p className='muted'>{message}</p> : null}
             {showPre && message ? (

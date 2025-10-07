@@ -1,19 +1,19 @@
-// Shared design tokens and mixins for small components
-$surface-radius: 20px !default;
-$surface-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !default;
-$surface-hover-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !default;
-$font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    sans-serif !default;
-$white: #ffffff !default;
+$surface-radius: 20px;
+$surface-shadow: 0 4px 16px rgb(0 0 0 / 10%);
+$surface-hover-shadow: 0 6px 20px rgb(0 0 0 / 15%);
+$font-stack: -apple-system, blinkmacsystemfont, 'Segoe UI', 'Roboto', 'Oxygen',
+    sans-serif;
+$white: #fff;
 
 // Project-wide design tokens
-$max-width: 600px !default;
-$card-size: 120px !default;
+$max-width: 600px;
+$card-size: 120px;
 
 @mixin surface($bg: null, $radius: $surface-radius) {
     border-radius: $radius;
     box-shadow: $surface-shadow;
     transition: all 0.3s ease;
+
     @if $bg {
         background: $bg;
     }
@@ -26,35 +26,35 @@ $card-size: 120px !default;
     }
 }
 
-/* Reusable interactive hover/active styles for buttons/links */
 @mixin interactive-hover(
     $bg-start: #f0f7ff,
     $bg-end: #e8f1fc,
     $border: #c5ddf5
 ) {
     transition: all 0.25s ease;
+
     &:hover {
         background: linear-gradient(135deg, $bg-start 0%, $bg-end 100%);
-        /* use consistent 1.5px border on hover to match base border and avoid layout shift */
         border: 1.5px solid $border;
-        box-shadow: 0 2px 8px rgba(107, 155, 209, 0.12);
+        box-shadow: 0 2px 8px rgb(107 155 209 / 12%);
         text-decoration: none;
     }
+
     &:active {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(107, 155, 209, 0.25);
+        box-shadow: 0 4px 12px rgb(107 155 209 / 25%);
     }
 }
 
 @mixin white-text-shadow($size: small) {
     @if $size == small {
-        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3),
-            0 0 8px rgba(255, 255, 255, 0.2);
+        text-shadow: 0 1px 0 rgb(0 0 0 / 50%), 0 2px 4px rgb(0 0 0 / 30%),
+            0 0 8px rgb(255 255 255 / 20%);
     } @else if $size == medium {
-        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5), 0 3px 6px rgba(0, 0, 0, 0.3),
-            0 0 10px rgba(255, 255, 255, 0.25);
+        text-shadow: 0 2px 0 rgb(0 0 0 / 50%), 0 3px 6px rgb(0 0 0 / 30%),
+            0 0 10px rgb(255 255 255 / 25%);
     } @else if $size == large {
-        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4),
-            0 0 12px rgba(255, 255, 255, 0.3);
+        text-shadow: 0 2px 0 rgb(0 0 0 / 60%), 0 4px 8px rgb(0 0 0 / 40%),
+            0 0 12px rgb(255 255 255 / 30%);
     }
 }

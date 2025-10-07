@@ -1,10 +1,14 @@
 @import './styles/_variables';
+@import './styles/_breakpoints';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 :root {
     --max-width: #{$max-width};
     --card-size: #{$card-size};
     --border-radius: 12px;
-    --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+    --chat-input-bottom: 20px;
+    --chat-input-height: 72px;
+    --font-mono: ui-monospace, menlo, monaco, 'Cascadia Mono', 'Segoe UI Mono',
         'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
         'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
     --primary-color: #6b9bd1;
@@ -28,15 +32,14 @@ body {
     color: var(--text-color);
     background-color: var(--bg-color);
     line-height: 1.6;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-        'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-        'Helvetica Neue', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 a {
-    /* common baseline for all anchors */
     color: var(--primary-color);
     text-decoration: none;
     transition: color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease,
@@ -47,111 +50,65 @@ a:hover {
     color: #5a8bc4;
 }
 
-/* subtle focus baseline for keyboard users; components may override with stronger outlines */
 a:focus {
-    outline: 2px solid rgba(107, 155, 209, 0.08);
+    outline: 2px solid rgb(107 155 209 / 8%);
     outline-offset: 2px;
 }
 
-/* Make other links use the same hover/active visual language as the Home link.
-   These styles are intentionally subtle so they don't override component-level
-   designs but provide a consistent baseline for anchors. */
 a:hover,
 a:active {
-    /* subtle background tint on hover (only visible if element has background or padding)
-       keeps text color transition from earlier rule */
     color: #5a8bc4;
 }
-
-/* For anchors that visually behave like buttons (use .home-link or add .link-btn),
-   ensure hover/active match the Home link appearance */
 
 a.home-link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    text-decoration: none;
-}
-
-/* Utility: extracted common link-like styles that button-like anchors can share.
-   Use `.link-base` for shared visuals and `.link-btn` / `.home-link` for specifics. */
-.link-base {
-    text-decoration: none;
-    transition: color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease,
-        transform 0.12s ease;
-}
-
-a.home-link:hover {
-    box-shadow: 0 2px 6px rgba(90, 140, 200, 0.08);
-    background: linear-gradient(
-        180deg,
-        rgba(245, 250, 255, 1),
-        rgba(240, 248, 255, 1)
-    );
-}
-
-a.home-link:active {
-    transform: translateY(-1px);
-    box-shadow: 0 1px 4px rgba(90, 140, 200, 0.06);
-}
-
-/* Standardized Home link styling used across components/pages */
-.home-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 500; /* less bold */
+    font-weight: 500;
     font-size: 0.88rem;
     color: #142a44;
     background: linear-gradient(
         180deg,
-        rgba(242, 248, 255, 0.98),
-        rgba(240, 246, 255, 0.96)
+        rgb(242 248 255 / 98%),
+        rgb(240 246 255 / 96%)
     );
     padding: 4px 8px;
     border-radius: 7px;
-    text-decoration: none;
-    /* Use 1.5px here so hover/active visuals match other components and avoid layout shift */
-    border: 1.5px solid rgba(90, 140, 200, 0.16);
-    box-shadow: 0 1px 4px rgba(90, 140, 200, 0.04);
+    border: 1.5px solid rgb(90 140 200 / 16%);
+    box-shadow: 0 1px 4px rgb(90 140 200 / 4%);
     transition: box-shadow 0.12s ease, background 0.12s ease;
 }
 
 .home-link:hover {
-    box-shadow: 0 2px 6px rgba(90, 140, 200, 0.08);
+    box-shadow: 0 2px 6px rgb(90 140 200 / 8%);
     background: linear-gradient(
         180deg,
-        rgba(245, 250, 255, 1),
-        rgba(240, 248, 255, 1)
+        rgb(245 250 255 / 100%),
+        rgb(240 248 255 / 100%)
     );
 }
 
 .home-link:focus {
-    outline: 2px solid rgba(107, 155, 209, 0.12);
+    outline: 2px solid rgb(107 155 209 / 12%);
     outline-offset: 2px;
 }
 
-/* Unified hover/active styles for link-like UI elements.
-   Keep this rule as the single source of truth for hover/active visuals
-   (background, border-color, subtle elevation). Components should not
-   duplicate these styles; instead they should use `.link-base` or
-   `.home-link` on anchors to inherit this behavior. */
 .link-base:hover,
 .home-link:hover,
 .category:hover,
-.chatContainer .homeLink:hover {
+.chat-container .home-link:hover {
     background: linear-gradient(135deg, #f0f7ff 0%, #e8f1fc 100%);
     border-color: #c5ddf5;
-    box-shadow: 0 2px 8px rgba(107, 155, 209, 0.12);
+    box-shadow: 0 2px 8px rgb(107 155 209 / 12%);
     text-decoration: none;
 }
 
 .link-base:active,
 .home-link:active,
 .category:active,
-.chatContainer .homeLink:active {
+.chat-container .home-link:active {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(107, 155, 209, 0.25);
+    box-shadow: 0 4px 12px rgb(107 155 209 / 25%);
 }
 
 ul,
@@ -160,8 +117,7 @@ ol {
     margin: 12px 0;
 }
 
-/* Layout utilities used by error/not-found pages and smaller components */
-.page-center {
+.layout-centered {
     max-width: 720px;
     margin-left: auto;
     margin-right: auto;
@@ -267,62 +223,13 @@ ol {
 
 .control-bar {
     flex-shrink: 0;
-    padding: 12px 16px 0 16px;
+    padding: 12px 16px 0;
     background: var(--bg-color);
-}
-
-/* Global page layout utilities for different page types */
-
-/* Basic chat layout - simple vertical layout for basic chat pages */
-.page-chat {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background: var(--bg-color);
-    overflow: hidden; /* prevent page-level scrollbar */
-}
-
-/* Centered layout with side controls - for pages with buttons/controls on sides */
-.page-centered-with-controls {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100dvh;
-    padding: 20px;
-    box-sizing: border-box;
-    background: linear-gradient(
-        135deg,
-        var(--background) 0%,
-        var(--background-secondary) 100%
-    );
 }
 
-.centered-container {
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    width: 100%;
-    max-width: 1200px;
-}
-
-.side-column {
-    display: flex;
-    align-items: center;
-    flex: 0 0 auto;
-}
-
-.center-column {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.center-content {
-    width: 100%;
-    max-width: 600px;
-}
-
-/* Control buttons for side layouts */
 .control-button {
     padding: 12px 24px;
     background: var(--background-secondary);

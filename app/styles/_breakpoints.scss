@@ -5,3 +5,5 @@ $mobile: 900px;
         @content;
     }
 }
+
+// NOTE: Desktop mixin removed per request — only `mq-mobile` contains any @media.

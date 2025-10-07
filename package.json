@@ -1,39 +1,43 @@
 {
-  "name": "openai-chat-nextjs",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "tsc": "tsc --noEmit",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
-  },
-  "dependencies": {
-    "next": "^14.2.33",
-    "openai": "^4.46.0",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-markdown": "^9.0.1",
-    "sass": "^1.93.2"
-  },
-  "devDependencies": {
-    "@types/node": "20.12.7",
-    "@types/react": "18.2.79",
-    "@typescript-eslint/eslint-plugin": "^8.45.0",
-    "@typescript-eslint/parser": "^8.45.0",
-    "eslint": "8.57.1",
-    "eslint-config-next": "15.5.4",
-    "eslint-config-prettier": "^10.1.8",
-    "prettier": "2.8.8",
-    "typescript": "5.4.5"
-  },
-  "prettier": {
-    "trailingComma": "es5",
-    "tabWidth": 4,
-    "semi": true,
-    "singleQuote": true,
-    "jsxSingleQuote": true
-  }
+    "name": "openai-chat-nextjs",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "stylelint": "stylelint \"**/*.{css,scss}\" --allow-empty-input",
+        "tsc": "tsc --noEmit",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+    },
+    "dependencies": {
+        "next": "^14.2.33",
+        "openai": "^4.46.0",
+        "react": "^18",
+        "react-dom": "^18",
+        "react-markdown": "^9.0.1",
+        "sass": "^1.93.2"
+    },
+    "devDependencies": {
+        "@types/react": "18.2.79",
+        "@typescript-eslint/eslint-plugin": "^8.45.0",
+        "@typescript-eslint/parser": "^8.45.0",
+        "eslint": "8.57.1",
+        "eslint-config-next": "15.5.4",
+        "eslint-config-prettier": "^10.1.8",
+        "prettier": "2.8.8",
+        "stylelint": "^14.16.1",
+        "stylelint-config-recommended-scss": "^8.0.0",
+        "stylelint-config-standard": "^31.0.0",
+        "stylelint-scss": "^4.7.0",
+        "typescript": "5.4.5"
+    },
+    "prettier": {
+        "trailingComma": "es5",
+        "tabWidth": 4,
+        "semi": true,
+        "singleQuote": true,
+        "jsxSingleQuote": true
+    }
 }

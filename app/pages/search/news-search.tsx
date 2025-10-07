@@ -193,7 +193,7 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
     };
 
     return (
-        <div className='page-chat'>
+        <div className='layout-chat'>
             {/* Control bar: testing utilities placed outside the chat container */}
             <div className={styles.controlBar + ' flex-row-gap-12'}>
                 <div className='flex-row'>
@@ -248,18 +248,23 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                 </div>
             </div>
 
-            <div className={chatStyles.chatContainer}>
+            <div
+                className={`${chatStyles['chat-container']} layout-chat-container`}
+            >
                 {/* Home link intentionally placed as a direct child of chatContainer so it is positioned absolutely and does not scroll with messages */}
-                <Link href='/' className={`${chatStyles.homeLink} link-base`}>
+                <Link
+                    href='/'
+                    className={`${chatStyles['home-link']} link-base`}
+                >
                     Home
                 </Link>
 
-                <div className={chatStyles.messages}>
+                <div className={`${chatStyles.messages} layout-chat-messages`}>
                     {messages.map((msg, index) => {
                         const baseClass =
                             msg.role === 'user'
-                                ? chatStyles.userMessage
-                                : chatStyles.assistantMessage;
+                                ? chatStyles['user-message']
+                                : chatStyles['assistant-message'];
                         const combinedClass = msg.error
                             ? `${baseClass} msg-error`
                             : baseClass;
@@ -274,8 +279,13 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                             {previews.map((pRaw, i) => {
                                 const p = pRaw as Preview;
                                 return (
-                                    <div key={i} className={styles.previewCard}>
-                                        <div className={styles.previewImage}>
+                                    <div
+                                        key={i}
+                                        className={styles['preview-card']}
+                                    >
+                                        <div
+                                            className={styles['preview-image']}
+                                        >
                                             <Image
                                                 src={p.image}
                                                 alt={p.title}
@@ -284,14 +294,22 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                                                 className='preview-image'
                                             />
                                         </div>
-                                        <div className={styles.previewContent}>
+                                        <div
+                                            className={
+                                                styles['preview-content']
+                                            }
+                                        >
                                             <div className='preview-title'>
                                                 {p.title}
                                             </div>
                                             <div className='preview-summary'>
                                                 {p.summary}
                                             </div>
-                                            <div className={styles.sourceCloud}>
+                                            <div
+                                                className={
+                                                    styles['source-cloud']
+                                                }
+                                            >
                                                 {Array.isArray(p.sources) &&
                                                     p.sources.map((s, idx) => (
                                                         <a
@@ -300,7 +318,9 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                                                             target='_blank'
                                                             rel='noreferrer'
                                                             className={
-                                                                styles.sourceBadge
+                                                                styles[
+                                                                    'source-badge'
+                                                                ]
                                                             }
                                                         >
                                                             {s.domain || s.url}
@@ -316,7 +336,10 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                     <div ref={messagesEndRef} />
                 </div>
 
-                <form onSubmit={handleSubmit} className={chatStyles.inputForm}>
+                <form
+                    onSubmit={handleSubmit}
+                    className={chatStyles['input-form']}
+                >
                     <input
                         type='text'
                         className={chatStyles.input}
@@ -329,13 +352,13 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                     />
                     <button
                         type='submit'
-                        className={`${chatStyles.button} ${chatStyles.buttonArrow}`}
+                        className={`${chatStyles.button} ${chatStyles['button-arrow']}`}
                         disabled={isProcessing}
                         aria-label={
                             isProcessing ? 'Processing' : 'Send message'
                         }
                     >
-                        <span className={chatStyles.buttonLabel}>
+                        <span className={chatStyles['button-label']}>
                             {isProcessing ? '...' : 'Search'}
                         </span>
                     </button>

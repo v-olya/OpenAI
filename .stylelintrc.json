@@ -1,0 +1,23 @@
+{
+    "extends": ["stylelint-config-standard"],
+    "plugins": ["stylelint-scss"],
+    "customSyntax": "postcss-scss",
+    "ignoreUnknownRules": true,
+    "rules": {
+        "at-rule-no-unknown": null,
+        "scss/at-rule-no-unknown": true,
+        "annotation-no-unknown": null,
+        "selector-class-pattern": "^[a-z][a-z0-9\\-]*$",
+        "selector-anb-no-unmatchable": null,
+        "no-descending-specificity": null,
+        "string-quotes": "single"
+    },
+    "overrides": [
+        {
+            "files": ["**/*.{css,scss}"],
+            "rules": {
+                "selector-anb-no-unmatchable": null
+            }
+        }
+    ]
+}

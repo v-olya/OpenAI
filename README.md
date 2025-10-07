@@ -96,12 +96,12 @@ Try these natural language queries:
 ```
 app/
 ├── components/
-│   ├── chat/                 # Chat interface
-│   │   ├── chat.tsx
-│   │   └── chat.module.css
-│   └── widget/               # Weather widget
-│       ├── weather-widget.tsx
-│       └── weather-widget.module.css
+    │   ├── chat/                 # Chat interface
+    │   │   ├── chat.tsx
+    │   │   └── chat.module.scss
+    │   └── widget/               # Weather widget
+    │       ├── weather-widget.tsx
+    │       └── weather-widget.module.scss
 ├── examples/
 │   ├── basic-chat/           # Simple chat demo
 │   └── weather/              # Weather demo
@@ -110,7 +110,7 @@ app/
 ├── utils/
 │   └── weather.ts            # Weather utilities
 ├── types.ts                  # TypeScript definitions
-└── globals.css               # Global styles
+└── globals.scss              # Global styles (migrated to SCSS)
 ```
 
 ## License

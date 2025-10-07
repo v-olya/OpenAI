@@ -16,12 +16,14 @@ const WeatherDemo = () => {
 
     return (
         <main className={styles.main}>
-            <div className={styles.container}>
-                <div className={styles.column}>
+            <div className={`${styles.container} container`}>
+                <div className={`${styles.column} layout-column`}>
                     <WeatherWidget weather={weatherData} />
                 </div>
-                <div className={styles.chatContainer}>
-                    <div className={styles.chat}>
+                <div
+                    className={`${styles['chat-container']} layout-chat-container`}
+                >
+                    <div className={`${styles.chat} layout-chat`}>
                         <Chat onWeatherUpdate={handleWeatherUpdate} />
                     </div>
                 </div>
