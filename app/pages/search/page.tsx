@@ -10,12 +10,15 @@ const SearchExample = () => {
     const [previews, setPreviews] = useState<NewsPreview[] | null>(null);
     const testMode = process.env.NEXT_PUBLIC_NEWS_SEARCH_FAKE_BACKEND + 1;
 
-    const handleNewsResults = (newPreviews: NewsPreview[]) => {
+    const handleNewsResults = (newPreviews: NewsPreview[] | null) => {
+        if (!newPreviews) return setPreviews(null);
         setPreviews(newPreviews.slice(0, 3));
     };
 
     // Handle test button clicks - separate from chat
     const runTestCase = async (mode: 'valid' | 'invalid') => {
+        // Clear previews immediately when developer triggers a test
+        setPreviews(null);
         try {
             const endpoint =
                 mode === 'valid'
@@ -40,7 +43,7 @@ const SearchExample = () => {
     };
 
     const previewsContent = previews && (
-        <div className='preview-list'>
+        <div>
             {previews.map((preview, i) => (
                 <div key={i} className={styles['preview-card']}>
                     <div className={styles['preview-image']}>
@@ -76,9 +79,9 @@ const SearchExample = () => {
     );
 
     const leftControl = testMode && (
-        <div className='side-column control-bar'>
+        <div className={`${styles['side-column']}`}>
             <button
-                className='control-button'
+                className={styles['control-button']}
                 onClick={() => runTestCase('valid')}
             >
                 Get Valid
@@ -87,9 +90,9 @@ const SearchExample = () => {
     );
 
     const rightControl = testMode && (
-        <div className='side-column control-bar'>
+        <div className={`${styles['side-column']}`}>
             <button
-                className='control-button'
+                className={styles['control-button']}
                 onClick={() => runTestCase('invalid')}
             >
                 Get Invalid
@@ -98,18 +101,17 @@ const SearchExample = () => {
     );
 
     return (
-        <main className='layout-with-controls'>
-            <div className='centered-container'>
-                {leftControl}
-                <Chat
-                    chatType='news'
-                    placeholder='Search news...'
-                    onNewsResults={handleNewsResults}
-                >
-                    {previewsContent}
-                </Chat>
-                {rightControl}
-            </div>
+        <main className='container'>
+            {leftControl}
+            <Chat
+                chatType='news'
+                placeholder='Search news...'
+                onNewsResults={handleNewsResults}
+                newsPreviews={previews}
+            >
+                {previewsContent}
+            </Chat>
+            {rightControl}
         </main>
     );
 };

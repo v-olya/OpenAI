@@ -62,7 +62,9 @@ export interface ChatProps {
     onWeatherUpdate?: (data: WeatherData) => void;
     chatType?: 'weather' | 'news';
     placeholder?: string;
-    onNewsResults?: (previews: NewsPreview[]) => void;
+    onNewsResults?: (previews: NewsPreview[] | null) => void;
+    /** current previews from parent (optional) so Chat can react when previews are cleared */
+    newsPreviews?: NewsPreview[] | null;
     children?: React.ReactNode;
     // Note: control bar rendering moved out of Chat; compose layout in pages where needed
 }

@@ -2,33 +2,24 @@
 @import './styles/_breakpoints';
 
 .main {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100dvh;
-    background: linear-gradient(135deg, #fafafa 0%, #f0f4f8 100%);
-}
-
-.title {
-    font-size: clamp(1.15rem, 4vw, 1.6rem);
-    margin-bottom: 32px;
-    font-weight: 600;
-    color: #2c3e50;
-    letter-spacing: -0.02em;
     text-align: center;
+    padding: $space-12 * 2 var(--space-12);
 }
 
-.container {
-    display: flex;
-    flex-direction: row;
-    gap: 24px;
-    max-width: var(--max-width);
-    width: 100%;
-    padding: 24px;
-    box-sizing: border-box;
-    align-items: center;
-    justify-content: center;
+/* Prevent the global .container (height:100%) from stretching inside the home main */
+.main .container {
+    height: auto;
+}
+
+.main > .container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 .category {
@@ -44,7 +35,7 @@
     max-width: var(--max-width);
     width: var(--card-size);
     height: var(--card-size);
-    padding: 20px;
+    padding: $space-20;
     transition: all 0.3s ease;
     font-weight: 500;
     border: 1.5px solid #eaeaea;
@@ -55,24 +46,10 @@
 }
 
 @include mq-mobile {
-    .main {
-        padding: 20px 12px;
-    }
-
-    .title {
-        margin-bottom: 14px;
-    }
-
-    .container {
-        flex-direction: column;
-        gap: 14px;
-        padding: 12px;
-    }
-
     .category {
         width: 100%;
         max-width: none;
         height: auto;
-        padding: 16px;
+        padding: $space-16;
     }
 }

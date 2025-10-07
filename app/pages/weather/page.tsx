@@ -15,11 +15,9 @@ const WeatherDemo = () => {
     useEffect(() => {}, [weatherData]);
 
     return (
-        <main className={styles.main}>
-            <div className={styles.container}>
-                <WeatherWidget weather={weatherData} />
-                <Chat onWeatherUpdate={handleWeatherUpdate} />
-            </div>
+        <main className={`${styles.container} container`}>
+            <WeatherWidget weather={weatherData} />
+            <Chat onWeatherUpdate={handleWeatherUpdate} />
         </main>
     );
 };

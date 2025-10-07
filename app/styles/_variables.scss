@@ -1,15 +1,17 @@
-$surface-radius: 20px;
-$surface-shadow: 0 4px 16px rgb(0 0 0 / 10%);
-$surface-hover-shadow: 0 6px 20px rgb(0 0 0 / 15%);
+$space-20: 20px;
+$space-12: 12px;
+$surface-shadow: 0 4px var(--space-16) rgb(0 0 0 / 10%);
+$surface-hover-shadow: 0 6px var(--space-20) rgb(0 0 0 / 15%);
 $font-stack: -apple-system, blinkmacsystemfont, 'Segoe UI', 'Roboto', 'Oxygen',
     sans-serif;
 $white: #fff;
+$space-16: 16px;
 
 // Project-wide design tokens
 $max-width: 600px;
 $card-size: 120px;
 
-@mixin surface($bg: null, $radius: $surface-radius) {
+@mixin surface($bg: null, $radius: $space-20) {
     border-radius: $radius;
     box-shadow: $surface-shadow;
     transition: all 0.3s ease;
@@ -42,7 +44,7 @@ $card-size: 120px;
 
     &:active {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgb(107 155 209 / 25%);
+        box-shadow: 0 4px #{$space-12} rgb(107 155 209 / 25%);
     }
 }
 
@@ -55,6 +57,6 @@ $card-size: 120px;
             0 0 10px rgb(255 255 255 / 25%);
     } @else if $size == large {
         text-shadow: 0 2px 0 rgb(0 0 0 / 60%), 0 4px 8px rgb(0 0 0 / 40%),
-            0 0 12px rgb(255 255 255 / 30%);
+            0 0 #{$space-12} rgb(255 255 255 / 30%);
     }
 }

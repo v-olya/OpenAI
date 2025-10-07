@@ -11,10 +11,8 @@ const Home = () => {
 
     return (
         <main className={styles.main}>
-            <div className={styles.title}>
-                Example of an app built with OpenAI API
-            </div>
-            <div className={styles.container}>
+            <h2>Example of an app built with OpenAI API</h2>
+            <div className='container home'>
                 {Object.entries(categories).map(([name, url]) => (
                     <a
                         key={name}

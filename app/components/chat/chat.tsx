@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './chat.module.scss';
 import { ChatProps, MessageType } from '@/app/types';
 import { ChatLayout } from './ChatLayout';
@@ -11,6 +11,7 @@ export function Chat({
     placeholder,
     onNewsResults,
     children,
+    newsPreviews,
 }: // new optional side controls
 ChatProps) {
     const [messages, setMessages] = useState<MessageType[]>([]);
@@ -27,7 +28,21 @@ ChatProps) {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // When parent clears previews, remove any assistant message that said "Top previews ready."
+    // This keeps the chat history consistent with the preview area.
+    useEffect(() => {
+        if (chatType !== 'news') return;
+        if (newsPreviews !== null) return;
+        setMessages((prev) =>
+            prev.filter((m) => m.text !== 'Top previews ready.')
+        );
+    }, [newsPreviews, chatType]);
+
     const sendMessage = async (text: string) => {
+        // Inform parent that a new query is starting and clear previous previews
+        if (chatType === 'news') {
+            onNewsResults?.(null);
+        }
         try {
             if (chatType === 'news') {
                 // News search logic
@@ -167,6 +182,8 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
         if (!trimmedInput || isProcessing) return;
         setUserInput('');
         setIsProcessing(true);
+        // Clear previews before sending so parent can update UI immediately
+        onNewsResults?.(null);
         appendMessage('user', trimmedInput);
         await sendMessage(trimmedInput);
     };

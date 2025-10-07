@@ -3,19 +3,68 @@
 
 .preview-card {
     display: flex;
-    gap: 12px;
+    gap: var(--space-12);
     padding: 10px;
     background: white;
-    border-radius: 12px;
-    margin-bottom: 12px;
+    border-radius: var(--space-12);
+    margin-bottom: var(--space-12);
     align-items: flex-start;
     box-shadow: 0 2px 6px rgb(0 0 0 / 4%);
+}
+
+.centered-container {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.layout-with-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100dvh;
+    padding: var(--space-20);
+    box-sizing: border-box;
+    background: linear-gradient(
+        135deg,
+        var(--background) 0%,
+        var(--background-secondary) 100%
+    );
+}
+
+.side-column {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.control-button {
+    padding: var(--space-12) $space-12 * 2;
+    background: var(--background-secondary);
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: var(--background-tertiary);
+        border-color: var(--border-hover);
+        @include hover-elevate;
+    }
+
+    &:active {
+        transform: translateY(1px);
+    }
 }
 
 .preview-image {
     flex: 0 0 140px;
     height: 140px;
-    border-radius: 12px;
+    border-radius: var(--space-12);
     overflow: hidden;
 }
 
@@ -32,7 +81,7 @@
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    margin-top: 12px;
+    margin-top: var(--space-12);
 }
 
 .source-badge {
@@ -41,7 +90,7 @@
     background: #f1f5f9;
     color: #334155;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: var(--space-12);
     text-decoration: none;
 }
 
@@ -55,4 +104,30 @@
         width: 100%;
         height: 160px;
     }
+    .layout-with-controls {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 8px;
+    }
+
+    .centered-container {
+        flex-direction: column;
+        padding: 0 8px;
+        gap: 8px;
+        height: 100%;
+        min-height: 0;
+    }
+
+    .side-column {
+        display: none;
+    }
+}
+
+.layout-chat-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    min-height: 100dvh;
+    box-sizing: border-box;
 }
