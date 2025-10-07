@@ -15,9 +15,15 @@
 }
 
 .container {
+    display: flex;
     gap: $layout-gap;
     padding: 12px;
     min-height: 0;
+}
+
+.container > * {
+    @include surface($bg: white, $radius: 20px);
+    width: 100%;
 }
 
 .surface,
@@ -48,14 +54,12 @@
         min-height: 0;
     }
 
-    .column {
-        width: 100%;
-    }
-
-    .column > * {
-        margin-top: 10px;
-        height: auto;
-        margin-bottom: 0;
+    .container {
+        flex-direction: column;
+        padding: 0 8px;
+        gap: 8px;
+        height: 100%;
+        min-height: 0;
     }
 
     .chat {
