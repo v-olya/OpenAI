@@ -1,18 +1,12 @@
-import Link from 'next/link';
+import ErrorView from './components/error-view/ErrorView';
 
 export default function NotFound() {
+    //throw new Error('Test error from /api/news-search/test-invalid/route.ts');
+
     return (
-        <main className='page-center'>
-            <h1 className='heading-xl'>404 — Page not found</h1>
-            <p className='muted'>
-                We couldn&apos;t find the page you&apos;re looking for. It might
-                have been moved or deleted.
-            </p>
-            <div className='spaced-top'>
-                <Link href='/' className='home-link link-base'>
-                    Take me home!
-                </Link>
-            </div>
-        </main>
+        <ErrorView
+            title='404 — Page not found'
+            message={`We couldn't find the page you're looking for.`}
+        />
     );
 }
