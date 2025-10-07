@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },
   "dependencies": {
     "next": "^14.2.33",
@@ -20,8 +21,12 @@
   "devDependencies": {
     "@types/node": "20.12.7",
     "@types/react": "18.2.79",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
     "eslint": "8.57.1",
     "eslint-config-next": "15.5.4",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "2.8.8",
     "typescript": "5.4.5"
   },
   "prettier": {
