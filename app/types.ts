@@ -64,12 +64,7 @@ export interface ChatProps {
     placeholder?: string;
     onNewsResults?: (previews: NewsPreview[]) => void;
     children?: React.ReactNode;
-    /** deprecated: use controlBarLeft/controlBarRight to place controls outside the chat container */
-    controlBar?: React.ReactNode;
-    /** optional left-side controls rendered outside the chat container */
-    controlBarLeft?: React.ReactNode;
-    /** optional right-side controls rendered outside the chat container */
-    controlBarRight?: React.ReactNode;
+    // Note: control bar rendering moved out of Chat; compose layout in pages where needed
 }
 
 export interface WeatherWidgetProps {

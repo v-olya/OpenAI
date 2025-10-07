@@ -3,17 +3,8 @@ import type { Message } from '@/app/openai';
 
 export const runtime = 'nodejs';
 
-// Toggle: when true the route will use the mock SERP directly and skip OpenAI calls.
-// Controlled by the server-side env var NEWS_SEARCH_FAKE_BACKEND. Defaults to true when unset.
-const USE_FAKE_BACKEND = (() => {
-    try {
-        const v = process.env.NEWS_SEARCH_FAKE_BACKEND;
-        if (typeof v === 'undefined' || v === null) return true;
-        return ['1', 'true', 'yes', 'on'].includes(String(v).toLowerCase());
-    } catch {
-        return true;
-    }
-})();
+// Controlled by the server-side env var NEXT_PUBLIC_NEWS_SEARCH_FAKE_BACKEND.
+// When true the route will use the mock SERP directly and skip OpenAI calls.
 
 // Mock implementation: return 20 fake SERP results for a query
 function mockFetchSerp(query: string) {
@@ -92,7 +83,7 @@ export async function POST(request: Request) {
         const { messages } = (await request.json()) as { messages: Message[] };
 
         // If configured, bypass OpenAI and use the mock SERP directly for testing.
-        if (USE_FAKE_BACKEND) {
+        if (+process.env.NEXT_PUBLIC_NEWS_SEARCH_FAKE_BACKEND === 1) {
             // extract the last user message as the query
             const userMsg = Array.isArray(messages)
                 ? messages

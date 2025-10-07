@@ -11,8 +11,6 @@ export function Chat({
     placeholder,
     onNewsResults,
     children,
-    controlBarLeft,
-    controlBarRight,
 }: // new optional side controls
 ChatProps) {
     const [messages, setMessages] = useState<MessageType[]>([]);
@@ -221,12 +219,7 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
     );
 
     return (
-        <ChatLayout
-            messages={messagesContent}
-            inputForm={inputFormContent}
-            controlBarLeft={controlBarLeft}
-            controlBarRight={controlBarRight}
-        >
+        <ChatLayout messages={messagesContent} inputForm={inputFormContent}>
             {children}
         </ChatLayout>
     );

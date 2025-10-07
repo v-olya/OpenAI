@@ -52,21 +52,6 @@ async function get_weather({ location }: { location: string }) {
     };
 }
 
-export const weatherTool = {
-    name: 'get_weather',
-    description: 'Get the current weather and local time for a city',
-    parameters: {
-        type: 'object',
-        properties: {
-            location: {
-                type: 'string',
-                description: 'The city and country, e.g. London, UK',
-            },
-        },
-        required: ['location'],
-    },
-};
-
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');

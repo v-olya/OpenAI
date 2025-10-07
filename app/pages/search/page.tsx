@@ -8,6 +8,7 @@ import Image from 'next/image';
 
 const SearchExample = () => {
     const [previews, setPreviews] = useState<NewsPreview[] | null>(null);
+    const testMode = process.env.NEXT_PUBLIC_NEWS_SEARCH_FAKE_BACKEND + 1;
 
     const handleNewsResults = (newPreviews: NewsPreview[]) => {
         setPreviews(newPreviews.slice(0, 3));
@@ -74,7 +75,7 @@ const SearchExample = () => {
         </div>
     );
 
-    const leftControl = (
+    const leftControl = testMode && (
         <div className='side-column control-bar'>
             <button
                 className='control-button'
@@ -85,7 +86,7 @@ const SearchExample = () => {
         </div>
     );
 
-    const rightControl = (
+    const rightControl = testMode && (
         <div className='side-column control-bar'>
             <button
                 className='control-button'
@@ -97,18 +98,17 @@ const SearchExample = () => {
     );
 
     return (
-        <main className='layout-centered-with-controls'>
+        <main className='layout-with-controls'>
             <div className='centered-container'>
-                {/* left control rendered outside the chat container via Chat props */}
+                {leftControl}
                 <Chat
                     chatType='news'
                     placeholder='Search news...'
                     onNewsResults={handleNewsResults}
-                    controlBarLeft={leftControl}
-                    controlBarRight={rightControl}
                 >
                     {previewsContent}
                 </Chat>
+                {rightControl}
             </div>
         </main>
     );
