@@ -20,20 +20,6 @@
     max-width: 1200px;
 }
 
-.layout-with-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100dvh;
-    padding: var(--space-20);
-    box-sizing: border-box;
-    background: linear-gradient(
-        135deg,
-        var(--background) 0%,
-        var(--background-secondary) 100%
-    );
-}
-
 .side-column {
     display: flex;
     align-items: center;
