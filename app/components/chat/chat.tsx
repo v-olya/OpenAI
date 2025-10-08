@@ -199,7 +199,7 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                     ? `${baseClass} msg-error`
                     : baseClass;
                 return (
-                    <div key={index} className={combined}>
+                    <div key={`${msg.role}-${index}`} className={combined}>
                         {msg.text}
                     </div>
                 );

@@ -45,7 +45,10 @@ const SearchExample = () => {
     const previewsContent = previews && (
         <div>
             {previews.map((preview, i) => (
-                <div key={i} className={styles['preview-card']}>
+                <div
+                    key={preview.url ?? `preview-${i}`}
+                    className={styles['preview-card']}
+                >
                     <div className={styles['preview-image']}>
                         <Image
                             src={preview.image}
@@ -62,7 +65,10 @@ const SearchExample = () => {
                             {Array.isArray(preview.sources) &&
                                 preview.sources.map((source, idx) => (
                                     <a
-                                        key={idx}
+                                        key={
+                                            source.url ??
+                                            `${source.domain ?? 'src'}-${idx}`
+                                        }
                                         href={source.url}
                                         target='_blank'
                                         rel='noreferrer'
