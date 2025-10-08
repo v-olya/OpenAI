@@ -8,7 +8,7 @@ import Image from 'next/image';
 
 const SearchExample = () => {
     const [previews, setPreviews] = useState<NewsPreview[] | null>(null);
-    const testMode = process.env.NEXT_PUBLIC_NEWS_SEARCH_FAKE_BACKEND + 1;
+    const testMode = +process.env.NEXT_PUBLIC_NEWS_SEARCH_FAKE_BACKEND;
 
     const handleNewsResults = (newPreviews: NewsPreview[] | null) => {
         if (!newPreviews) return setPreviews(null);
@@ -26,7 +26,7 @@ const SearchExample = () => {
                     : '/api/news-search/test-invalid';
             const response = await fetch(endpoint);
             const data = await response.json();
-
+            console.log(response.ok, data);
             if (!response.ok) {
                 if (
                     Array.isArray(data.details?.previews) &&
