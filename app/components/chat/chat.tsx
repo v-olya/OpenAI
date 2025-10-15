@@ -2,16 +2,16 @@
 
 import { useState, useRef, useEffect } from 'react';
 import styles from './chat.module.scss';
-import { ChatProps, MessageType } from '@/app/types';
-import { ChatLayout } from './ChatLayout';
+import { ChatProps, MessageType, ErrorMessages } from '@/types';
+import { ChatLayout } from './chat-layout';
 
 export function Chat({
-    onWeatherUpdate,
-    chatType = 'weather',
+    chatType = 'basic',
     placeholder,
+    onWeatherUpdate,
     onNewsResults,
-    children,
     newsPreviews,
+    children,
 }: // new optional side controls
 ChatProps) {
     const [messages, setMessages] = useState<MessageType[]>([]);
@@ -19,13 +19,20 @@ ChatProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+    // unique id generator for message tracking
+    let uidCounter = 0;
+    const makeId = () => `${Date.now()}-${++uidCounter}`;
+
     const appendMessage = (
         role: 'user' | 'assistant',
         text: string,
-        error?: boolean
+        error?: boolean,
+        id?: string
     ) => {
-        setMessages((prev) => [...prev, { role, text, error }]);
+        const message = { role, text, error, id } as MessageType;
+        setMessages((prev) => [...prev, message]);
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        return id || message.id;
     };
 
     // When parent clears previews, remove any assistant message that said "Top previews ready."
@@ -71,7 +78,7 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                 const data = await response.json();
                 if (!response.ok) {
                     const code = data?.error;
-                    let errorMsg = 'An error occurred. Please try again.';
+                    let errorMsg: string = ErrorMessages.TRY_AGAIN;
                     if (
                         data?.userMessage &&
                         typeof data.userMessage === 'string'
@@ -114,7 +121,7 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                     } else {
                         appendMessage(
                             'assistant',
-                            'Unexpected response from server.'
+                            ErrorMessages.UNEXPECTED_RESPONSE
                         );
                     }
                     if (data.previews) {
@@ -123,16 +130,16 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                 } else {
                     appendMessage(
                         'assistant',
-                        'Unexpected response from server'
+                        ErrorMessages.UNEXPECTED_RESPONSE
                     );
                 }
-            } else {
+            } else if (chatType === 'weather') {
                 // Weather chat logic
                 const response = await fetch(
                     `/api/weather?q=${encodeURIComponent(text)}`
                 );
                 if (!response.ok) {
-                    let errorMsg = 'An error occurred. Please try again.';
+                    let errorMsg: string = ErrorMessages.TRY_AGAIN;
                     try {
                         const errorData = await response.json();
                         if (errorData && errorData.error) {
@@ -147,13 +154,20 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                     appendMessage('assistant', data.error, true);
                     return;
                 }
+                // Show resolvedName if the detected location didn't include a region
+                const detectedRegion = data.location?.includes(',');
+                const resolvedSuffix =
+                    data.resolvedName && !detectedRegion
+                        ? ` (Resolved to ${data.resolvedName})`
+                        : '';
                 appendMessage(
                     'assistant',
-                    'Weather data received and displayed in the widget.'
+                    `Weather data received and displayed in the widget.${resolvedSuffix}`
                 );
                 if (onWeatherUpdate) {
                     onWeatherUpdate({
                         location: data.location,
+                        resolvedName: data.resolvedName,
                         temperature: data.temperature,
                         windspeed: data.windspeed,
                         weathercode: data.weathercode,
@@ -163,13 +177,137 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                         timezone_offset: undefined,
                     });
                 }
+            } else {
+                // Basic chat (streaming) logic
+                // Build the messages payload from the current conversation (includes the user's message
+                // because handleSubmit appends it before calling sendMessage) and send that to the server.
+                // include the just-submitted user message to ensure the server receives it
+                const messagesPayload = [
+                    ...messages.map((m) => ({ role: m.role, content: m.text })),
+                    { role: 'user', content: text },
+                ];
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: messagesPayload }),
+                });
+
+                if (!response.ok || !response.body) {
+                    let errorMsg: string = ErrorMessages.TRY_AGAIN;
+                    try {
+                        const err = await response.json();
+                        if (err?.error) errorMsg = err.error;
+                    } catch {}
+                    appendMessage('assistant', errorMsg, true);
+                    return;
+                }
+
+                // Insert a placeholder assistant message which we'll update as chunks arrive
+                const placeholderId = makeId();
+                appendMessage('assistant', '', false, placeholderId);
+
+                try {
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffered = '';
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        buffered += decoder.decode(value, { stream: true });
+                        let newlineIndex;
+                        while ((newlineIndex = buffered.indexOf('\n')) !== -1) {
+                            const line = buffered.slice(0, newlineIndex).trim();
+                            buffered = buffered.slice(newlineIndex + 1);
+                            if (!line) continue;
+                            try {
+                                const parsed = JSON.parse(line);
+                                if (
+                                    parsed?.type === 'content' &&
+                                    typeof parsed.content === 'string'
+                                ) {
+                                    setMessages((prev) => {
+                                        // find the placeholder by id if present; otherwise fallback to last assistant
+                                        const idx = prev.findIndex(
+                                            (m) => m.id === placeholderId
+                                        );
+                                        if (idx === -1) {
+                                            const lastIdx = prev
+                                                .map((m) => m.role)
+                                                .lastIndexOf('assistant');
+                                            if (lastIdx === -1)
+                                                return [
+                                                    ...prev,
+                                                    {
+                                                        role: 'assistant',
+                                                        text: parsed.content,
+                                                    },
+                                                ];
+                                            const updated = [...prev];
+                                            const prevText =
+                                                updated[lastIdx].text || '';
+                                            updated[lastIdx] = {
+                                                ...updated[lastIdx],
+                                                text: prevText + parsed.content,
+                                            };
+                                            return updated;
+                                        }
+                                        const updated = [...prev];
+                                        const prevText =
+                                            updated[idx].text || '';
+                                        updated[idx] = {
+                                            ...updated[idx],
+                                            text: prevText + parsed.content,
+                                        };
+                                        return updated;
+                                    });
+                                    messagesEndRef.current?.scrollIntoView({
+                                        behavior: 'smooth',
+                                    });
+                                } else if (parsed?.type === 'error') {
+                                    setMessages((prev) => {
+                                        const idx = prev.findIndex(
+                                            (m) => m.id === placeholderId
+                                        );
+                                        if (idx === -1) {
+                                            return [
+                                                ...prev,
+                                                {
+                                                    role: 'assistant',
+                                                    text:
+                                                        parsed.content ||
+                                                        'Stream error',
+                                                    error: true,
+                                                },
+                                            ];
+                                        }
+                                        const updated = [...prev];
+                                        updated[idx] = {
+                                            ...updated[idx],
+                                            text:
+                                                parsed.content ||
+                                                'Stream error',
+                                            error: true,
+                                        };
+                                        return updated;
+                                    });
+                                }
+                            } catch (err) {
+                                console.error(
+                                    'Failed to parse stream line',
+                                    err
+                                );
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Streaming error:', err);
+                    appendMessage('assistant', ErrorMessages.TRY_AGAIN, true);
+                }
             }
         } catch (error) {
-            appendMessage(
-                'assistant',
-                'An error occurred. Please try again.',
-                true
-            );
+            appendMessage('assistant', ErrorMessages.TRY_AGAIN, true);
             console.error('Error sending message:', error);
         } finally {
             setIsProcessing(false);
@@ -199,7 +337,10 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
                     ? `${baseClass} msg-error`
                     : baseClass;
                 return (
-                    <div key={`${msg.role}-${index}`} className={combined}>
+                    <div
+                        key={msg.id ?? `${msg.role}-${index}`}
+                        className={combined}
+                    >
                         {msg.text}
                     </div>
                 );

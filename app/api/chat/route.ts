@@ -1,4 +1,31 @@
-import { createChatCompletion, Message } from '@/app/openai';
+import { client } from '@/init-client';
+
+import type { ChatCompletionCreateParams } from 'openai/resources/chat';
+type Message = ChatCompletionCreateParams['messages'][number];
+
+export type StreamResponse = { type: 'content'; content: string };
+
+async function* createChatCompletion(
+    messages: Message[]
+): AsyncGenerator<StreamResponse> {
+    const response = await client.chat.completions.create({
+        model: 'gpt-4.1',
+        messages,
+        stream: true,
+    });
+
+    try {
+        for await (const chunk of response) {
+            const delta = chunk.choices[0]?.delta;
+
+            if (delta?.content) {
+                yield { type: 'content', content: delta.content };
+            }
+        }
+    } catch (error) {
+        console.error('Error in chat completion stream:', error);
+    }
+}
 
 export const runtime = 'nodejs';
 
@@ -7,7 +34,7 @@ export async function POST(request: Request) {
         messages: Message[];
     };
 
-    const stream = createChatCompletion(messages, true);
+    const stream = createChatCompletion(messages);
 
     return new Response(
         new ReadableStream({
@@ -15,16 +42,7 @@ export async function POST(request: Request) {
                 const encoder = new TextEncoder();
                 try {
                     for await (const chunk of stream) {
-                        if (chunk.type === 'function_call') {
-                            controller.enqueue(
-                                encoder.encode(
-                                    JSON.stringify({
-                                        type: 'function_call',
-                                        function: chunk.function,
-                                    }) + '\n'
-                                )
-                            );
-                        } else if (chunk.type === 'content') {
+                        if (chunk.type === 'content') {
                             controller.enqueue(
                                 encoder.encode(
                                     JSON.stringify({
@@ -37,13 +55,12 @@ export async function POST(request: Request) {
                     }
                 } catch (error) {
                     console.error('Chat API error:', error);
-                    // Show user-friendly message
                     controller.enqueue(
                         encoder.encode(
                             JSON.stringify({
                                 type: 'error',
                                 content:
-                                    'Sorry, I could not process your request due to a technical issue. Please check your input or try again in a moment.',
+                                    'Sorry, I could not process your request due to a technical issue.',
                             }) + '\n'
                         )
                     );

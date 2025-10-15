@@ -1,6 +1,6 @@
 'use client';
 
-import styles from './page.module.scss';
+import styles from './styles/page.module.scss';
 
 const Home = () => {
     const categories = {

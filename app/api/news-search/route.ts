@@ -1,5 +1,5 @@
-import { openai } from '@/app/openai';
-import type { Message } from '@/app/openai';
+import { client } from '@/init-client';
+import { Message } from '@/types';
 
 export const runtime = 'nodejs';
 
@@ -186,10 +186,9 @@ export async function POST(request: Request) {
 
         // First call to the model (synchronous call to capture possible function_call)
         /* eslint-disable @typescript-eslint/no-explicit-any */
-        const initial = (await openai.chat.completions.create({
+        const initial = (await client.chat.completions.create({
             model: 'gpt-4.1',
             messages,
-            // cast functions to any to satisfy OpenAI typings for this demo
             functions: functions as any,
             function_call: 'auto',
         } as any)) as any;
@@ -234,7 +233,7 @@ export async function POST(request: Request) {
             ];
 
             /* eslint-disable @typescript-eslint/no-explicit-any */
-            const final = (await openai.chat.completions.create({
+            const final = (await client.chat.completions.create({
                 model: 'gpt-4.1',
                 messages: messagesWithFunction,
             } as any)) as any;
@@ -330,7 +329,7 @@ export async function POST(request: Request) {
                                 };
                             };
                             const imgResp = await (
-                                openai as unknown as OpenAIImagesClient
+                                client as unknown as OpenAIImagesClient
                             ).images.generate({
                                 prompt: p.imagePrompt,
                                 size: '1024x512',

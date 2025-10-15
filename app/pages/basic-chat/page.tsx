@@ -6,7 +6,7 @@ import { Chat } from '../../components/chat/chat';
 const Home = () => {
     return (
         <main className='container'>
-            <Chat />
+            <Chat chatType='basic' />
         </main>
     );
 };

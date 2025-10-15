@@ -27,7 +27,7 @@ export async function GET() {
     return NextResponse.json(
         {
             error: 'NO_VERIFIED_EVENTS',
-            userMessage: `No corroborated events available. All results for Torino are mock snippets without concrete event details.`,
+            userMessage: `No corroborated events available.`,
             details: { previews, diagnostics },
         },
         { status: 400 }

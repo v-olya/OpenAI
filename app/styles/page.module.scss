@@ -1,5 +1,5 @@
-@import './styles/_variables';
-@import './styles/_breakpoints';
+@import './_variables';
+@import './_breakpoints';
 
 .main {
     min-height: 100vh;
@@ -11,7 +11,6 @@
     padding: $space-12 * 2 var(--space-12);
 }
 
-/* Prevent the global .container (height:100%) from stretching inside the home main */
 .main .container {
     height: auto;
 }

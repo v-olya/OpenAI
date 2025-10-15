@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import styles from './page.module.scss';
 import { Chat } from '../../components/chat/chat';
-import { NewsPreview } from '@/app/types';
+import { NewsPreview } from '@/types';
 import Image from 'next/image';
 
 const SearchExample = () => {
