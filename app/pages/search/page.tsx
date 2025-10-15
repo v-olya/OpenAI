@@ -26,14 +26,18 @@ const SearchExample = () => {
                         <Image
                             src={preview.image}
                             alt={preview.title}
-                            width={140}
-                            height={140}
+                            width={145}
+                            height={145}
                             className='preview-image'
                         />
                     </div>
                     <div className={styles['preview-content']}>
-                        <div className='preview-title'>{preview.title}</div>
-                        <div className='preview-summary'>{preview.summary}</div>
+                        <div className={styles['preview-title']}>
+                            {preview.title}
+                        </div>
+                        <div className={styles['preview-summary']}>
+                            {preview.summary}
+                        </div>
                         <div className={styles['source-cloud']}>
                             {Array.isArray(preview.sources) &&
                                 preview.sources.map((source, idx) => (

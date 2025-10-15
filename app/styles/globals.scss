@@ -5,6 +5,7 @@
 :root {
     --max-width: #{variables.$max-width};
     --card-size: #{variables.$card-size};
+    --space-8: #{variables.$space-8};
     --space-12: #{variables.$space-12};
     --space-16: #{variables.$space-16};
     --space-20: #{variables.$space-20};
@@ -187,25 +188,6 @@ ol {
 .select-compact {
     padding: 6px 8px;
     border-radius: 6px;
-}
-
-.preview-image {
-    width: 140px;
-    height: 140px;
-    overflow: hidden;
-    border-radius: 10px;
-}
-
-.preview-title {
-    font-size: 15px;
-    color: #111;
-    font-weight: 700;
-}
-
-.preview-summary {
-    font-size: 14px;
-    color: #555;
-    margin-top: 6px;
 }
 
 .msg-error {
