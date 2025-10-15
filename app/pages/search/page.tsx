@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import styles from './page.module.scss';
 import { Chat } from '../../components/chat/chat';
-import { NewsPreview } from '@/types';
+import { NewsPreview } from '@/utils/types';
 import Image from 'next/image';
+import Panel from '../../components/panel/panel';
 
 const SearchExample = () => {
     const [previews, setPreviews] = useState<NewsPreview[] | null>(null);
@@ -56,8 +57,21 @@ const SearchExample = () => {
         </div>
     );
 
+    const today = new Date().toDateString();
+
     return (
         <main className='container'>
+            <Panel>
+                <h2>Enter a region</h2>
+                <p>to see the Top news for today, </p>
+                <h3 className='emphasis'>{today}</h3>
+                <p>
+                    {' '}
+                    <br />
+                    LLM should describe 3 most important ones (on its opinion)
+                    and illustrate them with pictures
+                </p>
+            </Panel>
             <Chat
                 chatType='news'
                 placeholder='Search news...'

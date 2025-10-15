@@ -1,9 +1,8 @@
 'use client';
-import styles from './page.module.scss';
 import { Chat } from '../../components/chat/chat';
 import WeatherWidget from '../../components/widget/weather-widget';
 import { useState, useEffect } from 'react';
-import { WeatherData } from '@/types';
+import { WeatherData } from '@/utils/types';
 
 const WeatherDemo = () => {
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
@@ -15,7 +14,7 @@ const WeatherDemo = () => {
     useEffect(() => {}, [weatherData]);
 
     return (
-        <main className={`${styles.container} container`}>
+        <main className='container'>
             <WeatherWidget weather={weatherData} />
             <Chat chatType='weather' onWeatherUpdate={handleWeatherUpdate} />
         </main>
