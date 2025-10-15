@@ -1,11 +1,11 @@
 import styles from './weather-widget.module.scss';
 import Image from 'next/image';
-import { WeatherWidgetProps } from '@/app/types';
+import { WeatherWidgetProps } from '@/types';
 import {
     weatherCodeMap,
     formatLocalTime,
     getWeatherIconName,
-} from '@/app/utils/weather';
+} from '@/utils/weather';
 
 const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     if (!weather) {

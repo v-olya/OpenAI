@@ -1,4 +1,4 @@
-import { ErrorMessages } from '@/app/types';
+import { ErrorMessages } from '@/types';
 
 export const isNightTime = (hour?: number): boolean => {
     const currentHour = hour ?? new Date().getHours();
@@ -95,7 +95,7 @@ const getWeather = async (location: string) => {
     try {
         // Geocode location to get lat/lon
         const geoRes = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
                 location
             )}`
         );
@@ -109,6 +109,7 @@ const getWeather = async (location: string) => {
         const lat = geoData[0].lat;
         const lon = geoData[0].lon;
         const country = geoData[0].address?.country || '';
+        const displayName = geoData[0].display_name || '';
 
         // Fetch weather from Open-Meteo with timezone
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
@@ -125,6 +126,7 @@ const getWeather = async (location: string) => {
         }
         return {
             location: country ? `${location}, ${country}` : location,
+            resolvedName: displayName,
             temperature: weatherData.current_weather.temperature,
             unit: 'C',
             weathercode: weatherData.current_weather.weathercode,

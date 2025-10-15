@@ -1,31 +1,7 @@
-// Type guards for OpenAI Responses API output items
-function isFunctionCallOutput(
-    item: unknown
-): item is { type: string; name: string; arguments: string } {
-    return (
-        typeof item === 'object' &&
-        item !== null &&
-        'type' in item &&
-        (item as { type: string }).type === 'function_call' &&
-        'name' in item &&
-        (item as { name: string }).name === 'get_weather' &&
-        'arguments' in item &&
-        typeof (item as { arguments: unknown }).arguments === 'string'
-    );
-}
-function isTextOutput(item: unknown): item is { text: string } {
-    return (
-        typeof item === 'object' &&
-        item !== null &&
-        'text' in item &&
-        typeof (item as { text: unknown }).text === 'string'
-    );
-}
-
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
-import { getWeather } from '@/app/utils/weather';
-import { ErrorMessages } from '@/app/types';
+import { getWeather } from '@/utils/weather';
+import { ErrorMessages } from '@/types';
+import { client } from '@/init-client';
 
 async function get_weather({ location }: { location: string }) {
     const weather = await getWeather(location);
@@ -62,10 +38,9 @@ export async function GET(request: Request) {
         );
     }
 
-    const openai = new OpenAI();
     try {
         console.log('Calling OpenAI responses.create...');
-        const response = await openai.responses.create({
+        const response = await client.responses.create({
             model: 'gpt-4.1',
             input: [
                 {
@@ -133,7 +108,7 @@ export async function GET(request: Request) {
         }
         return NextResponse.json(
             {
-                error: 'Sorry, I could not understand your request.',
+                error: ErrorMessages.UNRECOGNIZED_REQUEST,
                 details: 'Please ask about a specific city.',
             },
             { status: 500 }
@@ -150,7 +125,7 @@ export async function GET(request: Request) {
         ) {
             return NextResponse.json(
                 {
-                    error: ErrorMessages.GENERAL_API_ERROR,
+                    error: ErrorMessages.WEATHER_API_ERROR,
                     details: (error as { response: { data: unknown } }).response
                         .data,
                 },
@@ -158,8 +133,32 @@ export async function GET(request: Request) {
             );
         }
         return NextResponse.json(
-            { error: ErrorMessages.GENERAL_API_ERROR, details: String(error) },
+            { error: ErrorMessages.WEATHER_API_ERROR, details: String(error) },
             { status: 500 }
         );
     }
+}
+
+// Type guards for OpenAI Responses API output items
+function isFunctionCallOutput(
+    item: unknown
+): item is { type: string; name: string; arguments: string } {
+    return (
+        typeof item === 'object' &&
+        item !== null &&
+        'type' in item &&
+        (item as { type: string }).type === 'function_call' &&
+        'name' in item &&
+        (item as { name: string }).name === 'get_weather' &&
+        'arguments' in item &&
+        typeof (item as { arguments: unknown }).arguments === 'string'
+    );
+}
+function isTextOutput(item: unknown): item is { text: string } {
+    return (
+        typeof item === 'object' &&
+        item !== null &&
+        'text' in item &&
+        typeof (item as { text: unknown }).text === 'string'
+    );
 }
