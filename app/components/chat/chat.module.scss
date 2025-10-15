@@ -1,5 +1,5 @@
-@import '../../styles/_breakpoints';
-@import '../../styles/_variables';
+@use '../../styles/_breakpoints';
+@use '../../styles/_variables';
 
 .chat {
     max-width: var(--max-width);
@@ -38,7 +38,7 @@
         border: 1.5px solid rgba(15, 23, 42, 0.06);
         color: #0b1220;
         text-decoration: none;
-        @include interactive-hover();
+        @include variables.interactive-hover();
     }
 
     /* Input area */
@@ -146,9 +146,9 @@
     .assistant-message,
     .code-message {
         margin: 10px 0;
-        padding: 14px $space-20;
+        padding: 14px variables.$space-20;
         align-self: flex-start;
-        border-radius: $space-20;
+        border-radius: variables.$space-20;
         max-width: 80%;
         overflow-wrap: break-word;
         line-height: 1.6;

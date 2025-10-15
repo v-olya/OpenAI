@@ -1,5 +1,5 @@
-@import './styles/_variables';
-@import './styles/_breakpoints';
+@use 'styles/_variables';
+@use 'styles/_breakpoints';
 
 .main {
     min-height: 100vh;
@@ -8,7 +8,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: $space-12 * 2 var(--space-12);
+    padding: variables.$space-12 * 2 var(--space-12);
 }
 
 .main .container {
@@ -34,21 +34,21 @@
     max-width: var(--max-width);
     width: var(--card-size);
     height: var(--card-size);
-    padding: $space-20;
+    padding: variables.$space-20;
     transition: all 0.3s ease;
     font-weight: 500;
     border: 1.5px solid #eaeaea;
     box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
     text-decoration: none;
 
-    @include interactive-hover();
+    @include variables.interactive-hover();
 }
 
-@include mq-mobile {
+@include breakpoints.mq-mobile {
     .category {
         width: 100%;
         max-width: none;
         height: auto;
-        padding: $space-16;
+        padding: variables.$space-16;
     }
 }

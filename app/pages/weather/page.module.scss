@@ -1,19 +1,19 @@
-@import '../../styles/_breakpoints';
-@import '../../styles/_variables';
+@use '../../styles/_breakpoints';
+@use '../../styles/_variables';
 
 .surface,
 .column > * {
-    @include surface($bg: white, $radius: $space-20);
+    @include variables.surface($bg: white, $radius: variables.$space-20);
 
     width: 100%;
 }
 
 .surface:hover,
 .column > *:hover {
-    @include hover-elevate;
+    @include variables.hover-elevate;
 }
 
-@include mq-mobile {
+@include breakpoints.mq-mobile {
     .container {
         align-items: stretch;
     }

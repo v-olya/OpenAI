@@ -1,5 +1,5 @@
-@import '../../styles/_breakpoints';
-@import '../../styles/_variables';
+@use '../../styles/_breakpoints';
+@use '../../styles/_variables';
 
 .preview-card {
     display: flex;
@@ -45,7 +45,7 @@
     text-decoration: none;
 }
 
-@include mq-mobile {
+@include breakpoints.mq-mobile {
     .preview-card {
         flex-direction: column;
         gap: 8px;

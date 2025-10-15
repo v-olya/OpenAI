@@ -1,14 +1,14 @@
-@import './_variables';
-@import './_breakpoints';
+@use '_variables';
+@use '_breakpoints';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 :root {
-    --max-width: #{$max-width};
-    --card-size: #{$card-size};
-    --space-12: #{$space-12};
-    --space-16: #{$space-16};
-    --space-20: #{$space-20};
-    --chat-input-bottom: #{$space-20};
+    --max-width: #{variables.$max-width};
+    --card-size: #{variables.$card-size};
+    --space-12: #{variables.$space-12};
+    --space-16: #{variables.$space-16};
+    --space-20: #{variables.$space-20};
+    --chat-input-bottom: #{variables.$space-20};
     --chat-input-height: 72px;
     --font-mono: ui-monospace, menlo, monaco, 'Cascadia Mono', 'Segoe UI Mono',
         'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
@@ -118,7 +118,7 @@ h2 {
 }
 ul,
 ol {
-    padding-left: $space-12 * 2;
+    padding-left: variables.$space-12 * 2;
     margin: var(--space-12) 0;
 }
 
@@ -127,7 +127,7 @@ ol {
     margin-left: auto;
     margin-right: auto;
     margin-top: 6rem;
-    padding: $space-12 * 2;
+    padding: variables.$space-12 * 2;
     text-align: center;
     background: transparent;
     color: var(--text-color);
@@ -238,7 +238,7 @@ ol {
     min-height: 0;
 }
 
-@include mq-mobile {
+@include breakpoints.mq-mobile {
     .container {
         flex-direction: column;
         padding: 8px;

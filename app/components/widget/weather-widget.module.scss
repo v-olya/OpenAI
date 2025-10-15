@@ -1,5 +1,5 @@
-@import '../../styles/_breakpoints';
-@import '../../styles/_variables';
+@use '../../styles/_breakpoints';
+@use '../../styles/_variables';
 
 .weather-empty-state {
     background: #6b9bd1;
@@ -59,7 +59,7 @@
     }
 }
 
-@include mq-mobile {
+@include breakpoints.mq-mobile {
     .weather-icon-container {
         margin-top: 0.2rem;
     }

@@ -1,11 +1,11 @@
-@import '../../styles/_breakpoints';
-@import '../../styles/_variables';
+@use '../../styles/_breakpoints';
+@use '../../styles/_variables';
 
 .panel {
     width: 300px;
     height: 100dvh;
     box-sizing: border-box;
-    padding: clamp(var(--space-12), 2.5vw, 32px) clamp(10px, 2vw, $space-12 * 2);
+    padding: clamp(var(--space-12), 2.5vw, 32px) clamp(10px, 2vw, variables.$space-12 * 2);
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -58,7 +58,7 @@
     letter-spacing: 0.4px;
 }
 
-@include mq-mobile {
+@include breakpoints.mq-mobile {
     .panel {
         height: 230px;
         font-weight: 600;
