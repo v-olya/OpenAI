@@ -1,7 +1,7 @@
 'use client';
 
-import ResetButton from './components/error-view/ResetButton';
-import ErrorView from './components/error-view/ErrorView';
+import ResetButton from './components/error-view/reset-button';
+import ErrorView from './components/error-view/error-view';
 
 export default function GlobalError({ error }: { error?: Error }) {
     return (

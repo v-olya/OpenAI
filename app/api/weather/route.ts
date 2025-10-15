@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getWeather } from '@/utils/weather';
-import { ErrorMessages } from '@/types';
-import { client } from '@/init-client';
+import { ErrorMessages } from '@/utils/types';
+import { client } from '@/utils/init-client';
 
 async function get_weather({ location }: { location: string }) {
     const weather = await getWeather(location);

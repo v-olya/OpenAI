@@ -1,4 +1,4 @@
-import { client } from '@/init-client';
+import { client } from '@/utils/init-client';
 
 import type { ChatCompletionCreateParams } from 'openai/resources/chat';
 type Message = ChatCompletionCreateParams['messages'][number];

@@ -1,4 +1,4 @@
-import { Message } from '@/types';
+import { Message } from '@/utils/types';
 
 export const runtime = 'nodejs';
 

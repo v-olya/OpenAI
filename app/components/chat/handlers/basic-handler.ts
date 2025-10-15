@@ -1,4 +1,4 @@
-import { ErrorMessages, MessageType } from '@/types';
+import { ErrorMessages, MessageType } from '@/utils/types';
 type StreamMessage = {
     type: 'content' | 'error';
     content: string;

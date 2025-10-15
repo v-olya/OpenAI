@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { ChatProps, MessageType, ErrorMessages } from '@/types';
-import { handleNews } from './handlers/news-handler';
-import { handleWeather } from './handlers/weather-handler';
-import { handleBasic } from './handlers/basic-handler';
+import { ChatProps, MessageType, ErrorMessages } from '@/utils/types';
+import { handleNews } from '../components/chat/handlers/news-handler';
+import { handleWeather } from '../components/chat/handlers/weather-handler';
+import { handleBasic } from '../components/chat/handlers/basic-handler';
 
 export const useChat = ({
     chatType,

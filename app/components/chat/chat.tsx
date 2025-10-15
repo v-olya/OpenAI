@@ -1,9 +1,9 @@
 ﻿'use client';
 
 import styles from './chat.module.scss';
-import { ChatProps } from '@/types';
+import { ChatProps } from '@/utils/types';
 import { ChatLayout } from './chat-layout';
-import { useChat } from './useChat';
+import { useChat } from '@/hooks/useChat';
 
 export function Chat({
     chatType = 'basic',

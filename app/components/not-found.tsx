@@ -1,4 +1,4 @@
-import ErrorView from './components/error-view/error-view';
+import ErrorView from './error-view/error-view';
 
 export default function NotFound() {
     //throw new Error('Test error from /api/news-search/test-invalid/route.ts');

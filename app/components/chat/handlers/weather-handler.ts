@@ -1,4 +1,4 @@
-import { ErrorMessages, WeatherData } from '@/types';
+import { ErrorMessages, WeatherData } from '@/utils/types';
 
 type AppendMessage = (
     role: 'user' | 'assistant',

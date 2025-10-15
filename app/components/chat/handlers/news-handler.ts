@@ -1,4 +1,4 @@
-import { ErrorMessages } from '@/types';
+import { ErrorMessages } from '@/utils/types';
 
 type AppendMessage = (
     role: 'user' | 'assistant',
