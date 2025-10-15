@@ -1,19 +1,47 @@
 import { ErrorMessages } from '@/types';
 
 export const isNightTime = (hour?: number): boolean => {
-    const currentHour = hour ?? new Date().getHours();
+    const currentHour = typeof hour === 'number' ? hour : new Date().getHours();
     return currentHour >= 20 || currentHour < 6;
 };
 
-export const formatLocalTime = (date?: Date): string => {
+export const formatLocalTime = (
+    date?: Date,
+    options?: { timeZone?: string }
+): string => {
     const timeToFormat = date ?? new Date();
-    return timeToFormat.toLocaleTimeString([], {
+    const tz = options?.timeZone;
+    const intlOpts: Intl.DateTimeFormatOptions = {
         hour: '2-digit',
         minute: '2-digit',
-    });
+        ...(tz ? { timeZone: tz } : {}),
+    };
+
+    return timeToFormat.toLocaleTimeString([], intlOpts);
 };
 
-export const getWeatherIconName = (weathercode?: number): string => {
+// Format a server-provided datetime string into short time.
+// If timezone is provided as an identifier (e.g. 'Europe/London'), use it.
+export const formatLocalTimeFromString = (
+    localtimeStr?: string,
+    timeZone?: string
+): string => {
+    if (!localtimeStr) {
+        return formatLocalTime(undefined, { timeZone });
+    }
+    // Try to parse as ISO first
+    const parsed = new Date(localtimeStr);
+    if (!isNaN(parsed.getTime())) {
+        return formatLocalTime(parsed, { timeZone });
+    }
+    // If parsing fails, fall back to current time with timezone
+    return formatLocalTime(undefined, { timeZone });
+};
+
+export const getWeatherIconName = (
+    weathercode?: number,
+    hour?: number
+): string => {
     if (typeof weathercode !== 'number' || !weatherIconMap[weathercode]) {
         return 'unknown';
     }
@@ -21,7 +49,7 @@ export const getWeatherIconName = (weathercode?: number): string => {
     let iconName = weatherIconMap[weathercode];
 
     // Show clear-night icon for clear weather at night
-    if (isNightTime() && (weathercode === 0 || weathercode === 1)) {
+    if (isNightTime(hour) && (weathercode === 0 || weathercode === 1)) {
         iconName = 'clear-night';
     }
 
@@ -132,7 +160,6 @@ const getWeather = async (location: string) => {
             weathercode: weatherData.current_weather.weathercode,
             windspeed: weatherData.current_weather.windspeed,
             timezone: weatherData.timezone,
-            timezone_offset: weatherData.timezone_abbreviation,
             error: undefined,
         };
     } catch (error) {

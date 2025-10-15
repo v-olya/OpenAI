@@ -42,6 +42,19 @@ export const handleWeather = async (
         `Weather data received and displayed in the widget.${resolvedSuffix}`
     );
     if (onWeatherUpdate) {
+        // compute numeric hour for the target timezone so we can render night icons
+        let localHour: number | undefined = undefined;
+        if (data.timezone) {
+            try {
+                const hourStr = new Date().toLocaleString('en-US', {
+                    hour: '2-digit',
+                    hour12: false,
+                    timeZone: data.timezone,
+                });
+                const parsed = parseInt(hourStr, 10);
+                if (!Number.isNaN(parsed)) localHour = parsed;
+            } catch {}
+        }
         onWeatherUpdate({
             location: data.location,
             resolvedName: data.resolvedName,
@@ -51,7 +64,8 @@ export const handleWeather = async (
             error: data.error,
             conditions: '',
             unit: 'C',
-            timezone_offset: undefined,
+            timezone: data.timezone,
+            localHour,
         });
     }
 };

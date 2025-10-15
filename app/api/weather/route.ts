@@ -5,27 +5,9 @@ import { client } from '@/init-client';
 
 async function get_weather({ location }: { location: string }) {
     const weather = await getWeather(location);
-
-    let localtime = new Date().toLocaleString('en-US', { timeZone: 'UTC' });
-
-    if (weather.timezone) {
-        try {
-            localtime = new Date().toLocaleString('en-US', {
-                timeZone: weather.timezone,
-            });
-        } catch {
-            console.warn(
-                'Invalid timezone:',
-                weather.timezone,
-                'falling back to UTC'
-            );
-        }
-    }
-
-    return {
-        ...weather,
-        localtime,
-    };
+    // Return canonical weather object. Client is responsible for formatting
+    // local display time using the provided IANA timezone identifier.
+    return weather;
 }
 
 export async function GET(request: Request) {
@@ -46,7 +28,7 @@ export async function GET(request: Request) {
                 {
                     role: 'system',
                     content:
-                        'You are a weather assistant. Detect the city from the user query and call the get_weather function. Respond only with a strict JSON object: { "location": string, "temperature": number, "windspeed": number, "weathercode": number, "localtime": string, "error": string | null }.',
+                        'You are a weather assistant. Detect the city from the user query and call the get_weather function. Respond only with a strict JSON object: { "location": string, "temperature": number, "windspeed": number, "weathercode": number, "timezone": string, "error": string | null }.',
                 },
                 {
                     role: 'user',

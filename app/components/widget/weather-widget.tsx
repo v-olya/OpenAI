@@ -40,14 +40,22 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
         typeof weather.weathercode === 'number'
             ? weatherCodeMap[weather.weathercode]
             : '';
-    const iconName = getWeatherIconName(weather.weathercode);
+    const iconName = getWeatherIconName(
+        weather.weathercode,
+        typeof weather.localHour === 'number' ? weather.localHour : undefined
+    );
 
     return (
         <div className={styles['weather-widget']}>
             <div className={styles['weather-widget-data']}>
                 <h2>{weather.location || 'Unknown location'}</h2>
                 <div className={styles.weatherLocalTime}>
-                    <span>Local time:</span> {formatLocalTime()}
+                    <span>Local time:</span>{' '}
+                    {weather.timezone
+                        ? formatLocalTime(undefined, {
+                              timeZone: weather.timezone,
+                          })
+                        : formatLocalTime()}
                 </div>
                 {typeof weather.temperature === 'number' && (
                     <h3 className={styles['weather-widget-temp']}>

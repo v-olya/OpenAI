@@ -27,7 +27,13 @@ export type WeatherData = {
     error?: string;
     conditions?: string;
     unit?: string;
-    timezone_offset?: number;
+    /** timezone identifier returned from weather API, e.g. "Europe/London" */
+    timezone?: string;
+    /** numeric hour (0-23) at the location - used for night detection */
+    localHour?: number;
+    // Note: we intentionally keep the timezone identifier (IANA) and compute
+    // localHour on the client. We don't return server-side localtime or
+    // timezone offsets to avoid ambiguity.
 };
 
 export type NewsPreview = {
