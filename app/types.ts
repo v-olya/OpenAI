@@ -19,6 +19,8 @@ export function isValidMessage(
 
 export type WeatherData = {
     location?: string;
+    /** display name resolved from geocoder (Nominatim) */
+    resolvedName?: string;
     temperature?: number;
     windspeed?: number;
     weathercode?: number;
@@ -42,14 +44,12 @@ export const ErrorMessages = {
     WEATHER_API_ERROR:
         'Unable to retrieve weather data. Please try again later.',
     NO_WEATHER_DATA: 'No weather data available for this location.',
-    GENERAL_API_ERROR:
-        'Something went wrong while getting the weather. Please try again in a moment.',
-
     INVALID_QUERY: 'Query parameter must be a non-empty string.',
     FUNCTION_PARSE_ERROR:
         'Failed to parse function arguments or fetch weather.',
-    MODEL_TEXT_OUTPUT: 'Model returned text output instead of function call.',
     UNRECOGNIZED_REQUEST: 'Sorry, I could not understand your request.',
+    UNEXPECTED_RESPONSE: 'Unexpected response from server.',
+    TRY_AGAIN: 'An error occurred. Please try again.',
 } as const;
 
 export type ApiErrorResponse = {
@@ -57,26 +57,27 @@ export type ApiErrorResponse = {
     details?: string;
 };
 
-// Component prop interfaces
-export interface ChatProps {
-    onWeatherUpdate?: (data: WeatherData) => void;
-    chatType?: 'weather' | 'news';
-    placeholder?: string;
-    onNewsResults?: (previews: NewsPreview[] | null) => void;
-    /** current previews from parent (optional) so Chat can react when previews are cleared */
-    newsPreviews?: NewsPreview[] | null;
-    children?: React.ReactNode;
-    // Note: control bar rendering moved out of Chat; compose layout in pages where needed
-}
-
-export interface WeatherWidgetProps {
-    weather: WeatherData | null;
-}
-
 export interface MessageType {
     role: 'user' | 'assistant';
     text: string;
     error?: boolean;
+    /** optional stable id to track and update messages */
+    id?: string;
+}
+
+// Component prop interfaces
+export interface ChatProps {
+    chatType: 'weather' | 'news' | 'basic';
+    placeholder?: string;
+    children?: React.ReactNode;
+    onWeatherUpdate?: (data: WeatherData) => void;
+    onNewsResults?: (previews: NewsPreview[] | null) => void;
+    /** current previews from parent (optional) so Chat can react when previews are cleared */
+    newsPreviews?: NewsPreview[] | null;
+}
+
+export interface WeatherWidgetProps {
+    weather: WeatherData | null;
 }
 
 export const weatherFunction = {
