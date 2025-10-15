@@ -64,7 +64,6 @@ Remember: the model must synthesize titles and summaries from multiple SERP entr
 
     if (data.previews && Array.isArray(data.previews)) {
         onNewsResults?.(data.previews.slice(0, 3));
-        appendMessage('assistant', 'Top previews ready.');
     } else if (data.error) {
         const code = data.error;
         if (code === 'PARSE_FAILURE') {

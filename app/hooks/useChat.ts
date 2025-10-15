@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { ChatProps, MessageType, ErrorMessages } from '@/utils/types';
 import { handleNews } from '../components/chat/handlers/news-handler';
 import { handleWeather } from '../components/chat/handlers/weather-handler';
@@ -10,7 +10,6 @@ export const useChat = ({
     chatType,
     onWeatherUpdate,
     onNewsResults,
-    newsPreviews,
 }: ChatProps) => {
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [userInput, setUserInput] = useState('');
@@ -31,14 +30,6 @@ export const useChat = ({
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         return id || message.id;
     };
-
-    useEffect(() => {
-        if (chatType !== 'news') return;
-        if (newsPreviews !== null) return;
-        setMessages((prev) =>
-            prev.filter((m) => m.text !== 'Top previews ready.')
-        );
-    }, [newsPreviews, chatType]);
 
     const sendMessage = async (text: string) => {
         try {

@@ -51,10 +51,7 @@
         align-items: center;
         flex-wrap: nowrap;
         position: sticky;
-        bottom: calc(
-            var(--chat-input-bottom, var(--space-20)) +
-                env(safe-area-inset-bottom)
-        );
+        bottom: calc(var(--space-12) * 2);
         z-index: 20;
 
         .input {
@@ -138,6 +135,12 @@
             border: 0;
             clip: rect(0 0 0 0);
             clip-path: inset(50%);
+        }
+    }
+
+    @include breakpoints.mq-mobile {
+        .input-form {
+            bottom: var(--space-16);
         }
     }
 

@@ -16,7 +16,7 @@ const SearchExample = () => {
     };
 
     const previewsContent = previews && (
-        <div>
+        <>
             {previews.map((preview, i) => (
                 <div
                     key={preview.url ?? `preview-${i}`}
@@ -54,7 +54,7 @@ const SearchExample = () => {
                     </div>
                 </div>
             ))}
-        </div>
+        </>
     );
 
     const today = new Date().toDateString();
@@ -63,13 +63,14 @@ const SearchExample = () => {
         <main className='container'>
             <Panel>
                 <h2>Enter a region</h2>
-                <p>to see the Top news for today, </p>
+                <p>
+                    to see the Top news for <br />
+                </p>
                 <h3 className='emphasis'>{today}</h3>
                 <p>
-                    {' '}
                     <br />
-                    LLM should describe 3 most important ones (on its opinion)
-                    and illustrate them with pictures
+                    LLM will pick the most important ones, describe them
+                    briefly, and illustrate with pictures
                 </p>
             </Panel>
             <Chat
