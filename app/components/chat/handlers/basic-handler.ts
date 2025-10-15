@@ -150,7 +150,7 @@ export const handleBasic = async (
     makeId: () => string
 ): Promise<void> => {
     try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch('/api/basic-chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ messages: messagesPayload }),
