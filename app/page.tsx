@@ -4,7 +4,7 @@ const Home = () => {
     const categories = {
         Chat: 'basic-chat',
         Weather: 'weather',
-        Search: 'search',
+        Search: 'news-search',
     };
 
     return (
