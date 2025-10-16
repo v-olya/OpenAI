@@ -5,7 +5,7 @@ import styles from './page.module.scss';
 import { Chat } from '../../components/chat/chat';
 import { NewsPreview } from '@/utils/types';
 import Image from 'next/image';
-import Panel from '../../components/panel/panel';
+import Panel from '../../components/left-panel/panel';
 
 const SearchExample = () => {
     const [previews, setPreviews] = useState<NewsPreview[] | null>(null);

@@ -6,7 +6,7 @@ import {
     formatLocalTime,
     getWeatherIconName,
 } from '@/utils/weather';
-import Panel from '../panel/panel';
+import Panel from '../left-panel/panel';
 
 const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     if (!weather) {
