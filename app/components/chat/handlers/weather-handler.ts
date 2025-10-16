@@ -1,3 +1,4 @@
+import { getResponseError } from '@/utils/get-response-error';
 import { ErrorMessages, WeatherData } from '@/utils/types';
 
 type AppendMessage = (
@@ -16,19 +17,12 @@ export const handleWeather = async (
 ) => {
     const response = await fetch(`/api/weather?q=${encodeURIComponent(text)}`);
     if (!response.ok) {
-        let errorMsg: string = ErrorMessages.TRY_AGAIN;
-        try {
-            const errorData = await response.json();
-            if (errorData && errorData.error) {
-                errorMsg = errorData.error;
-            }
-        } catch {}
-        appendMessage('assistant', errorMsg, true);
+        appendMessage('assistant', await getResponseError(response), true);
         return;
     }
     const data = await response.json();
-    if (data.error) {
-        appendMessage('assistant', data.error, true);
+    if (!data.location) {
+        appendMessage('assistant', ErrorMessages.LOCATION_NOT_FOUND, true);
         return;
     }
     // Show resolvedName if the detected location didn't include a region

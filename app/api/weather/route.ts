@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getWeather } from '@/utils/weather';
 import { ErrorMessages } from '@/utils/types';
 import { client } from '@/utils/init-client';
+import { getSearchParam } from '@/utils/get-search-param';
 
 async function get_weather({ location }: { location: string }) {
     const weather = await getWeather(location);
@@ -11,9 +12,8 @@ async function get_weather({ location }: { location: string }) {
 }
 
 export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q');
-    if (typeof query !== 'string' || query.trim().length === 0) {
+    const query = getSearchParam(request);
+    if (!query) {
         return NextResponse.json(
             { error: ErrorMessages.INVALID_QUERY },
             { status: 400 }
@@ -21,7 +21,6 @@ export async function GET(request: Request) {
     }
 
     try {
-        console.log('Calling OpenAI responses.create...');
         const response = await client.responses.create({
             model: 'gpt-4.1',
             input: [
