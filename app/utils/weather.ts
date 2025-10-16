@@ -20,24 +20,6 @@ export const formatLocalTime = (
     return timeToFormat.toLocaleTimeString([], intlOpts);
 };
 
-// Format a server-provided datetime string into short time.
-// If timezone is provided as an identifier (e.g. 'Europe/London'), use it.
-export const formatLocalTimeFromString = (
-    localtimeStr?: string,
-    timeZone?: string
-): string => {
-    if (!localtimeStr) {
-        return formatLocalTime(undefined, { timeZone });
-    }
-    // Try to parse as ISO first
-    const parsed = new Date(localtimeStr);
-    if (!isNaN(parsed.getTime())) {
-        return formatLocalTime(parsed, { timeZone });
-    }
-    // If parsing fails, fall back to current time with timezone
-    return formatLocalTime(undefined, { timeZone });
-};
-
 export const getWeatherIconName = (
     weathercode?: number,
     hour?: number
