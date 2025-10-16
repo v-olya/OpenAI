@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './page.module.scss';
 import { Chat } from '../../components/chat/chat';
 import { NewsPreview } from '@/utils/types';

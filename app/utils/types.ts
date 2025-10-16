@@ -1,5 +1,5 @@
 import type { ChatCompletionMessage } from 'openai/resources/chat';
-import React from 'react';
+import { ReactNode } from 'react';
 
 export type Message = {
     role: 'user' | 'assistant' | 'system' | 'function';
@@ -31,9 +31,7 @@ export type WeatherData = {
     timezone?: string;
     /** numeric hour (0-23) at the location - used for night detection */
     localHour?: number;
-    // Note: we intentionally keep the timezone identifier (IANA) and compute
-    // localHour on the client. We don't return server-side localtime or
-    // timezone offsets to avoid ambiguity.
+    // We intentionally keep the timezone identifier (IANA) and compute localHour on the client.
 };
 
 export type NewsPreview = {
@@ -75,7 +73,7 @@ export interface MessageType {
 export interface ChatProps {
     chatType: 'weather' | 'news' | 'basic';
     placeholder?: string;
-    children?: React.ReactNode;
+    children?: ReactNode;
     onWeatherUpdate?: (data: WeatherData) => void;
     onNewsResults?: (previews: NewsPreview[] | null) => void;
     /** current previews from parent (optional) so Chat can react when previews are cleared */

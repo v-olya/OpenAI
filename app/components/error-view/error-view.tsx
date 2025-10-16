@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { ReactNode } from 'react';
 import Link from 'next/link';
 
 export default function ErrorView({
@@ -12,7 +12,7 @@ export default function ErrorView({
     title?: string;
     message?: string;
     showPre?: boolean;
-    children?: React.ReactNode;
+    children?: ReactNode;
 }) {
     return (
         <main className='layout-centered'>

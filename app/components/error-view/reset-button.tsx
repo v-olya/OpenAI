@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 export default function ResetButton({ label = 'Refresh' }: { label?: string }) {
     const handle = () => {
         try {

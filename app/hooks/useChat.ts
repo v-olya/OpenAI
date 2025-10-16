@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, FormEvent } from 'react';
 import { ChatProps, MessageType, ErrorMessages } from '@/utils/types';
 import { handleNews } from '../components/chat/handlers/news-handler';
 import { handleWeather } from '../components/chat/handlers/weather-handler';
@@ -57,7 +57,7 @@ export const useChat = ({
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const trimmedInput = userInput.trim();
         if (!trimmedInput || isProcessing) return;
