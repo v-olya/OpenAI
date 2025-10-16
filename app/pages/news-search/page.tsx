@@ -68,7 +68,8 @@ const SearchExample = () => {
             <Panel>
                 <h2>Enter a region</h2>
                 <p>
-                    to see the Top news for <br />
+                    to see the Top news for today,
+                    <br />
                 </p>
                 <h3 className='emphasis'>{today}</h3>
                 <p>
@@ -79,7 +80,6 @@ const SearchExample = () => {
             </Panel>
             <Chat
                 chatType='news'
-                placeholder='Search news...'
                 onNewsResults={handleNewsResults}
                 newsPreviews={previews}
             >

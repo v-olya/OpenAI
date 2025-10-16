@@ -72,7 +72,6 @@ export interface MessageType {
 // Component prop interfaces
 export interface ChatProps {
     chatType: 'weather' | 'news' | 'basic';
-    placeholder?: string;
     children?: ReactNode;
     onWeatherUpdate?: (data: WeatherData) => void;
     onNewsResults?: (previews: NewsPreview[] | null) => void;

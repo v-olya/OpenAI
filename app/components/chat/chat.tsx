@@ -7,7 +7,6 @@ import { useChat } from '@/hooks/useChat';
 
 export function Chat({
     chatType = 'basic',
-    placeholder,
     onWeatherUpdate,
     onNewsResults,
     newsPreviews,
@@ -57,11 +56,7 @@ export function Chat({
                 className={styles.input}
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                placeholder={
-                    isProcessing
-                        ? 'Processing...'
-                        : placeholder || 'Your question'
-                }
+                placeholder={isProcessing ? 'Processing...' : 'Your message...'}
                 disabled={isProcessing}
             />
             <button
