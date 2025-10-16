@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // No external placeholder hosts required; demo uses local /public/preview.jpg
+    // No external image hosts required
     images: {
         domains: [],
     },
