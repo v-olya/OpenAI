@@ -53,16 +53,16 @@ const appendToMessage = (
 
 const updateMessagesFromStream = (
     setMessages: SetMessages,
-    placeholderId: string,
+    streamMessageId: string,
     parsed: StreamMessage
 ): void => {
     if (parsed?.type === 'content' && typeof parsed.content === 'string') {
         setMessages((prev) =>
-            appendToMessage(prev, placeholderId, parsed.content)
+            appendToMessage(prev, streamMessageId, parsed.content)
         );
     } else if (parsed?.type === 'error') {
         setMessages((prev) =>
-            updateMessageById(prev, placeholderId, {
+            updateMessageById(prev, streamMessageId, {
                 text: parsed.content || STREAM_ERROR_MESSAGE,
                 error: true,
             })
@@ -73,7 +73,7 @@ const updateMessagesFromStream = (
 const processStream = async (
     reader: ReadableStreamDefaultReader<Uint8Array>,
     setMessages: SetMessages,
-    placeholderId: string
+    streamMessageId: string
 ): Promise<void> => {
     const decoder = new TextDecoder();
     let buffer = '';
@@ -95,7 +95,7 @@ const processStream = async (
                         const parsed = JSON.parse(line) as StreamMessage;
                         updateMessagesFromStream(
                             setMessages,
-                            placeholderId,
+                            streamMessageId,
                             parsed
                         );
                     } catch (err) {
@@ -117,11 +117,11 @@ const processStream = async (
 const handleStreamingResponse = async (
     response: Response,
     setMessages: SetMessages,
-    placeholderId: string
+    streamMessageId: string
 ): Promise<void> => {
     if (!response.body) {
         setMessages((prev) =>
-            updateMessageById(prev, placeholderId, {
+            updateMessageById(prev, streamMessageId, {
                 text: ErrorMessages.TRY_AGAIN,
                 error: true,
             })
@@ -131,11 +131,11 @@ const handleStreamingResponse = async (
 
     try {
         const reader = response.body.getReader();
-        await processStream(reader, setMessages, placeholderId);
+        await processStream(reader, setMessages, streamMessageId);
     } catch (err) {
         console.error('Streaming error:', err);
         setMessages((prev) =>
-            updateMessageById(prev, placeholderId, {
+            updateMessageById(prev, streamMessageId, {
                 text: ErrorMessages.TRY_AGAIN,
                 error: true,
             })
@@ -166,10 +166,10 @@ export const handleBasic = async (
             appendMessage('assistant', errorMsg, true);
             return;
         }
-        const placeholderId = makeId();
-        appendMessage('assistant', '', false, placeholderId);
+        const streamMessageId = makeId();
+        appendMessage('assistant', '', false, streamMessageId);
 
-        await handleStreamingResponse(response, setMessages, placeholderId);
+        await handleStreamingResponse(response, setMessages, streamMessageId);
     } catch (err) {
         console.error('Error in handleBasic:', err);
         appendMessage('assistant', ErrorMessages.TRY_AGAIN, true);
