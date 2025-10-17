@@ -7,11 +7,13 @@ import type { ChatProps, MessageType } from '@/utils/types';
 import { handleNews } from '../components/chat/handlers/news-handler';
 import { handleWeather } from '../components/chat/handlers/weather-handler';
 import { handleBasic } from '../components/chat/handlers/basic-handler';
+import { handleCoding } from '../components/chat/handlers/coding-handler';
 
 export const useChat = ({
     chatType,
     onWeatherUpdate,
     onNewsResults,
+    onFinishCoding,
 }: ChatProps) => {
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [userInput, setUserInput] = useState('');
@@ -35,21 +37,28 @@ export const useChat = ({
 
     const sendMessage = async (text: string) => {
         try {
-            if (chatType === 'news') {
-                await handleNews(text, appendMessage, onNewsResults);
-            } else if (chatType === 'weather') {
-                await handleWeather(text, appendMessage, onWeatherUpdate);
-            } else {
-                const messagesPayload = [
-                    ...messages.map((m) => ({ role: m.role, content: m.text })),
-                    { role: 'user', content: text },
-                ];
-                await handleBasic(
-                    messagesPayload,
-                    appendMessage,
-                    setMessages,
-                    makeId
-                );
+            switch (chatType) {
+                case 'news':
+                    await handleNews(text, appendMessage, onNewsResults);
+                    break;
+                case 'weather':
+                    await handleWeather(text, appendMessage, onWeatherUpdate);
+                    break;
+                case 'coding':
+                    await handleCoding(text, appendMessage, onFinishCoding);
+                    break;
+                default: {
+                    const messagesPayload = [
+                        ...messages.map((m) => ({ role: m.role, content: m.text })),
+                        { role: 'user', content: text },
+                    ];
+                    await handleBasic(
+                        messagesPayload,
+                        appendMessage,
+                        setMessages,
+                        makeId
+                    );
+                }
             }
         } catch (error) {
             appendMessage('assistant', ErrorMessages.TRY_AGAIN, true);
