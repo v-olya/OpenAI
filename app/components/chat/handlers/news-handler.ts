@@ -1,8 +1,6 @@
 import { getResponseError } from '@/utils/get-response-error';
 import { ErrorMessages } from '@/utils/error-messages';
-import type { AppendMessage } from '@/utils/types';
-
-type OnNewsResults = ((previews: any[] | null) => void) | undefined;
+import type { AppendMessage, OnNewsResults } from '@/utils/types';
 
 export const handleNews = async (
     region: string,

@@ -1,11 +1,10 @@
 import { ErrorMessages } from '@/utils/error-messages';
-import type { MessageType, AppendMessage } from '@/utils/types';
-type StreamMessage = {
-    type: 'content' | 'error';
-    content: string;
-};
-
-type SetMessages = (updater: (prev: MessageType[]) => MessageType[]) => void;
+import type {
+    MessageType,
+    AppendMessage,
+    StreamMessage,
+    SetMessages,
+} from '@/utils/types';
 
 const STREAM_ERROR_MESSAGE = 'Stream error';
 

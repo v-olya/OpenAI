@@ -1,8 +1,6 @@
 import { getResponseError } from '@/utils/get-response-error';
 import { ErrorMessages } from '@/utils/error-messages';
-import type { WeatherData, AppendMessage } from '@/utils/types';
-
-type OnWeatherUpdate = ((update: Partial<WeatherData>) => void) | undefined;
+import type { AppendMessage, OnWeatherUpdate } from '@/utils/types';
 
 export const handleWeather = async (
     text: string,

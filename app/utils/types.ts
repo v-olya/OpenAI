@@ -69,8 +69,9 @@ export type AppendMessage = (
 export interface ChatProps {
     chatType: 'weather' | 'news' | 'basic' | 'coding';
     children?: ReactNode;
-    onWeatherUpdate?: (data: WeatherData) => void;
-    onNewsResults?: (previews: NewsPreview[] | null) => void;
+    onWeatherUpdate?: OnWeatherUpdate;
+    onNewsResults?: OnNewsResults;
+    onFinishCoding?: OnFinishCoding;
     /** current previews from parent (optional) so Chat can react when previews are cleared */
     newsPreviews?: NewsPreview[] | null;
 }
@@ -78,6 +79,25 @@ export interface ChatProps {
 export interface WeatherWidgetProps {
     weather: WeatherData | null;
 }
+
+export type StreamMessage = {
+    type: 'content' | 'error';
+    content: string;
+};
+
+export type SetMessages = (
+    updater: (prev: MessageType[]) => MessageType[]
+) => void;
+
+export type OnFinishCoding = ((result: unknown) => void) | undefined; // TODO specify type
+
+export type OnNewsResults =
+    | ((previews: NewsPreview[] | null) => void)
+    | undefined;
+
+export type OnWeatherUpdate =
+    | ((update: Partial<WeatherData>) => void)
+    | undefined;
 
 export const weatherFunction = {
     name: 'get_weather',
