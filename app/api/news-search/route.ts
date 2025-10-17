@@ -14,21 +14,20 @@ export async function GET(request: Request) {
         );
     }
     const systemPrompt = `Please perform a web search on the today's news in ${query}.
-        Do NOT, explicitly or implicitly, mention particular web-sites in your search.
-        Based on the search results, provide up to 3 previews in English.
-        
-        While performing the task, exactly follow these STRICT RULES:
-        1) The previews must describe unrelated events. "Unrelated" means the events must have different primary subjects or causes. If you end up with a group of related previews, show only one of them.
-        2) The news chosen for previews MUST be published in the last 24 hours. 
-        3) Prioritize national sources and socially impactful news. 
-        4) Return either a JSON object with the key "previews" (an array of up to 3 preview objects) and "error": null, OR return an error object with a single "error" string explaining the issue.
-        5) Each preview object must contain exactly these fields: title, summary, sources, imagePrompt and must be written in English.
+        Do NOT mention particular websites in your search, either explicitly or implicitly.
+        Based on the search results, provide up to 3 previews in English. While performing the task, exactly follow these STRICT RULES:
+
+        1) The news chosen for previews MUST be published in the last 24 hours. 
+        2) Prioritize national sources and socially impactful news. 
+        3) The previews must describe unrelated events. "Unrelated" means the events must have different primary subjects or causes. If you end up with a group of related results, show one preview only.
+        4) Return either a JSON object with the key "previews" (an array of preview objects) and "error": null, OR an error object with a single "error" string explaining the issue.
+        5) Each preview object must contain exactly these fields: title, summary, sources, and imagePrompt and must be written in English.
             - title: synthesized (7-12 words). Do NOT include source headlines verbatim; synthesize across multiple results.
             - summary: synthesized, MAX 360 characters.
             - sources: array of objects {domain, url}. Every snippet MUST be backed by at least 2 sources on different domains. Within that preview, domains MUST be unique.
             - imagePrompt: a short descriptive prompt (<= 120 characters) for generating a single illustrative image.
         6) Do NOT guess or fabricate URLs or domains. Only include URLs/domains that were present in the web_search tool results. If a result URL is inaccessible (404), do NOT include it.
-        7) A single URL/source MUST NOT be used to corroborate more than one preview. Do NOT reuse the same URL to prove multiple news.
+        7) A single URL/source MUST NOT be used to corroborate more than one preview. Do NOT reuse the same URL to corroborate multiple news.
         8) Return at most 3 preview objects in the "previews" array. Do NOT return empty or partial preview objects.
         9) Never hand back to the user. Your error messages MUST NOT include "you’d like", "I can", "Please", etc. `;
 
