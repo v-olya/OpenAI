@@ -1,5 +1,38 @@
 @use '../../styles/_breakpoints';
 @use '../../styles/_variables';
+/* Accent colors */
+$accent-start: #6b9bd1;
+$accent-end: #5a8bc4;
+$accent-shadow: rgba(107, 155, 209, 0.25);
+$accent-shadow-strong: rgba(107, 155, 209, 0.35);
+/* Derived variables */
+$accent-gradient: linear-gradient(135deg, $accent-start 0%, $accent-end 100%);
+$disabled-gradient: linear-gradient(135deg, #d4d4d4 0%, #c4c4c4 100%);
+$btn-box-shadow: 0 1.5px 8px $accent-shadow;
+$btn-hover-shadow: 0 4px var(--space-12) $accent-shadow-strong;
+
+%btn-layout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+%btn-circle {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    flex: 0 0 44px;
+    border-radius: 50%;
+    @extend %btn-layout;
+}
+
+.button-rounded {
+    @extend %btn-circle;
+    background: $accent-gradient;
+    box-shadow: 0 2px 8px $accent-shadow;
+}
 
 .chat {
     max-width: var(--max-width);
@@ -14,7 +47,6 @@
     position: relative;
     border-radius: var(--space-12);
 
-    /* Messages area */
     .messages {
         flex: 1 1 auto;
         overflow-y: auto;
@@ -41,100 +73,159 @@
         @include variables.interactive-hover();
     }
 
-    /* Input area */
+    --input-area-padding: var(--space-16);
+
     .input-form {
         display: flex;
         width: 100%;
-        padding: var(--space-12) var(--space-16);
+        padding: var(--space-12) var(--input-area-padding);
         margin-top: 0;
         flex-shrink: 0;
         align-items: center;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         position: sticky;
         bottom: calc(var(--space-12) * 2);
         z-index: 20;
+    }
 
-        .input {
-            flex: 1 1 auto;
-            min-width: 0;
-            padding: 18px 26px;
-            margin-right: var(--space-12);
-            border-radius: 60px;
-            border: 2px solid #e1e5e9;
-            font-size: 1em;
-            line-height: 1.5;
-            background: #fff;
-            box-shadow: 0 4px var(--space-12) rgba(0, 0, 0, 0.08);
-            color: #2c3e50;
-            font-weight: 500;
+    .input {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 18px 26px;
+        margin-right: var(--space-12);
+        border-radius: 60px;
+        border: 2px solid #e1e5e9;
+        font-size: 1em;
+        line-height: 1.5;
+        background: #fff;
+        box-shadow: 0 4px var(--space-12) rgba(0, 0, 0, 0.08);
+        color: #2c3e50;
+        font-weight: 500;
 
-            &:focus {
-                outline: none;
-                border-color: #6b9bd1;
-                box-shadow: 0 6px var(--space-20) rgba(107, 155, 209, 0.25);
-            }
-
-            &::placeholder {
-                color: #8e9aaf;
-                font-weight: 400;
-            }
+        &:focus {
+            outline: none;
+            border-color: $accent-start;
+            box-shadow: 0 6px var(--space-20) rgba(107, 155, 209, 0.25);
         }
 
-        .button {
-            padding: var(--space-12) 28px;
-            background: linear-gradient(135deg, #6b9bd1 0%, #5a8bc4 100%);
-            color: #fff;
-            border: none;
-            font-size: 1em;
-            font-weight: 500;
-            border-radius: 60px;
-            cursor: pointer;
-            transition: transform 0.18s ease, box-shadow 0.18s ease;
-            box-shadow: 0 1.5px 8px rgba(107, 155, 209, 0.25);
+        &::placeholder {
+            color: #8e9aaf;
+            font-weight: 400;
+        }
+    }
 
-            &:hover:not(:disabled) {
-                transform: translateY(-1px);
-                box-shadow: 0 4px var(--space-12) rgba(107, 155, 209, 0.35);
-            }
+    button.input[data-has-files='false'] {
+        color: #8e9aaf;
+        font-weight: 400;
+    }
 
-            &:disabled {
-                background: linear-gradient(135deg, #d4d4d4 0%, #c4c4c4 100%);
-                cursor: not-allowed;
-                box-shadow: none;
-            }
+    button.input {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .file-row {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        padding: var(--space-12) var(--input-area-padding);
+        margin-top: var(--space-12);
+        gap: var(--space-12);
+        align-items: center;
+    }
+
+    .native-file-input {
+        display: none;
+    }
+
+    .file-control {
+        display: inline-flex;
+        width: 100%;
+        align-items: center;
+        gap: var(--space-12);
+    }
+
+    /* Reserve space for the "clear button" so the layout doesn't shift. */
+    .file-control .input {
+        margin-right: 0;
+        flex: 1 1 auto;
+        min-width: 0;
+        padding-right: var(--space-12);
+    }
+
+    /* Is used inside button.input to truncate the text */
+    .input-text {
+        display: inline-block;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
+
+    .clear-btn {
+        @extend %btn-circle;
+        line-height: 1;
+        opacity: 1;
+        transition: opacity 0.12s ease, transform 0.12s ease;
+    }
+
+    .clear-btn svg {
+        width: 18px;
+        height: 18px;
+        color: #fff;
+    }
+
+    .clear-btn:disabled {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .button-arrow {
+        @extend .button-rounded;
+
+        &::before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            border-left: 14px solid #fff;
         }
 
-        .button-arrow {
-            width: 44px;
-            height: 44px;
-            padding: 0;
-            flex: 0 0 44px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #6b9bd1 0%, #5a8bc4 100%);
-            box-shadow: 0 2px 8px rgba(107, 155, 209, 0.25);
-
-            &::before {
-                content: '';
-                width: 0;
-                height: 0;
-                border-top: 7px solid transparent;
-                border-bottom: 7px solid transparent;
-                border-left: 14px solid #fff;
-            }
+        &:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: $btn-hover-shadow;
         }
 
-        .button-label {
-            position: absolute;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-            white-space: nowrap;
-            border: 0;
-            clip: rect(0 0 0 0);
-            clip-path: inset(50%);
+        &:disabled {
+            background: $disabled-gradient;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    }
+
+    .button {
+        @extend %btn-layout;
+        background: $accent-gradient;
+        color: #fff;
+        border: none;
+        font-size: 1em;
+        font-weight: 500;
+        border-radius: 60px;
+        position: relative;
+        box-shadow: $btn-box-shadow;
+
+        &:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: $btn-hover-shadow;
+        }
+
+        &:disabled {
+            background: linear-gradient(135deg, #d4d4d4 0%, #c4c4c4 100%);
+            cursor: not-allowed;
+            box-shadow: none;
         }
     }
 
@@ -144,14 +235,13 @@
         }
     }
 
-    /* Message bubbles */
     .user-message,
     .assistant-message,
     .code-message {
         margin: 10px 0;
-        padding: 14px variables.$space-20;
+        padding: 14px var(--space-20);
         align-self: flex-start;
-        border-radius: variables.$space-20;
+        border-radius: var(--space-20);
         max-width: 80%;
         overflow-wrap: break-word;
         line-height: 1.6;
