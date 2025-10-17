@@ -25,14 +25,20 @@ export const handleNews = async (
         appendMessage('assistant', await getResponseError(response), true);
         return;
     }
-    const data = await response.json();
+    // OK response: parse JSON and return previews or an error message
+    try {
+        const data: any = await response.json();
 
-    if (data.previews && Array.isArray(data.previews)) {
-        onNewsResults?.(data.previews);
-    } else {
+        if (Array.isArray(data?.previews)) {
+            onNewsResults?.(data.previews);
+            return;
+        }
         appendMessage(
             'assistant',
-            data.error ?? ErrorMessages.UNEXPECTED_RESPONSE
+            data?.error ?? ErrorMessages.UNEXPECTED_RESPONSE
         );
+    } catch {
+        // JSON parse error or empty body
+        appendMessage('assistant', ErrorMessages.UNEXPECTED_RESPONSE, true);
     }
 };

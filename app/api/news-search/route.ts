@@ -1,175 +1,127 @@
-import { Message } from '@/utils/types';
+import { getSearchParam } from '@/utils/get-search-param';
+import { client } from '@/utils/init-client';
+import { ErrorMessages } from '@/utils/types';
+import { NextResponse } from 'next/server';
+import { zodTextFormat } from 'openai/helpers/zod';
+import { z } from 'zod';
 
-export const runtime = 'nodejs';
-
-// Controlled by the server-side env var NEXT_PUBLIC_NEWS_SEARCH_FAKE_BACKEND.
-// When true the route will use the mock SERP directly and skip OpenAI calls.
-
-// Mock implementation: return 20 fake SERP results for a query
-function mockFetchSerp(query: string) {
-    const domains = [
-        'example.com',
-        'news.example.org',
-        'localnews.it',
-        'blog.example.com',
-        'another-source.net',
-    ];
-    const lorem = ' Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
-    const results = Array.from({ length: 20 }).map((_, i) => {
-        const domain = domains[i % domains.length];
-        return {
-            title: `Event ${i + 1}`,
-            snippet: `This is a mock snippet for result ${
-                i + 1
-            } related to ${query}.${lorem}`,
-            url: `https://${domain}/${query.replace(/\s+/g, '-')}/${i + 1}`,
-            domain,
-            rank: i + 1,
-        };
-    });
-    return { results };
-}
-
-// helper to create a placeholder image URL from a prompt
-function placeholderImageForPrompt() {
-    // Use a local preview image to avoid external dependencies and ensure caching
-    return '/preview.jpg';
-}
-
-// Normalize a hostname/domain: lowercase and strip leading www.
-function normalizeDomain(domain: string | undefined | null): string {
-    if (!domain) return '';
-    const d = domain.toLowerCase().trim();
-    return d.startsWith('www.') ? d.slice(4) : d;
-}
-
-// Extract domain from a source object which may have { domain, url }
-function domainFromSource(src: unknown): string {
-    if (!src || typeof src !== 'object') return '';
-    const s = src as Record<string, unknown>;
-    if (typeof s.domain === 'string' && s.domain.trim().length > 0)
-        return normalizeDomain(s.domain);
-    if (typeof s.url === 'string' && s.url.trim().length > 0) {
-        try {
-            // Use URL constructor to get the exact hostname
-            const u = new URL(s.url);
-            return normalizeDomain(u.hostname);
-        } catch {
-            // If URL parsing fails, return empty string (no regex fallback to ensure exactness)
-            return '';
-        }
+export async function GET(request: Request) {
+    const query = getSearchParam(request);
+    if (!query) {
+        return NextResponse.json(
+            { error: ErrorMessages.INVALID_QUERY },
+            { status: 400 }
+        );
     }
-    return '';
-}
+    const systemPrompt = `Please perform a web search on the today's news in ${query}.
+        Do NOT, explicitly or implicitly, mention particular web-sites in your search.
+        Based on the search results, provide up to 3 previews in English.
+        
+        While performing the task, exactly follow these STRICT RULES:
+        1) The previews must describe unrelated events. "Unrelated" means the events must have different primary subjects or causes. If you end up with a group of related previews, show only one of them.
+        2) The news chosen for previews MUST be published in the last 24 hours. 
+        3) Prioritize national sources and socially impactful news. 
+        4) Return either a JSON object with the key "previews" (an array of up to 3 preview objects) and "error": null, OR return an error object with a single "error" string explaining the issue.
+        5) Each preview object must contain exactly these fields: title, summary, sources, imagePrompt and must be written in English.
+            - title: synthesized (7-12 words). Do NOT include source headlines verbatim; synthesize across multiple results.
+            - summary: synthesized, MAX 360 characters.
+            - sources: array of objects {domain, url}. Every snippet MUST be backed by at least 2 sources on different domains. Within that preview, domains MUST be unique.
+            - imagePrompt: a short descriptive prompt (<= 120 characters) for generating a single illustrative image.
+        6) Do NOT guess or fabricate URLs or domains. Only include URLs/domains that were present in the web_search tool results. If a result URL is inaccessible (404), do NOT include it.
+        7) A single URL/source MUST NOT be used to corroborate more than one preview. Do NOT reuse the same URL to prove multiple news.
+        8) Return at most 3 preview objects in the "previews" array. Do NOT return empty or partial preview objects.
+        9) Never hand back to the user. Your error messages MUST NOT include "you’d like", "I can", "Please", etc. `;
 
-export async function POST(request: Request) {
+    const Preview = z
+        .object({
+            title: z.string(),
+            // Preprocess summary: ensure it's a string and truncate to 360 chars
+            summary: z.preprocess((val) => {
+                const s = val == null ? '' : String(val);
+                return s.length > 360 ? s.slice(0, 360) : s;
+            }, z.string().max(360)),
+            sources: z
+                .array(
+                    z.object({
+                        domain: z.string(),
+                        url: z.string(),
+                    })
+                )
+                .min(1),
+            imagePrompt: z.string(),
+        })
+        .strict();
+
+    const News = z
+        .object({
+            previews: z.array(Preview).max(3),
+            // error may be a string explaining why no results were found, or null
+            error: z.union([z.string(), z.null()]),
+        })
+        .strict();
     try {
-        const { messages } = (await request.json()) as { messages: Message[] };
+        const response = await client.responses.create({
+            model: 'gpt-5-nano',
+            reasoning: { effort: 'low' },
+            tools: [
+                {
+                    type: 'web_search',
+                    user_location: {
+                        type: 'approximate',
+                        region: query,
+                    },
+                },
+            ],
+            input: systemPrompt,
+            text: {
+                format: zodTextFormat(News, 'news'),
+            },
+        });
+        const news = response.output_text;
+        console.log('OpenAI news response:', response.output);
 
-        // If configured, bypass OpenAI and use the mock SERP directly for testing.
-        if (+process.env.NEXT_PUBLIC_NEWS_SEARCH_FAKE_BACKEND === 1) {
-            // extract the last user message as the query
-            const userMsg = Array.isArray(messages)
-                ? messages
-                      .slice()
-                      .reverse()
-                      .find((m) => m.role === 'user')
-                : null;
-            const query =
-                userMsg && typeof userMsg.content === 'string'
-                    ? userMsg.content
-                    : '';
-
-            const functionResult = mockFetchSerp(query || '');
-            const results = Array.isArray(functionResult.results)
-                ? functionResult.results
-                : [];
-
-            // Build up to 3 previews by grouping results two-per-preview where possible
-            type Src = { domain?: string; url?: string };
-            type ParsedPreview = {
-                title?: string;
-                summary?: string;
-                sources?: Src[];
-                url?: string;
-                imagePrompt?: string;
-            };
-            const parsedPreviews: ParsedPreview[] = [];
-            for (let i = 0; i < 3; i++) {
-                const r1 = results[i * 2];
-                const r2 = results[i * 2 + 1];
-                if (!r1) break;
-                const sources: Src[] = [];
-                if (r1) sources.push({ domain: r1.domain, url: r1.url });
-                if (r2) sources.push({ domain: r2.domain, url: r2.url });
-                parsedPreviews.push({
-                    title: r1.title || '',
-                    summary: r1.snippet || '',
-                    sources,
-                    url: r1.url || '',
-                    imagePrompt: r1.title || '',
-                });
-            }
-
-            // validate previews using same logic as normal flow
-            const previewDiagnostics: Array<Record<string, unknown>> = [];
-            const invalid = parsedPreviews.some((p: unknown) => {
-                const item =
-                    p && typeof p === 'object'
-                        ? (p as Record<string, unknown>)
-                        : {};
-                const sources = Array.isArray(item.sources) ? item.sources : [];
-                const domains = (sources as unknown[])
-                    .map((s) => domainFromSource(s))
-                    .filter((d): d is string => d.length > 0);
-                const unique = Array.from(new Set(domains));
-                const title = typeof item.title === 'string' ? item.title : '';
-                previewDiagnostics.push({ title, domains, unique });
-                return unique.length < 2;
-            });
-
-            if (invalid) {
-                const originalQuery = query || 'the locality';
-                const userMessage = `No corroborated events available. All results for ${originalQuery} are mock snippets without concrete event details. Please try again later with real news data.`;
-                return new Response(
-                    JSON.stringify({
-                        error: 'NO_VERIFIED_EVENTS',
-                        userMessage,
-                        details: {
-                            query: originalQuery,
-                            previews: parsedPreviews,
-                            diagnostics: previewDiagnostics,
-                        },
-                    }),
-                    {
-                        status: 400,
-                        headers: { 'Content-Type': 'application/json' },
-                    }
-                );
-            }
-
-            // For each preview, attach an image placeholder
-            const previews = parsedPreviews
-                .slice(0, 3)
-                .map((p: ParsedPreview) => ({
-                    title: p.title || '',
-                    summary: p.summary || '',
-                    sources: Array.isArray(p.sources) ? p.sources : [],
-                    url: p.url || '',
-                    image: placeholderImageForPrompt(),
-                }));
-
-            return new Response(JSON.stringify({ previews }), {
-                headers: { 'Content-Type': 'application/json' },
-            });
+        // Parse the model output as JSON before validating against the News schema
+        let parsedNews: unknown;
+        try {
+            parsedNews = typeof news === 'string' ? JSON.parse(news) : news;
+        } catch (parseErr: unknown) {
+            return NextResponse.json(
+                { error: 'PARSE_ERROR', details: String(parseErr), raw: news },
+                { status: 500 }
+            );
         }
+
+        const validation = News.safeParse(parsedNews);
+        if (!validation.success) {
+            return NextResponse.json(
+                {
+                    error: 'SCHEMA_VALIDATION_ERROR',
+                    details: validation.error.issues,
+                    raw: news,
+                },
+                { status: 500 }
+            );
+        }
+        if (validation.data.error) {
+            // validation.data.error is expected to be a string or null per schema.
+            const errStr =
+                typeof validation.data.error === 'string'
+                    ? validation.data.error
+                    : ErrorMessages.UNEXPECTED_RESPONSE;
+            return NextResponse.json({ error: errStr }, { status: 200 });
+        }
+        // Image generation is handled by the dedicated /api/gen-image route.
+        // The client will request generated images asynchronously after receiving previews.
+
+        const previews = validation.data.previews || [];
+        return NextResponse.json({
+            previews,
+            error: validation.data.error,
+        });
     } catch (err) {
-        console.error('news-search route error:', err);
-        const message = err.message ?? String(err);
-        // Return a minimal standardized internal error code
-        return new Response(
-            JSON.stringify({ error: 'INTERNAL_ERROR', details: message }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+        return NextResponse.json(
+            { error: 'INTERNAL_ERROR', details: err.message ?? String(err) },
+            { status: 500 }
         );
     }
 }
