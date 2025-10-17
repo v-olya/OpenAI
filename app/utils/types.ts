@@ -1,5 +1,5 @@
 import type { ChatCompletionMessage } from 'openai/resources/chat';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export type Message = {
     role: 'user' | 'assistant' | 'system' | 'function';
@@ -43,19 +43,7 @@ export type NewsPreview = {
     imagePrompt: string;
 };
 
-export const ErrorMessages = {
-    LOCATION_NOT_FOUND:
-        "Sorry, I couldn't find that city. Please check the spelling or try another location.",
-    WEATHER_API_ERROR:
-        'Unable to retrieve weather data. Please try again later.',
-    NO_WEATHER_DATA: 'No weather data available for this location.',
-    INVALID_QUERY: 'Query parameter must be a non-empty string.',
-    FUNCTION_PARSE_ERROR:
-        'Failed to parse function arguments or fetch weather.',
-    UNRECOGNIZED_REQUEST: 'Sorry, I could not understand your request.',
-    UNEXPECTED_RESPONSE: 'Unexpected response from server.',
-    TRY_AGAIN: 'An error occurred. Please try again.',
-} as const;
+// Error messages moved to `app/utils/error-messages.ts` to keep this file type-only.
 
 export type ApiErrorResponse = {
     error: string;
@@ -70,9 +58,16 @@ export interface MessageType {
     id?: string;
 }
 
+export type AppendMessage = (
+    role: 'user' | 'assistant',
+    text: string,
+    error?: boolean,
+    id?: string
+) => string | undefined;
+
 // Component prop interfaces
 export interface ChatProps {
-    chatType: 'weather' | 'news' | 'basic';
+    chatType: 'weather' | 'news' | 'basic' | 'coding';
     children?: ReactNode;
     onWeatherUpdate?: (data: WeatherData) => void;
     onNewsResults?: (previews: NewsPreview[] | null) => void;
