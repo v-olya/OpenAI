@@ -40,6 +40,7 @@ export type NewsPreview = {
     sources?: { domain?: string; url?: string }[];
     url: string;
     image: string;
+    imagePrompt: string;
 };
 
 export const ErrorMessages = {
