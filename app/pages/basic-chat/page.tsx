@@ -1,6 +1,6 @@
 import { Chat } from '../../components/chat/chat';
 
-const Home = () => {
+const BasicChat = () => {
     return (
         <main className='container'>
             <Chat chatType='basic' />
@@ -8,4 +8,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default BasicChat;
