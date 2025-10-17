@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getWeather } from '@/utils/weather';
-import { ErrorMessages } from '@/utils/types';
+import { ErrorMessages } from '@/utils/error-messages';
 import { client } from '@/utils/init-client';
 import { getSearchParam } from '@/utils/get-search-param';
 

@@ -1,4 +1,4 @@
-import { ErrorMessages } from '@/utils/types';
+import { ErrorMessages } from '@/utils/error-messages';
 
 export const isNightTime = (hour?: number): boolean => {
     const currentHour = typeof hour === 'number' ? hour : new Date().getHours();

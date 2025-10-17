@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useRef, FormEvent } from 'react';
-import { ChatProps, MessageType, ErrorMessages } from '@/utils/types';
+import { useState, useRef } from 'react';
+import type { FormEvent } from 'react';
+import { ErrorMessages } from '@/utils/error-messages';
+import type { ChatProps, MessageType } from '@/utils/types';
 import { handleNews } from '../components/chat/handlers/news-handler';
 import { handleWeather } from '../components/chat/handlers/weather-handler';
 import { handleBasic } from '../components/chat/handlers/basic-handler';

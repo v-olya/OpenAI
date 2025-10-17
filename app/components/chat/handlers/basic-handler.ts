@@ -1,15 +1,9 @@
-import { ErrorMessages, MessageType } from '@/utils/types';
+import { ErrorMessages } from '@/utils/error-messages';
+import type { MessageType, AppendMessage } from '@/utils/types';
 type StreamMessage = {
     type: 'content' | 'error';
     content: string;
 };
-
-type AppendMessage = (
-    role: 'user' | 'assistant',
-    text: string,
-    error?: boolean,
-    id?: string
-) => string | undefined;
 
 type SetMessages = (updater: (prev: MessageType[]) => MessageType[]) => void;
 

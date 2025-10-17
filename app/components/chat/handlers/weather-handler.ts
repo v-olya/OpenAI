@@ -1,12 +1,6 @@
 import { getResponseError } from '@/utils/get-response-error';
-import { ErrorMessages, WeatherData } from '@/utils/types';
-
-type AppendMessage = (
-    role: 'user' | 'assistant',
-    text: string,
-    error?: boolean,
-    id?: string
-) => string | undefined;
+import { ErrorMessages } from '@/utils/error-messages';
+import type { WeatherData, AppendMessage } from '@/utils/types';
 
 type OnWeatherUpdate = ((update: Partial<WeatherData>) => void) | undefined;
 

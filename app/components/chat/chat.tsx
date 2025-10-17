@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import styles from './chat.module.scss';
-import { ChatProps } from '@/utils/types';
+import type { ChatProps } from '@/utils/types';
 import { ChatLayout } from './chat-layout';
 import { useChat } from '@/hooks/useChat';
 

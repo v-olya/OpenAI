@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import styles from './page.module.scss';
 import { Chat } from '../../components/chat/chat';
-import { NewsPreview } from '@/utils/types';
+import type { NewsPreview } from '@/utils/types';
 import Image from 'next/image';
 import Panel from '../../components/left-panel/panel';
 

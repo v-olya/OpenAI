@@ -1,6 +1,6 @@
 import styles from './weather-widget.module.scss';
 import Image from 'next/image';
-import { WeatherWidgetProps } from '@/utils/types';
+import type { WeatherWidgetProps } from '@/utils/types';
 import {
     weatherCodeMap,
     formatLocalTime,

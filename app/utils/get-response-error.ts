@@ -1,4 +1,4 @@
-import { ErrorMessages } from './types';
+import { ErrorMessages } from './error-messages';
 
 export async function getResponseError(res: Response): Promise<string> {
     try {

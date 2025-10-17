@@ -1,12 +1,6 @@
 import { getResponseError } from '@/utils/get-response-error';
-import { ErrorMessages } from '@/utils/types';
-
-type AppendMessage = (
-    role: 'user' | 'assistant',
-    text: string,
-    error?: boolean,
-    id?: string
-) => string | undefined;
+import { ErrorMessages } from '@/utils/error-messages';
+import type { AppendMessage } from '@/utils/types';
 
 type OnNewsResults = ((previews: any[] | null) => void) | undefined;
 
