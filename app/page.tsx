@@ -4,13 +4,13 @@ const Home = () => {
     const categories = [
         { url: 'basic-chat', title: 'Basic Chat' },
         { url: 'weather', title: 'Weather Widget' },
-        { url: 'news-search', title: 'Today in News' },
-        { url: 'coding', title: 'Coding Tool' },
+        { url: 'news-search', title: 'Today in the World' },
+        { url: 'coding', title: 'Code & File Analysis' },
     ];
 
     return (
         <main className={styles.main}>
-            <h2>Examples of OpenAI and GenAI API usage</h2>
+            <h2>Examples of the OpenAI and GenAI APIs usage</h2>
             <div className='container home'>
                 {categories.map(({ url, title }) => (
                     <a
