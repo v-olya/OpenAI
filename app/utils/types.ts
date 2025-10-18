@@ -71,7 +71,6 @@ export interface ChatProps {
     children?: ReactNode;
     onWeatherUpdate?: OnWeatherUpdate;
     onNewsResults?: OnNewsResults;
-    onFinishCoding?: OnFinishCoding;
     /** current previews from parent (optional) so Chat can react when previews are cleared */
     newsPreviews?: NewsPreview[] | null;
 }
@@ -88,8 +87,6 @@ export type StreamMessage = {
 export type SetMessages = (
     updater: (prev: MessageType[]) => MessageType[]
 ) => void;
-
-export type OnFinishCoding = ((result: unknown) => void) | undefined; // TODO specify type
 
 export type OnNewsResults =
     | ((previews: NewsPreview[] | null) => void)
