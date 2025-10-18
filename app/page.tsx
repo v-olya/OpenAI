@@ -5,11 +5,12 @@ const Home = () => {
         { url: 'basic-chat', title: 'Basic Chat' },
         { url: 'weather', title: 'Weather Widget' },
         { url: 'news-search', title: 'Today in News' },
+        { url: 'coding', title: 'Coding Tool' },
     ];
 
     return (
         <main className={styles.main}>
-            <h2>Example of an app built with OpenAI API</h2>
+            <h2>Examples of OpenAI and GenAI API usage</h2>
             <div className='container home'>
                 {categories.map(({ url, title }) => (
                     <a
