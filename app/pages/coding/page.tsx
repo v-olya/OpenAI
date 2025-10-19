@@ -8,7 +8,7 @@ const Coding = () => {
             <Panel>
                 <h2>Analyze files and write code with AI</h2>
                 <br />
-                <PresetList />
+                <PresetList type='coding' />
                 <br />
                 <p className='emphasis'>or anything else...</p>
             </Panel>
