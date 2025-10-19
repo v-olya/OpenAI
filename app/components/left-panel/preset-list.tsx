@@ -5,14 +5,7 @@ import chatStyles from '../chat/chat.module.scss';
 
 export default function PresetList({ type }: { type: 'weather' | 'coding' }) {
     const handleClick = (p: { text: string; code?: string; file?: string }) => {
-        // Dispatch a custom event that client components (like Chat) can listen to
-        try {
-            window.dispatchEvent(
-                new CustomEvent('openai:preset', { detail: p })
-            );
-        } catch (e) {
-            console.warn('Could not dispatch preset event', e);
-        }
+        window.dispatchEvent(new CustomEvent('openai:preset', { detail: p }));
     };
 
     return (

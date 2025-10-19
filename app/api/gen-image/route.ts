@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const prompt = body.prompt;
         if (!prompt || typeof prompt !== 'string') {
-            console.error('gen-image: invalid request', { body });
+            console.error('Gen-image faild', { body });
         }
 
         const response = await googleGenAI.models.generateContent({
@@ -73,8 +73,7 @@ export async function POST(request: Request) {
                         Buffer.from(imageData, 'base64')
                     );
                 } catch (e) {
-                    // ignore file write errors; still return the data URL
-                    console.error('gen-image: write failed', e);
+                    console.error('Gen-image failed', e);
                 }
 
                 return NextResponse.json({ image: dataUrl });

@@ -48,12 +48,8 @@ export const useChat = (
     ) => {
         const shouldClear = filesHaveChanged(newFiles, previousMeta);
         if (shouldClear) {
-            if (previousIds.length > 0) {
-                try {
-                    await cleanupUploadedFileIds(previousIds);
-                } catch (err) {
-                    console.warn('cleanup failed', err);
-                }
+            if (previousIds.length) {
+                await cleanupUploadedFileIds(previousIds);
             }
             uploadedFileIdsRef.current = undefined;
             uploadedFileMetaRef.current = undefined;
@@ -196,13 +192,13 @@ export const useChat = (
                 throw new Error(await resp.text());
             }
             console.log(
-                'cleanupUploadedFileIds: status',
+                'CleanupUploaded:',
                 resp.status,
-                'deleting files',
+                'deleting files:',
                 ids
             );
         } catch (err) {
-            console.warn('Failed to cleanup uploaded files', err);
+            console.log('Failed to cleanup uploaded files', err);
         }
     };
 
@@ -215,18 +211,8 @@ export const useChat = (
 
             const payload = JSON.stringify({ fileIds: ids });
             const blob = new Blob([payload], { type: 'application/json' });
-            try {
-                // This is a fire-and-forget request to clean up files when the user navigates away.
-                const ok = navigator.sendBeacon('/api/coding/cleanup', blob);
-                console.log(
-                    'pageHide: sendBeacon for file cleanup:',
-                    ok,
-                    'fileIds:',
-                    ids
-                );
-            } catch (err) {
-                console.warn('pageHide: sendBeacon error:', err);
-            }
+            // Fire-and-forget clean up request.
+            navigator.sendBeacon('/api/coding/cleanup', blob);
         };
 
         const onPageHide = () => sendBeaconIfNeeded();

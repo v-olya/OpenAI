@@ -37,7 +37,7 @@ export const handleCoding = async (
             } finally {
                 appendMessage(
                     'assistant',
-                    String(errBody.error ?? '') || ErrorMessages.TRY_AGAIN,
+                    String(errBody?.error ?? '') || ErrorMessages.TRY_AGAIN,
                     true
                 );
                 if (errBody) {
@@ -47,16 +47,11 @@ export const handleCoding = async (
                     } as any;
                 }
             }
-            return null;
+            return;
         }
         try {
             const data = await response.json();
-            console.log('response', response);
-            if (!data) {
-                throw new Error();
-            }
-
-            if (typeof data.output === 'string') {
+            if (typeof data?.output === 'string') {
                 appendMessage('assistant', data.output);
             }
             // Return uploaded file ids and containerId so the client can reuse them
@@ -65,11 +60,9 @@ export const handleCoding = async (
                 containerId: data.containerId,
             } as any;
         } catch (err) {
-            console.error('Failed to parse /api/coding response JSON', err);
-            return null;
+            console.error('Failed to get JSON from /api/coding response', err);
         }
-    } catch (err) {
-        console.error('Error in handleCoding:', err);
+    } catch {
         appendMessage('assistant', ErrorMessages.TRY_AGAIN, true);
     }
 };

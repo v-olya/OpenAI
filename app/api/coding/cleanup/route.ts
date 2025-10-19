@@ -41,7 +41,7 @@ export async function POST(request: Request) {
                     throw new Error(await res.text());
                 }
             } catch (err) {
-                console.warn('Failed to delete file', id, err);
+                console.error('Failed to delete file', id, err);
             }
         }
 
