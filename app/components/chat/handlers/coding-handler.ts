@@ -54,6 +54,23 @@ export const handleCoding = async (
             if (typeof data?.output === 'string') {
                 appendMessage('assistant', data.output);
             }
+
+            // If containerFiles are present, append an assistant message with links to download them.
+            if (
+                Array.isArray(data?.containerFiles) &&
+                data.containerFiles.length
+            ) {
+                try {
+                    const payload = JSON.stringify(data.containerFiles);
+                    appendMessage(
+                        'assistant',
+                        `__MAIN_LINK_MESSAGE__${payload}`
+                    );
+                } catch (e) {
+                    console.warn('Failed to serialize containerFiles', e);
+                }
+            }
+
             // Return uploaded file ids and containerId so the client can reuse them
             return {
                 uploadedFileIds: data.uploadedFileIds,

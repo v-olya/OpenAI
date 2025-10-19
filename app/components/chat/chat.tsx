@@ -44,6 +44,51 @@ export function Chat({
     const messagesContent = (
         <>
             {messages.map((msg, index) => {
+                // Detect the special main message with links to download (if present).
+                if (
+                    msg.role === 'assistant' &&
+                    typeof msg.text === 'string' &&
+                    msg.text.startsWith('__MAIN_LINK_MESSAGE__')
+                ) {
+                    const json = msg.text.replace('__MAIN_LINK_MESSAGE__', '');
+                    let files: { filename: string; download: string }[] = [];
+                    try {
+                        const parsed = JSON.parse(json) as any[];
+                        files = parsed.map((f) => ({
+                            filename: f.filename,
+                            download: f.download,
+                        }));
+                    } catch {
+                        files = [];
+                    }
+                    return (
+                        <div
+                            key={msg.id ?? `assistant-main-links-${index}`}
+                            className={styles['assistant-message']}
+                        >
+                            <div className={styles['main-link-message']}>
+                                <div className={styles['main-link-title']}>
+                                    Download files
+                                </div>
+                                <ul>
+                                    {files.map((f) => (
+                                        <li key={f.download}>
+                                            <a
+                                                href={f.download}
+                                                download={f.filename}
+                                                target='_blank'
+                                                rel='noreferrer'
+                                            >
+                                                {f.filename}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    );
+                }
+
                 const baseClass =
                     msg.role === 'user'
                         ? styles['user-message']

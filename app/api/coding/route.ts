@@ -1,6 +1,8 @@
 import { client } from '@/utils/init-client';
 import { NextResponse } from 'next/server';
-
+const FILES_URL = 'https://api.openai.com/v1/files';
+const getContainerFilesURL = (containerId: string) =>
+    `https://api.openai.com/v1/containers/${containerId}/files`;
 export async function POST(request: Request) {
     const uploadedToContainer: string[] = [];
     let containerId: string | undefined = undefined;
@@ -24,19 +26,21 @@ export async function POST(request: Request) {
             containerId = container.id;
         }
 
-        // Existing file IDs that the client wants to reuse
-        const existing = formData.get('existingFileIds') as string | null;
+        const existing = formData.get('existingFileIds');
         let existingFileIds: string[] = [];
         try {
-            existingFileIds = JSON.parse(existing) as string[];
+            if (typeof existing === 'string' && existing?.trim().length) {
+                const parsed = JSON.parse(existing);
+                if (Array.isArray(parsed)) existingFileIds = parsed as string[];
+            }
         } catch {
             existingFileIds = [];
         }
 
-        const sentByClient = formData.getAll('uploaded');
+        const sentByClient = formData.getAll('uploaded') ?? [];
         const apiKey = process.env.OPENAI_API_KEY;
 
-        if (sentByClient.length) {
+        if (sentByClient?.length) {
             for (const entry of sentByClient) {
                 if (!(entry instanceof File)) continue;
                 const file = entry as File;
@@ -45,16 +49,13 @@ export async function POST(request: Request) {
                     body.append('file', file, file.name);
                     body.append('purpose', 'user_data');
 
-                    const uploadRes = await fetch(
-                        `https://api.openai.com/v1/files`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                Authorization: `Bearer ${apiKey}`,
-                            },
-                            body,
-                        }
-                    );
+                    const uploadRes = await fetch(FILES_URL, {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${apiKey}`,
+                        },
+                        body,
+                    });
 
                     const uploadJson = await uploadRes.json();
                     if (!uploadRes.ok) {
@@ -110,8 +111,10 @@ export async function POST(request: Request) {
                     content: [
                         {
                             type: 'input_text' as const,
-                            text: `Do NOT include any file URLs, local filesystem paths, container identifiers, or sandbox links in the output_text, let it live in annotations that will be processed by the server.
-                            Examples of forbidden content: sandbox:/..., /mnt/..., file://..., container:..., cntr_... , or markdown links whose hrefs point to such paths.`,
+                            text: `Do NOT include any file URLs, local filesystem paths, container identifiers, or sandbox links in the output_text: all that stuff will be processed separately.
+                            Examples of forbidden content: sandbox:/..., /mnt/..., file://..., container:..., cntr_... , or markdown links whose hrefs point to such paths.
+                            Prefer to save the result as a container file rather than simply write the code to the output text.
+                            But in any case, in the output_text, you should provide human-readable explanation of what was done.`,
                         },
                     ],
                 },
@@ -124,6 +127,42 @@ export async function POST(request: Request) {
 
         console.log('Responses result:', containerId, resp.status);
 
+        // Fetch list of files in the container and pick non-user sources
+        let containerFiles: {
+            file_id: string;
+            container_id: string;
+            filename: string;
+        }[] = [];
+        try {
+            const filesRes = await fetch(getContainerFilesURL(containerId!), {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                },
+            });
+
+            const filesJson = await filesRes.json();
+            containerFiles = Array.isArray(filesJson?.data)
+                ? filesJson.data
+                      .filter((f: any) => f?.source !== 'user')
+                      .map((f: any) => ({
+                          file_id: f.id,
+                          container_id: f.container_id ?? containerId,
+                          filename: f.path?.split('/').pop() ?? f.id,
+                          download: `/api/coding/file?containerId=${encodeURIComponent(
+                              f.container_id ?? containerId!
+                          )}&fileId=${encodeURIComponent(f.id)}`,
+                      }))
+                : [];
+
+            console.log('Container files:', containerFiles);
+        } catch (err) {
+            console.error('Failed to list container files', err);
+        }
+
+        /**  It turned out that the code_interpreter does not always include file citations in the response.
+            So we've implemented more reliable way to bring the newly created files to the client.
+     
         const citations: {
             file_id: string;
             container_id?: string;
@@ -161,12 +200,15 @@ export async function POST(request: Request) {
             console.error('Failed to extract file paths from response');
         }
         console.log('Citations extracted:', citations);
+        **/
 
         return NextResponse.json({
             status: 'ok',
             uploadedFileIds: uploadedToContainer,
             output: resp.output_text,
             containerId,
+            // All non-user container files (download URL is included on each item)
+            containerFiles,
         });
     } catch (err: any) {
         const message = err?.message ?? String(err);

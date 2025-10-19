@@ -19,16 +19,21 @@ export const useChat = (
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // A helper function to determine if the files have changed between submissions
-    const filesHaveChanged = (
+    const uploadHasBeenChanged = (
         newFiles: File[] | undefined,
-        previousMeta: { name: string; size: number; lastModified: number }[]
+        previousMeta?:
+            | { name: string; size: number; lastModified: number }[]
+            | null
     ) => {
-        if (newFiles?.length !== previousMeta.length) {
+        const prevLen = previousMeta?.length ?? 0;
+        const newLen = newFiles?.length ?? 0;
+
+        if (newLen !== prevLen) {
             return true;
         }
-        if (newFiles?.length) {
+        if (newLen > 0 && newFiles) {
             return newFiles.some((file, idx) => {
-                const prev = previousMeta[idx];
+                const prev = previousMeta?.[idx];
                 return (
                     !prev ||
                     prev.name !== file.name ||
@@ -37,7 +42,7 @@ export const useChat = (
                 );
             });
         }
-        return previousMeta.length > 0;
+        return prevLen > 0;
     };
 
     // A helper function to clean up the session state when files change
@@ -46,7 +51,7 @@ export const useChat = (
         previousIds: string[],
         previousMeta: { name: string; size: number; lastModified: number }[]
     ) => {
-        const shouldClear = filesHaveChanged(newFiles, previousMeta);
+        const shouldClear = uploadHasBeenChanged(newFiles, previousMeta);
         if (shouldClear) {
             if (previousIds.length) {
                 await cleanupUploadedFileIds(previousIds);
@@ -70,7 +75,27 @@ export const useChat = (
         id?: string
     ) => {
         const message = { role, text, error, id } as MessageType;
-        setMessages((prev) => [...prev, message]);
+        // If this is a main-link-message, remove any previous main-link messages and keep the latest one in chat.
+        const MAIN_LINK_MARKER = '__MAIN_LINK_MESSAGE__';
+        if (
+            role === 'assistant' &&
+            typeof text === 'string' &&
+            text.startsWith(MAIN_LINK_MARKER)
+        ) {
+            setMessages((prev) => [
+                ...prev.filter(
+                    (m) =>
+                        !(
+                            m.role === 'assistant' &&
+                            typeof m.text === 'string' &&
+                            m.text.startsWith(MAIN_LINK_MARKER)
+                        )
+                ),
+                message,
+            ]);
+        } else {
+            setMessages((prev) => [...prev, message]);
+        }
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         return id || message.id;
     };
@@ -237,6 +262,7 @@ export const useChat = (
 
         // Clear UI state for the new preset
         fileRowRef?.setFiles(undefined);
+        setMessages([]);
 
         const composed = `${detail.text}${detail.code || ''}`.trim();
         setUserInput('');
