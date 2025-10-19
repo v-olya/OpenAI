@@ -11,11 +11,7 @@ export async function POST(request: Request) {
         }
         const formData = await request.formData();
 
-        const inputValue = formData.get('input');
-        const input = typeof inputValue === 'string' ? inputValue : '';
-        if (!input) {
-            throw new Error('Input field is required.');
-        }
+        const input = (formData.get('input') as string) ?? '';
 
         // Support reusing an existing container for the session.
         const providedContainerId = formData.get('containerId');
@@ -29,20 +25,18 @@ export async function POST(request: Request) {
         }
 
         // Existing file IDs that the client wants to reuse
-        const existing = formData.get('existingFileIds');
+        const existing = formData.get('existingFileIds') as string | null;
         let existingFileIds: string[] = [];
-        if (typeof existing === 'string') {
-            try {
-                existingFileIds = JSON.parse(existing) as string[];
-            } catch {
-                existingFileIds = [];
-            }
+        try {
+            existingFileIds = JSON.parse(existing) as string[];
+        } catch {
+            existingFileIds = [];
         }
 
         const sentByClient = formData.getAll('uploaded');
         const apiKey = process.env.OPENAI_API_KEY;
 
-        if (sentByClient.length > 0) {
+        if (sentByClient.length) {
             for (const entry of sentByClient) {
                 if (!(entry instanceof File)) continue;
                 const file = entry as File;
@@ -84,7 +78,6 @@ export async function POST(request: Request) {
 
         // If the client uploaded files in this request, do NOT include previous existingFileIds
         const includeExisting = !sentByClient.length && existingFileIds.length;
-
         const contentItems = [
             { type: 'input_text' as const, text: input },
             // Include existing file ids when no fresh uploads are present in this request
@@ -102,31 +95,72 @@ export async function POST(request: Request) {
         ];
 
         let resp: any = null;
-        try {
-            resp = await client.responses.create({
-                model: 'gpt-5-mini',
-                tools: [
-                    {
-                        type: 'code_interpreter',
-                        container: containerId,
-                    },
-                ],
-                tool_choice: 'required',
-                input: [
-                    {
-                        role: 'user',
-                        content: contentItems,
-                    },
-                ],
-            });
+        resp = await client.responses.create({
+            model: 'gpt-5-mini',
+            tools: [
+                {
+                    type: 'code_interpreter',
+                    container: containerId,
+                },
+            ],
+            tool_choice: 'required',
+            input: [
+                {
+                    role: 'system',
+                    content: [
+                        {
+                            type: 'input_text' as const,
+                            text: `Do NOT include any file URLs, local filesystem paths, container identifiers, or sandbox links in the output_text, let it live in annotations that will be processed by the server.
+                            Examples of forbidden content: sandbox:/..., /mnt/..., file://..., container:..., cntr_... , or markdown links whose hrefs point to such paths.`,
+                        },
+                    ],
+                },
+                {
+                    role: 'user',
+                    content: contentItems,
+                },
+            ],
+        });
 
-            console.log('Responses result', {
-                container: containerId,
-                respPreview: resp?.output_text ?? resp?.output ?? null,
-            });
-        } catch (err) {
-            throw err;
+        console.log('Responses result:', containerId, resp.status);
+
+        const citations: {
+            file_id: string;
+            container_id?: string;
+            ext: string;
+        }[] = [];
+        const seen = new Set<string>();
+        const out = Array.isArray(resp?.output) ? resp.output : [resp.output];
+        console.log(out);
+        try {
+            for (const block of out) {
+                if (!Array.isArray(block?.content)) {
+                    continue;
+                }
+                for (const item of block.content) {
+                    for (const a of item.annotations) {
+                        if (a?.type !== 'container_file_citation') {
+                            continue;
+                        }
+                        if (!a.file_id || typeof a.file_id !== 'string') {
+                            continue;
+                        }
+                        const key = `${a.container_id || ''}::${a.file_id}`;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            citations.push({
+                                file_id: a.file_id,
+                                container_id: a.container_id,
+                                ext: a.filename?.split('.').pop() ?? 'txt',
+                            });
+                        }
+                    }
+                }
+            }
+        } catch {
+            console.error('Failed to extract file paths from response');
         }
+        console.log('Citations extracted:', citations);
 
         return NextResponse.json({
             status: 'ok',
@@ -136,11 +170,10 @@ export async function POST(request: Request) {
         });
     } catch (err: any) {
         const message = err?.message ?? String(err);
-        console.error('In /api/coding: ', message, err);
         return NextResponse.json(
             {
                 status: 'error',
-                message,
+                error: message,
                 uploadedFileIds: uploadedToContainer ?? [],
                 // Return the containerId if it was created earlier in this request
                 containerId: containerId ?? undefined,
