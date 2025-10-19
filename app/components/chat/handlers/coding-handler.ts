@@ -4,11 +4,19 @@ import type { AppendMessage } from '@/utils/types';
 export const handleCoding = async (
     input: string,
     appendMessage: AppendMessage,
-    uploadedFiles?: File[]
+    uploadedFiles?: File[],
+    existingFileIds?: string[] | undefined,
+    containerId?: string | undefined
 ) => {
     try {
         const form = new FormData();
         form.append('input', input);
+        if (existingFileIds?.length) {
+            form.append('existingFileIds', JSON.stringify(existingFileIds));
+        }
+        if (containerId) {
+            form.append('containerId', containerId);
+        }
         if (uploadedFiles?.length) {
             for (const file of uploadedFiles) {
                 form.append('uploaded', file);
@@ -32,8 +40,11 @@ export const handleCoding = async (
                     String(errBody.error ?? '') || ErrorMessages.TRY_AGAIN,
                     true
                 );
-                if (errBody?.uploadedFileIds) {
-                    return errBody.uploadedFileIds;
+                if (errBody) {
+                    return {
+                        uploadedFileIds: errBody.uploadedFileIds,
+                        containerId: errBody.containerId,
+                    } as any;
                 }
             }
             return null;
@@ -48,8 +59,11 @@ export const handleCoding = async (
             if (typeof data.output === 'string') {
                 appendMessage('assistant', data.output);
             }
-            // Send uploaded file ids for cleanup
-            return data.uploadedFileIds;
+            // Return uploaded file ids and containerId so the client can reuse them
+            return {
+                uploadedFileIds: data.uploadedFileIds,
+                containerId: data.containerId,
+            } as any;
         } catch (err) {
             console.error('Failed to parse /api/coding response JSON', err);
             return null;

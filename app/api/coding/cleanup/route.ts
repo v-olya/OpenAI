@@ -17,7 +17,9 @@ export async function POST(request: Request) {
             }
         }
 
-        const { fileIds } = body as { fileIds?: string[] };
+        const { fileIds } = body as {
+            fileIds?: string[];
+        };
         const apiKey = process.env.OPENAI_API_KEY;
         if (!fileIds || !fileIds.length) {
             return NextResponse.json({ status: 'ok', deleted: [] });
@@ -36,18 +38,14 @@ export async function POST(request: Request) {
                 if (res.ok) {
                     deleted.push(id);
                 } else {
-                    const errText = await res.text();
-                    console.warn(
-                        'Failed to delete file',
-                        id,
-                        res.status,
-                        errText
-                    );
+                    throw new Error(await res.text());
                 }
             } catch (err) {
                 console.warn('Failed to delete file', id, err);
             }
         }
+
+        console.log('/api/coding/cleanup: Deleted ', deleted);
 
         return NextResponse.json({ status: 'ok', deleted });
     } catch (err: any) {

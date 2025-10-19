@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
     const uploadedToContainer: string[] = [];
+    let containerId: string | undefined = undefined;
     try {
         const contentType = request.headers.get('content-type') || '';
         if (!contentType.includes('multipart/form-data')) {
@@ -15,7 +16,28 @@ export async function POST(request: Request) {
         if (!input) {
             throw new Error('Input field is required.');
         }
-        const container = await client.containers.create({ name: 'coding' });
+
+        // Support reusing an existing container for the session.
+        const providedContainerId = formData.get('containerId');
+        containerId =
+            typeof providedContainerId === 'string' && providedContainerId;
+        if (!containerId) {
+            const container = await client.containers.create({
+                name: 'coding',
+            });
+            containerId = container.id;
+        }
+
+        // Existing file IDs that the client wants to reuse
+        const existing = formData.get('existingFileIds');
+        let existingFileIds: string[] = [];
+        if (typeof existing === 'string') {
+            try {
+                existingFileIds = JSON.parse(existing) as string[];
+            } catch {
+                existingFileIds = [];
+            }
+        }
 
         const sentByClient = formData.getAll('uploaded');
         const apiKey = process.env.OPENAI_API_KEY;
@@ -49,8 +71,7 @@ export async function POST(request: Request) {
                     } else {
                         if (uploadJson.id) {
                             console.log(
-                                `Uploaded file to the container ${container.id}, file id: ${uploadJson.id}`,
-                                uploadJson
+                                `Uploaded file to the container ${containerId}, file id: ${uploadJson.id}`
                             );
                             uploadedToContainer.push(uploadJson.id);
                         }
@@ -61,14 +82,23 @@ export async function POST(request: Request) {
             }
         }
 
+        // If the client uploaded files in this request, do NOT include previous existingFileIds
+        const includeExisting = !sentByClient.length && existingFileIds.length;
+
         const contentItems = [
             { type: 'input_text' as const, text: input },
-            ...uploadedToContainer.map((file_id: string) => {
-                return {
-                    type: 'input_file' as const,
-                    file_id,
-                };
-            }),
+            // Include existing file ids when no fresh uploads are present in this request
+            ...(includeExisting
+                ? existingFileIds.map((file_id: string) => ({
+                      type: 'input_file' as const,
+                      file_id,
+                  }))
+                : []),
+            // Include newly uploaded files
+            ...uploadedToContainer.map((file_id: string) => ({
+                type: 'input_file' as const,
+                file_id,
+            })),
         ];
 
         let resp: any = null;
@@ -78,7 +108,7 @@ export async function POST(request: Request) {
                 tools: [
                     {
                         type: 'code_interpreter',
-                        container: container.id,
+                        container: containerId,
                     },
                 ],
                 tool_choice: 'required',
@@ -91,7 +121,7 @@ export async function POST(request: Request) {
             });
 
             console.log('Responses result', {
-                container: container.id,
+                container: containerId,
                 respPreview: resp?.output_text ?? resp?.output ?? null,
             });
         } catch (err) {
@@ -102,6 +132,7 @@ export async function POST(request: Request) {
             status: 'ok',
             uploadedFileIds: uploadedToContainer,
             output: resp.output_text,
+            containerId,
         });
     } catch (err: any) {
         const message = err?.message ?? String(err);
@@ -111,6 +142,8 @@ export async function POST(request: Request) {
                 status: 'error',
                 message,
                 uploadedFileIds: uploadedToContainer ?? [],
+                // Return the containerId if it was created earlier in this request
+                containerId: containerId ?? undefined,
             },
             { status: 500 }
         );

@@ -5,7 +5,7 @@ import styles from './chat.module.scss';
 import type { ChatProps } from '@/utils/types';
 import { ChatLayout } from './chat-layout';
 import { useChat } from '@/hooks/useChat';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import type { FileRowHandle } from './file-row';
 
 const FileRow = dynamic(() => import('./file-row'), { ssr: false }) as any;
@@ -17,6 +17,8 @@ export function Chat({
     newsPreviews,
     children,
 }: ChatProps) {
+    const fileRowRef = useRef<FileRowHandle | null>(null);
+
     const {
         messages,
         userInput,
@@ -24,30 +26,20 @@ export function Chat({
         messagesEndRef,
         setUserInput,
         handleSubmit,
-        runPreset,
-    } = useChat({
-        chatType,
-        onWeatherUpdate,
-        onNewsResults,
-        newsPreviews,
-    });
-
-    const fileRowRef = useRef<FileRowHandle | null>(null);
-
-    useEffect(() => {
-        const handler = (e: Event) => {
-            const detail = (e as CustomEvent<{ text: string; file?: string }>)
-                .detail;
-            void runPreset(detail, fileRowRef.current ?? null);
-        };
-
-        window.addEventListener('openai:preset', handler as EventListener);
-        return () =>
-            window.removeEventListener(
-                'openai:preset',
-                handler as EventListener
-            );
-    }, [runPreset]);
+    } = useChat(
+        {
+            chatType,
+            onWeatherUpdate,
+            onNewsResults,
+            newsPreviews,
+        },
+        {
+            fileRowRef: {
+                setFiles: (files?: File[]) =>
+                    fileRowRef.current?.setFiles?.(files),
+            },
+        }
+    );
 
     const messagesContent = (
         <>
@@ -100,7 +92,9 @@ export function Chat({
                 />
             </form>
 
-            {chatType === 'coding' && <FileRow ref={fileRowRef} />}
+            {chatType === 'coding' && (
+                <FileRow ref={fileRowRef} disabled={isProcessing} />
+            )}
         </>
     );
 
