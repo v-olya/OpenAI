@@ -1,12 +1,11 @@
 $space-20: 20px;
+$space-16: 16px;
 $space-12: 12px;
+$space-8: 8px;
 $surface-shadow: 0 4px var(--space-16) rgb(0 0 0 / 10%);
 $surface-hover-shadow: 0 6px var(--space-20) rgb(0 0 0 / 15%);
 $font-stack: -apple-system, blinkmacsystemfont, 'Segoe UI', 'Roboto', 'Oxygen',
     sans-serif;
-$white: #fff;
-$space-16: 16px;
-$space-8: 8px;
 $max-width: 760px;
 
 @mixin surface($bg: null, $radius: $space-20) {
