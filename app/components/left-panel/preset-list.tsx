@@ -3,7 +3,7 @@
 import styles from '../../pages/coding/page.module.scss';
 import chatStyles from '../chat/chat.module.scss';
 
-export default function PresetList() {
+export default function PresetList({ type }: { type: 'weather' | 'coding' }) {
     const handleClick = (p: { text: string; code?: string; file?: string }) => {
         // Dispatch a custom event that client components (like Chat) can listen to
         try {
@@ -17,7 +17,7 @@ export default function PresetList() {
 
     return (
         <div className={styles.presets}>
-            {PRESETS.map((p, i) => (
+            {PRESETS[type].map((p, i) => (
                 <button
                     key={`preset-${i}`}
                     type='button'
@@ -32,18 +32,29 @@ export default function PresetList() {
 }
 // Code interpreter with Responses API currently rejects .py files,
 // so pass the contents of /examples .py files as code: "string".
-const PRESETS = [
-    {
-        text: 'Convert PDF to SVG',
-        file: 'doc.pdf',
-    },
-    {
-        text: 'Summarize in a few sentences',
-        file: 'letter.pdf',
-    },
-    {
-        text: 'Refactor the function for readability',
-        code: `
+
+const PRESETS = {
+    weather: [
+        {
+            text: 'Is London gloomy again?',
+        },
+        {
+            text: 'Now in Tokyo...',
+        },
+        { text: "Why don't I take a trip to Hawaii?" },
+    ],
+    coding: [
+        {
+            text: 'Convert PDF to SVG',
+            file: 'doc.pdf',
+        },
+        {
+            text: 'Summarize in a few sentences',
+            file: 'letter.pdf',
+        },
+        {
+            text: 'Refactor the function for readability',
+            code: `
         def compute(values):
             s = 0
             c = 0
@@ -55,14 +66,14 @@ const PRESETS = [
 
         if __name__ == '__main__':
             print(compute([1,2,-3,4]))`,
-    },
-    {
-        text: 'Draw a diagram of sales by year',
-        file: 'sales.csv',
-    },
-    {
-        text: 'Create a test file for edge cases',
-        code: `
+        },
+        {
+            text: 'Draw a diagram of sales by year',
+            file: 'sales.csv',
+        },
+        {
+            text: 'Create a test file for edge cases',
+            code: `
         from typing import Optional, Tuple
 
         def safe_divide(a, b) -> Optional[float]:
@@ -121,5 +132,6 @@ const PRESETS = [
             print(safe_divide(1, 0))
             print(parse_year_month('2023.06'))
         `,
-    },
-];
+        },
+    ],
+};
