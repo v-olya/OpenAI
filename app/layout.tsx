@@ -3,7 +3,7 @@ import './styles/globals.scss';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-    title: 'OpenAI API Consumer',
+    title: 'AI API Consumer',
     description:
         'A demo showcasing the OpenAI API capabilities including agentic tasks, web search, image creation, function calling, etc.',
     icons: {
