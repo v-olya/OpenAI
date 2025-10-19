@@ -7,21 +7,22 @@ import {
     getWeatherIconName,
 } from '@/utils/weather';
 import Panel from '../left-panel/panel';
+import PresetList from '../left-panel/preset-list';
 
 const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     if (!weather) {
         return (
             <Panel>
                 <h2>Enter a city</h2>
-                <p>to see the local weather:</p>
+                <p>
+                    to get the local weather
+                    <br />
+                    <br />
+                </p>
+                <PresetList type='weather' />
                 <p>
                     <br />
-                    &quot;What&apos;s the weather like in London?&quot;,
-                    <br />
-                    <br />
-                    &quot;Now in London&quot;,
-                    <br />
-                    <br /> or something else...
+                    or anything else...
                 </p>
             </Panel>
         );
@@ -45,7 +46,7 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
     return (
         <Panel>
             <h2>{weather.location || 'Unknown location'}</h2>
-            <div className={styles['weather-widget-local-time']}>
+            <div className={styles['weather-local-time']}>
                 <span>Local time:</span>{' '}
                 {weather.timezone
                     ? formatLocalTime(undefined, {
@@ -56,22 +57,18 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
             {typeof weather.temperature === 'number' && (
                 <h3 className='emphasis'>{weather.temperature}°C</h3>
             )}
-            <div className={styles['weather-widget-icon-container']}>
-                <div className={styles['weather-widget-icon-wrapper']}>
-                    <Image
-                        src={`/weather-icons/${iconName}.svg`}
-                        alt={
-                            conditions ||
-                            (iconName === 'cloudy'
-                                ? 'Cloudy'
-                                : 'Unknown weather')
-                        }
-                        width={64}
-                        height={64}
-                    />
-                </div>
-            </div>
-            <div className={styles['weather-widget-info']}>
+
+            <Image
+                className={styles['weather-icon']}
+                src={`/weather-icons/${iconName}.svg`}
+                alt={
+                    conditions ||
+                    (iconName === 'cloudy' ? 'Cloudy' : 'Unknown weather')
+                }
+                width={64}
+                height={64}
+            />
+            <div className={styles['weather-info']}>
                 <p>{conditions && <span>{conditions}</span>}</p>
                 <p>
                     {weather.windspeed !== undefined && (
