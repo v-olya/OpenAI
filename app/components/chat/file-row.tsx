@@ -5,6 +5,7 @@ import React, { useRef, useImperativeHandle, useState } from 'react';
 
 interface FileRowProps {
     onFilesChange?: (files?: File[]) => void;
+    disabled?: boolean;
 }
 
 export type FileRowHandle = {
@@ -13,7 +14,7 @@ export type FileRowHandle = {
 };
 
 const FileRow = React.forwardRef<FileRowHandle, FileRowProps>(
-    ({ onFilesChange }, ref) => {
+    ({ onFilesChange, disabled }, ref) => {
         const inputRef = useRef<HTMLInputElement | null>(null);
         const [files, setFilesState] = useState<File[] | undefined>(undefined);
 
@@ -44,16 +45,27 @@ const FileRow = React.forwardRef<FileRowHandle, FileRowProps>(
                     multiple
                     className={styles['native-file-input']}
                     onChange={handleChange}
+                    disabled={disabled}
                 />
                 <div className={styles['file-control']}>
                     <button
                         type='button'
                         className={styles.input}
-                        onClick={() => inputRef.current?.click()}
+                        onClick={() => {
+                            if (disabled) return;
+                            if (files?.length) {
+                                const ok = window.confirm(
+                                    'Uploading new files will replace previously attached and start a new session. Are you sure to continue?'
+                                );
+                                if (!ok) return;
+                            }
+                            inputRef.current?.click();
+                        }}
                         aria-label='Attach files'
                         data-has-files={
                             files && files.length > 0 ? 'true' : 'false'
                         }
+                        disabled={disabled}
                     >
                         <span className={styles['input-text']}>
                             {files && files.length
@@ -65,11 +77,12 @@ const FileRow = React.forwardRef<FileRowHandle, FileRowProps>(
                         type='button'
                         className={`${styles.button} ${styles['button-rounded']} ${styles['clear-btn']}`}
                         onClick={() => {
+                            if (disabled) return;
                             setFilesState(undefined);
                             if (inputRef.current) inputRef.current.value = '';
                             onFilesChange?.(undefined);
                         }}
-                        disabled={!(files && files.length > 0)}
+                        disabled={disabled || !files?.length}
                         aria-hidden={!(files && files.length > 0)}
                         title='Clear attachments'
                     >
