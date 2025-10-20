@@ -59,14 +59,22 @@ $btn-hover-shadow: 0 4px var(--space-12) $accent-shadow-strong;
 
     .menu-link {
         @include variables.interactive-hover();
+        margin-right: var(--space-8);
     }
 
-    --input-area-padding: var(--space-16);
+    [data-under='assistant'] .menu-link {
+        &:hover,
+        &:active {
+            transform: none;
+            background: $accent-gradient;
+            color: #fff;
+        }
+    }
 
     .input-form {
         display: flex;
         width: 100%;
-        padding: var(--space-12) var(--input-area-padding);
+        padding: var(--space-12) var(--space-16);
         margin-top: 0;
         flex-shrink: 0;
         align-items: center;
@@ -117,8 +125,7 @@ $btn-hover-shadow: 0 4px var(--space-12) $accent-shadow-strong;
         display: flex;
         width: 100%;
         box-sizing: border-box;
-        padding: 0 var(--input-area-padding) var(--space-12)
-            var(--input-area-padding);
+        padding: 0 var(--space-16) var(--space-12) var(--space-16);
         gap: var(--space-12);
         align-items: center;
     }

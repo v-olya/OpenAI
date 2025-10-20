@@ -64,7 +64,7 @@ a:active {
     position: absolute;
     z-index: 30;
     display: inline-flex;
-    gap: 8px;
+    gap: var(--space-8);
     align-items: center;
     left: var(--space-16);
     top: var(--space-12);
@@ -73,7 +73,7 @@ a:active {
 .menu-link {
     font-weight: 500;
     padding: 6px 10px;
-    border-radius: 8px;
+    border-radius: var(--space-8);
     background: #fff;
     border: 1.5px solid rgba(15, 23, 42, 0.06);
     color: #0b1220;
@@ -89,7 +89,7 @@ a:active {
 [data-under='assistant'] .menu-link {
     background: #5a8bc4;
     color: #fff;
-    box-shadow: 0 2px 8px rgb(107 185 209 / 20%);
+    box-shadow: 0 2px var(--space-8) rgb(107 185 209 / 20%);
 }
 
 h2 {
@@ -116,20 +116,20 @@ ol {
 
 .heading-lg {
     font-size: 28px;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-8);
 }
 
 .heading-xl {
     font-size: 32px;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-8);
 }
 
 .muted {
     color: #555;
-    margin-bottom: 18px;
+    margin-bottom: var(--space-16);
 }
 
-.spaced-top {
+.mt-20 {
     margin-top: var(--space-20);
 }
 
@@ -143,7 +143,7 @@ ol {
 }
 
 .btn-small {
-    padding: 8px 14px;
+    padding: var(--space-8) 14px;
     border-radius: 6px;
     border: 1px solid #e5e7eb;
     cursor: pointer;
@@ -156,7 +156,7 @@ ol {
 
 .flex-row {
     display: flex;
-    gap: 8px;
+    gap: var(--space-8);
     align-items: center;
 }
 
@@ -167,7 +167,7 @@ ol {
 }
 
 .select-compact {
-    padding: 6px 8px;
+    padding: 6px var(--space-8);
     border-radius: 6px;
 }
 
@@ -199,8 +199,8 @@ ol {
 @include breakpoints.mq-mobile {
     .container {
         flex-direction: column;
-        padding: 8px;
-        gap: 8px;
+        padding: var(--space-8);
+        gap: var(--space-8);
         width: 100%;
     }
 }
@@ -211,7 +211,7 @@ ol {
     font-weight: 900;
     color: #fff;
     font-family: inherit;
-    text-shadow: 0 2px 0 rgb(0 0 0 / 60%), 0 4px 8px rgb(0 0 0 / 40%),
+    text-shadow: 0 2px 0 rgb(0 0 0 / 60%), 0 4px var(--space-8) rgb(0 0 0 / 40%),
         0 0 var(--space-12) rgb(255 255 255 / 30%);
     letter-spacing: 0.4px;
 }

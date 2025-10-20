@@ -44,16 +44,3 @@ $max-width: 760px;
         box-shadow: 0 4px #{$space-12} rgb(107 155 209 / 25%);
     }
 }
-
-@mixin white-text-shadow($size: small) {
-    @if $size == small {
-        text-shadow: 0 1px 0 rgb(0 0 0 / 50%), 0 2px 4px rgb(0 0 0 / 30%),
-            0 0 8px rgb(255 255 255 / 20%);
-    } @else if $size == medium {
-        text-shadow: 0 2px 0 rgb(0 0 0 / 50%), 0 3px 6px rgb(0 0 0 / 30%),
-            0 0 10px rgb(255 255 255 / 25%);
-    } @else if $size == large {
-        text-shadow: 0 2px 0 rgb(0 0 0 / 60%), 0 4px 8px rgb(0 0 0 / 40%),
-            0 0 #{$space-12} rgb(255 255 255 / 30%);
-    }
-}
