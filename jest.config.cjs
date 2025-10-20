@@ -16,6 +16,9 @@ module.exports = {
         },
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/app/$1',
+    },
     // Don't collect coverage by default for `npm test` runs; use --coverage when needed
     collectCoverage: false,
     coverageDirectory: '<rootDir>/coverage',
