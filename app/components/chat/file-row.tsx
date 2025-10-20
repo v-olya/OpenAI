@@ -1,35 +1,24 @@
 'use client';
 
 import styles from './chat.module.scss';
-import React, { useRef, useImperativeHandle, useState } from 'react';
+import {
+    useRef,
+    useImperativeHandle,
+    useState,
+    forwardRef,
+    ChangeEvent,
+} from 'react';
 import type { FileRowHandle } from '@/utils/types';
-import { convertFiles } from '@/utils/convert-files';
 
 interface FileRowProps {
     onFilesChange?: (files?: File[]) => void;
     disabled?: boolean;
 }
 
-const FileRow = React.forwardRef<FileRowHandle, FileRowProps>(
+const FileRow = forwardRef<FileRowHandle, FileRowProps>(
     ({ onFilesChange, disabled }, ref) => {
         const inputRef = useRef<HTMLInputElement | null>(null);
         const [files, setFilesState] = useState<File[] | undefined>(undefined);
-        const currentConversion = useRef<Promise<void> | null>(null);
-        const [isConverting, setIsConverting] = useState(false);
-
-        const runConversion = async (f?: File[]) => {
-            setIsConverting(true);
-            currentConversion.current = (async () => {
-                const converted = await convertFiles(f ?? []);
-                setFilesState(converted);
-                onFilesChange?.(converted);
-            })();
-            try {
-                await currentConversion.current;
-            } finally {
-                setIsConverting(false);
-            }
-        };
 
         useImperativeHandle(ref, () => ({
             setFiles: async (f?: File[]) => await processFiles(f),
@@ -43,10 +32,12 @@ const FileRow = React.forwardRef<FileRowHandle, FileRowProps>(
                 onFilesChange?.(undefined);
                 return;
             }
-            await runConversion(f);
+            // Keep the original files and notify parent
+            setFilesState(f);
+            onFilesChange?.(f);
         };
 
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
             (async () => {
                 await processFiles(
                     e.target.files
@@ -88,21 +79,10 @@ const FileRow = React.forwardRef<FileRowHandle, FileRowProps>(
                         disabled={disabled}
                     >
                         <span className={styles['input-text']}>
-                            {files && files.length
+                            {files?.length
                                 ? files.map((f) => f.name).join(', ')
                                 : 'Attach files if needed...'}
                         </span>
-                        {isConverting && (
-                            <span
-                                style={{
-                                    marginLeft: 8,
-                                    fontSize: 12,
-                                    color: '#666',
-                                }}
-                            >
-                                Converting...
-                            </span>
-                        )}
                     </button>
                     <button
                         type='button'

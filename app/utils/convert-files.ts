@@ -14,33 +14,36 @@ export async function convertFiles(
     opts: ConvertFilesOptions = {}
 ): Promise<File[]> {
     const extLike = opts.textExtensions ?? DEFAULT_EXT;
-    const converted: File[] = [];
-    let anyConverted = false;
+    const processed: File[] = [];
+    const convertedNames: string[] = [];
+    const failedNames: string[] = [];
 
     for (const f of files) {
         const isText =
             (f.type && f.type.startsWith('text/')) || extLike.test(f.name);
         if (!isText) {
-            converted.push(f);
+            // non-text files are left untouched
+            processed.push(f);
             continue;
         }
 
         try {
             const pdf = await textFileToPdfFile(f);
-            converted.push(pdf);
-            anyConverted = true;
+            convertedNames.push(f.name);
+            processed.push(pdf);
         } catch (err) {
             console.warn('ConvertFiles: failed to convert', f.name, err);
-            converted.push(f);
-        }
-    }
-    if (anyConverted) {
-        try {
-            window.dispatchEvent(new CustomEvent('openai:fileConverted'));
-        } catch (e) {
-            console.warn('convertFiles: failed to dispatch fileConverted', e);
+            failedNames.push(f.name);
+            processed.push(f);
         }
     }
 
-    return converted;
+    if (convertedNames.length || failedNames.length) {
+        const detail = { converted: convertedNames, failed: failedNames };
+        window.dispatchEvent(
+            new CustomEvent('openai:fileConverted', { detail })
+        );
+    }
+
+    return processed;
 }

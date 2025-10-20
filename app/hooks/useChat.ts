@@ -287,20 +287,13 @@ export const useChat = (
                     type: blob.type || 'application/octet-stream',
                 });
                 presetFile = f;
-                // Set the file into the UI. FileRow will convert text-like files to PDF asynchronously
                 await options?.fileRowRef?.setFiles?.([f]);
             } catch {
                 console.error('Failed to load preset file:');
             }
         }
-        // Read converted files from the FileRow handle (if provided)
-        const convertedFiles = options?.fileRowRef?.getFiles?.();
-        // Programmatically submit the preset message.
-        const filesToSend = convertedFiles?.length
-            ? convertedFiles
-            : presetFile
-            ? [presetFile]
-            : undefined;
+        // Programmatically submit the preset message. Send the original file to the handler,
+        const filesToSend = presetFile ? [presetFile] : undefined;
 
         await sendMessage(composed, filesToSend);
     };
@@ -310,8 +303,9 @@ export const useChat = (
     runPresetRef.current = runPreset;
 
     useEffect(() => {
-        if (chatType !== 'coding' && chatType !== 'weather') return;
-
+        if (chatType !== 'coding' && chatType !== 'weather') {
+            return;
+        }
         const handler = (e: Event) => {
             const detail = (
                 e as CustomEvent<{ text: string; code?: string; file?: string }>
@@ -325,19 +319,41 @@ export const useChat = (
                 'openai:newChat',
                 handler as EventListener
             );
-    }, [chatType, options?.fileRowRef]);
+    }, [chatType]);
 
-    // Notify user when files were auto-converted to PDF
     useEffect(() => {
-        const onConverted = () => {
-            // We don't receive a mapping payload. Read the current files from the FileRow handle
-            const files = options?.fileRowRef?.getFiles?.() ?? [];
-            if (files.length) {
-                const names = files.map((f) => `• ${f.name}`);
+        if (chatType !== 'coding') {
+            return;
+        }
+        const onConverted = (e: Event) => {
+            // file converter dispatches an info object
+            const detail = (
+                e as CustomEvent<{
+                    converted?: string[];
+                    failed?: string[];
+                }>
+            )?.detail;
+
+            if (detail?.converted?.length || detail.failed?.length) {
+                const parts: string[] = [];
+                if (detail.converted?.length) {
+                    parts.push(
+                        `Converted to PDF: ${detail.converted
+                            .map((n) => `• ${n}`)
+                            .join(' ')}`
+                    );
+                }
+                if (detail.failed?.length) {
+                    parts.push(
+                        `Failed to convert: ${detail.failed
+                            .map((n) => `• ${n}`)
+                            .join(' ')}`
+                    );
+                }
                 appendMessage(
                     'assistant',
-                    `The following files were converted to PDF so the upload would be accepted by the OpenAI API: ${names.join(
-                        ' '
+                    `Some files had to be converted to PDF to be uploaded.\n${parts.join(
+                        '\n'
                     )}`
                 );
             }
@@ -351,7 +367,7 @@ export const useChat = (
                 'openai:fileConverted',
                 onConverted as EventListener
             );
-    }, [chatType, options?.fileRowRef]);
+    }, [chatType]);
 
     return {
         messages,
