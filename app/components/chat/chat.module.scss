@@ -117,8 +117,8 @@ $btn-hover-shadow: 0 4px var(--space-12) $accent-shadow-strong;
         display: flex;
         width: 100%;
         box-sizing: border-box;
-        padding: var(--space-12) var(--input-area-padding);
-        margin-top: var(--space-12);
+        padding: 0 var(--input-area-padding) var(--space-12)
+            var(--input-area-padding);
         gap: var(--space-12);
         align-items: center;
     }
