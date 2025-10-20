@@ -2,38 +2,58 @@
 
 import styles from './chat.module.scss';
 import React, { useRef, useImperativeHandle, useState } from 'react';
+import type { FileRowHandle } from '@/utils/types';
+import { convertFiles } from '@/utils/convert-files';
 
 interface FileRowProps {
     onFilesChange?: (files?: File[]) => void;
     disabled?: boolean;
 }
 
-export type FileRowHandle = {
-    setFiles: (files?: File[]) => void;
-    getFiles: () => File[] | undefined;
-};
-
 const FileRow = React.forwardRef<FileRowHandle, FileRowProps>(
     ({ onFilesChange, disabled }, ref) => {
         const inputRef = useRef<HTMLInputElement | null>(null);
         const [files, setFilesState] = useState<File[] | undefined>(undefined);
+        const currentConversion = useRef<Promise<void> | null>(null);
+        const [isConverting, setIsConverting] = useState(false);
+
+        const runConversion = async (f?: File[]) => {
+            setIsConverting(true);
+            currentConversion.current = (async () => {
+                const converted = await convertFiles(f ?? []);
+                setFilesState(converted);
+                onFilesChange?.(converted);
+            })();
+            try {
+                await currentConversion.current;
+            } finally {
+                setIsConverting(false);
+            }
+        };
 
         useImperativeHandle(ref, () => ({
-            setFiles: (f?: File[]) => {
-                setFilesState(f);
-                // Also clear native input when clearing
-                if (!f && inputRef.current) inputRef.current.value = '';
-                onFilesChange?.(f);
-            },
+            setFiles: async (f?: File[]) => await processFiles(f),
             getFiles: () => files,
         }));
 
+        const processFiles = async (f?: File[]) => {
+            if (!f || f.length === 0) {
+                setFilesState(undefined);
+                if (inputRef.current) inputRef.current.value = '';
+                onFilesChange?.(undefined);
+                return;
+            }
+            await runConversion(f);
+        };
+
         const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const newFiles = e.target.files
-                ? Array.from(e.target.files)
-                : undefined;
-            setFilesState(newFiles);
-            onFilesChange?.(newFiles);
+            (async () => {
+                await processFiles(
+                    e.target.files
+                        ? Array.from(e.target.files)
+                        : (undefined as File[])
+                );
+            })();
         };
 
         return (
@@ -72,6 +92,17 @@ const FileRow = React.forwardRef<FileRowHandle, FileRowProps>(
                                 ? files.map((f) => f.name).join(', ')
                                 : 'Attach files if needed...'}
                         </span>
+                        {isConverting && (
+                            <span
+                                style={{
+                                    marginLeft: 8,
+                                    fontSize: 12,
+                                    color: '#666',
+                                }}
+                            >
+                                Converting...
+                            </span>
+                        )}
                     </button>
                     <button
                         type='button'

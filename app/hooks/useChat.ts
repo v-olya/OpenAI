@@ -10,15 +10,29 @@ import { handleCoding } from '../components/chat/handlers/coding-handler';
 
 export const useChat = (
     props: ChatProps,
-    options?: { fileRowRef?: { setFiles: (files?: File[]) => void } | null }
+    options?: {
+        fileRowRef?:
+            | ({
+                  // setFiles may return a promise when conversion is async
+                  setFiles: (files?: File[]) => Promise<void>;
+                  getFiles?: () => File[] | undefined;
+              } | null)
+            | null;
+    }
 ) => {
     const { chatType, onWeatherUpdate, onNewsResults } = props;
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [userInput, setUserInput] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const containerIdRef = useRef<string | undefined>(undefined);
+    const isNewSession = !containerIdRef.current;
+    const uploadedFileIdsRef = useRef<string[] | undefined>(undefined);
+    // Metadata for the last-uploaded files so we can detect when the user resubmits the same file(s)
+    const uploadedFileMetaRef = useRef<
+        { name: string; size: number; lastModified: number }[] | undefined
+    >(undefined);
 
-    // A helper function to determine if the files have changed between submissions
     const uploadHasBeenChanged = (
         newFiles: File[] | undefined,
         previousMeta?:
@@ -45,28 +59,25 @@ export const useChat = (
         return prevLen > 0;
     };
 
-    // A helper function to clean up the session state when files change
-    const clearSessionIfChanged = async (
-        newFiles: File[] | undefined,
-        previousIds: string[],
-        previousMeta: { name: string; size: number; lastModified: number }[]
-    ) => {
-        const shouldClear = uploadHasBeenChanged(newFiles, previousMeta);
-        if (shouldClear) {
-            if (previousIds.length) {
-                await cleanupUploadedFileIds(previousIds);
-            }
-            uploadedFileIdsRef.current = undefined;
-            uploadedFileMetaRef.current = undefined;
-            containerIdRef.current = undefined;
-            setMessages([]); // Clear chat history for the new session
-            return true;
-        }
-        return false;
+    const startNewSession = () => {
+        uploadedFileIdsRef.current = undefined;
+        uploadedFileMetaRef.current = undefined;
+        containerIdRef.current = undefined;
+        setMessages([]);
+        // Any additional side-effects when a new session starts.
     };
 
-    let uidCounter = 0;
-    const makeId = () => `${Date.now()}-${++uidCounter}`;
+    const restartChat = async () => {
+        try {
+            // Clear files in the FileRow UI if provided
+            await options?.fileRowRef?.setFiles?.(
+                undefined as unknown as File[]
+            );
+        } finally {
+            startNewSession();
+            setUserInput('');
+        }
+    };
 
     const appendMessage = (
         role: 'user' | 'assistant',
@@ -99,6 +110,10 @@ export const useChat = (
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         return id || message.id;
     };
+
+    let uidCounter = 0; // used for basic chat only
+    const makeId = () => `${Date.now()}-${++uidCounter}`;
+
     const sendMessage = async (text: string, files?: File[]) => {
         try {
             switch (chatType) {
@@ -109,17 +124,11 @@ export const useChat = (
                     await handleWeather(text, appendMessage, onWeatherUpdate);
                     break;
                 case 'coding': {
-                    const previousIds = uploadedFileIdsRef.current ?? [];
-                    const isNewSession = !containerIdRef.current;
-
-                    const reuseIds = isNewSession ? [] : previousIds;
-                    const filesToSend = isNewSession ? files : undefined;
-
                     const result: any = await handleCoding(
                         text,
                         appendMessage,
-                        filesToSend,
-                        reuseIds,
+                        isNewSession ? files : undefined,
+                        isNewSession ? [] : uploadedFileIdsRef.current,
                         containerIdRef.current
                     );
 
@@ -130,9 +139,9 @@ export const useChat = (
                             'Storing uploadedFileIds for cleanup',
                             newIds
                         );
-
                         uploadedFileIdsRef.current = newIds;
-                        // Only update metadata if we actually uploaded new files
+
+                        // Update metadata if we actually uploaded new files
                         if (isNewSession && files?.length) {
                             uploadedFileMetaRef.current = files.map((f) => ({
                                 name: f.name,
@@ -174,16 +183,20 @@ export const useChat = (
 
     const handleMessage = async (text: string, files?: File[]) => {
         if (chatType === 'coding') {
-            await clearSessionIfChanged(
+            const shouldClearSession = uploadHasBeenChanged(
                 files,
-                uploadedFileIdsRef.current ?? [],
-                uploadedFileMetaRef.current ?? []
+                uploadedFileMetaRef.current
             );
+            if (shouldClearSession) {
+                if (uploadedFileIdsRef.current?.length) {
+                    await cleanupUploadedFileIds(uploadedFileIdsRef.current);
+                }
+                startNewSession();
+            }
         }
-
         setUserInput('');
-        setIsProcessing(true);
         appendMessage('user', text);
+        setIsProcessing(true);
         await sendMessage(text, files);
     };
 
@@ -195,14 +208,6 @@ export const useChat = (
     }
 
     // When the page is being unloaded, attempt to send a beacon with any remaining uploadedFileIds.
-    // Keep a ref of current uploadedFileIds so unload handlers can access it.
-    const uploadedFileIdsRef = useRef<string[] | undefined>(undefined);
-    // Keep metadata for the last-uploaded files so we can detect when the user resubmits the same file(s)
-    const uploadedFileMetaRef = useRef<
-        { name: string; size: number; lastModified: number }[] | undefined
-    >(undefined);
-    const containerIdRef = useRef<string | undefined>(undefined);
-
     const cleanupUploadedFileIds = async (ids: string[]) => {
         if (!ids?.length) return;
         try {
@@ -248,26 +253,17 @@ export const useChat = (
         };
     }, [chatType]);
 
-    const runPreset = async (
-        detail: { text: string; code?: string; file?: string },
-        fileRowRef?: { setFiles: (files?: File[]) => void } | null
-    ) => {
-        // A preset always starts a new session.
-        await clearSessionIfChanged(
-            // If a preset has a file, that's the new file list. Otherwise, it's empty.
-            detail.file ? [] : undefined,
-            uploadedFileIdsRef.current ?? [],
-            uploadedFileMetaRef.current ?? []
-        );
-
-        // Clear UI state for the new preset
-        fileRowRef?.setFiles(undefined);
-        setMessages([]);
-
+    const runPreset = async (detail: {
+        text: string;
+        code?: string;
+        file?: string;
+    }) => {
+        // A preset always starts a new chat.
+        await restartChat();
         const composed = `${detail.text}${detail.code || ''}`.trim();
-        setUserInput('');
-        setIsProcessing(true);
+        if (!composed) return;
         appendMessage('user', composed);
+        setIsProcessing(true);
 
         let presetFile: File | undefined;
         if (detail.file) {
@@ -279,13 +275,22 @@ export const useChat = (
                     type: blob.type || 'application/octet-stream',
                 });
                 presetFile = f;
-                fileRowRef?.setFiles([f]);
-            } catch (err) {
-                console.error('Failed to load preset file:', err);
+                // Set the file into the UI. FileRow will convert text-like files to PDF asynchronously
+                await options?.fileRowRef?.setFiles?.([f]);
+            } catch {
+                console.error('Failed to load preset file:');
             }
         }
+        // Read converted files from the FileRow handle (if provided)
+        const convertedFiles = options?.fileRowRef?.getFiles?.();
         // Programmatically submit the preset message.
-        await sendMessage(composed, presetFile ? [presetFile] : undefined);
+        const filesToSend = convertedFiles?.length
+            ? convertedFiles
+            : presetFile
+            ? [presetFile]
+            : undefined;
+
+        await sendMessage(composed, filesToSend);
     };
 
     // Keep a ref to the latest runPreset so the listener can call it
@@ -299,14 +304,40 @@ export const useChat = (
             const detail = (
                 e as CustomEvent<{ text: string; code?: string; file?: string }>
             ).detail;
-            runPresetRef.current(detail, options?.fileRowRef ?? null);
+            runPresetRef.current(detail);
         };
 
-        window.addEventListener('openai:preset', handler as EventListener);
+        window.addEventListener('openai:newChat', handler as EventListener);
         return () =>
             window.removeEventListener(
-                'openai:preset',
+                'openai:newChat',
                 handler as EventListener
+            );
+    }, [chatType, options?.fileRowRef]);
+
+    // Notify user when files were auto-converted to PDF
+    useEffect(() => {
+        const onConverted = () => {
+            // We don't receive a mapping payload. Read the current files from the FileRow handle
+            const files = options?.fileRowRef?.getFiles?.() ?? [];
+            if (files.length) {
+                const names = files.map((f) => `• ${f.name}`);
+                appendMessage(
+                    'assistant',
+                    `The following files were converted to PDF so the upload would be accepted by the OpenAI API: ${names.join(
+                        ' '
+                    )}`
+                );
+            }
+        };
+        window.addEventListener(
+            'openai:fileConverted',
+            onConverted as EventListener
+        );
+        return () =>
+            window.removeEventListener(
+                'openai:fileConverted',
+                onConverted as EventListener
             );
     }, [chatType, options?.fileRowRef]);
 

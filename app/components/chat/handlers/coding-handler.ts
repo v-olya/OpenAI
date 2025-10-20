@@ -1,5 +1,6 @@
 import { ErrorMessages } from '@/utils/error-messages';
 import type { AppendMessage } from '@/utils/types';
+import { convertFiles } from '@/utils/convert-files';
 
 export const handleCoding = async (
     input: string,
@@ -18,7 +19,9 @@ export const handleCoding = async (
             form.append('containerId', containerId);
         }
         if (uploadedFiles?.length) {
-            for (const file of uploadedFiles) {
+            // Ensure any text-like files are converted to PDF before sending.
+            const converted: File[] = await convertFiles(uploadedFiles);
+            for (const file of converted) {
                 form.append('uploaded', file);
             }
         }
@@ -30,7 +33,7 @@ export const handleCoding = async (
 
         if (!response.ok) {
             // Parse error body: the server includes uploadedFileIds even when the remote API call failed.
-            // Return those file_ids, so the client can perform cleanup on unload.
+            // Return those ids, so the client can perform storage cleanup on unload.
             let errBody = null;
             try {
                 errBody = await response.json();
