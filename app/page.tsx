@@ -15,7 +15,7 @@ const Home = () => {
                 {categories.map(({ url, title }) => (
                     <a
                         key={url}
-                        className={`${styles.category} link-base`}
+                        className={`${styles.category}`}
                         href={`/pages/${url}`}
                     >
                         {title}
