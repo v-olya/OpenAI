@@ -36,6 +36,7 @@ export function ChatLayout({
                         aria-label='Restart the chat'
                         onClick={(e) => {
                             e.preventDefault();
+                            (e.target as HTMLAnchorElement).blur();
                             dispatchNewChat({ text: '' });
                         }}
                     >
