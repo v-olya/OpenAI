@@ -7,7 +7,8 @@ export const handleCoding = async (
     appendMessage: AppendMessage,
     uploadedFiles?: File[],
     existingFileIds?: string[] | undefined,
-    containerId?: string | undefined
+    containerId?: string | undefined,
+    previousResponseId?: string | undefined
 ) => {
     try {
         const form = new FormData();
@@ -17,6 +18,9 @@ export const handleCoding = async (
         }
         if (containerId) {
             form.append('containerId', containerId);
+        }
+        if (previousResponseId) {
+            form.append('previousResponseId', previousResponseId);
         }
         if (uploadedFiles?.length) {
             // Ensure any text-like files are converted to PDF before sending.
@@ -47,6 +51,7 @@ export const handleCoding = async (
                     return {
                         uploadedFileIds: errBody.uploadedFileIds,
                         containerId: errBody.containerId,
+                        previousResponseId: errBody.previousResponseId,
                     } as any;
                 }
             }
@@ -78,6 +83,7 @@ export const handleCoding = async (
             return {
                 uploadedFileIds: data.uploadedFileIds,
                 containerId: data.containerId,
+                previousResponseId: data.previousResponseId,
             } as any;
         } catch (err) {
             console.error('Failed to get JSON from /api/coding response', err);

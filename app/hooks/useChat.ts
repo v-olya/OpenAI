@@ -26,6 +26,7 @@ export const useChat = (
     const [isProcessing, setIsProcessing] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const containerIdRef = useRef<string | undefined>(undefined);
+    const previousResponseIdRef = useRef<string | undefined>(undefined);
     const isNewSession = !containerIdRef.current;
     const uploadedFileIdsRef = useRef<string[] | undefined>(undefined);
     // Metadata for the last-uploaded files so we can detect when the user resubmits the same file(s)
@@ -63,6 +64,7 @@ export const useChat = (
         uploadedFileIdsRef.current = undefined;
         uploadedFileMetaRef.current = undefined;
         containerIdRef.current = undefined;
+        previousResponseIdRef.current = undefined;
         setMessages([]);
         // Any additional side-effects when a new session starts.
     };
@@ -127,7 +129,8 @@ export const useChat = (
                         appendMessage,
                         isNewSession ? files : undefined,
                         isNewSession ? [] : uploadedFileIdsRef.current,
-                        containerIdRef.current
+                        containerIdRef.current,
+                        previousResponseIdRef.current
                     );
 
                     // If the server returned new file IDs, persist them for the session.
@@ -152,6 +155,10 @@ export const useChat = (
                     } else if (result?.containerId) {
                         // Persist container ID even if no files were uploaded
                         containerIdRef.current = result.containerId;
+                    }
+                    if (result?.previousResponseId) {
+                        previousResponseIdRef.current =
+                            result.previousResponseId;
                     }
                     break;
                 }

@@ -96,6 +96,9 @@ export async function POST(request: Request) {
         ];
 
         let resp: any = null;
+        const previousResponseId =
+            formData.get('previousResponseId') ?? undefined;
+        console.log('pr', previousResponseId);
         resp = await client.responses.create({
             model: 'gpt-5-mini',
             tools: [
@@ -123,6 +126,7 @@ export async function POST(request: Request) {
                     content: contentItems,
                 },
             ],
+            previous_response_id: previousResponseId as string,
         });
 
         console.log('Responses result:', containerId, resp.status);
@@ -209,6 +213,11 @@ export async function POST(request: Request) {
             containerId,
             // All non-user container files (download URL is included on each item)
             containerFiles,
+            // Only expose the id if resp doesn't contain an error.
+            previousResponseId:
+                resp && !resp?.error && typeof resp.id === 'string'
+                    ? resp.id
+                    : undefined,
         });
     } catch (err: any) {
         const message = err?.message ?? String(err);
