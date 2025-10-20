@@ -44,6 +44,10 @@ const PRESETS = {
             file: 'letter.pdf',
         },
         {
+            text: 'Draw a diagram of sales by year',
+            file: 'sales.csv',
+        },
+        {
             text: 'Refactor the function for readability',
             code: `
         def compute(values):
@@ -57,10 +61,6 @@ const PRESETS = {
 
         if __name__ == '__main__':
             print(compute([1,2,-3,4]))`,
-        },
-        {
-            text: 'Draw a diagram of sales by year',
-            file: 'sales.csv',
         },
         {
             text: 'Create a test file for edge cases',

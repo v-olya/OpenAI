@@ -21,7 +21,7 @@ export default function ErrorView({
             {showPre && message ? (
                 <pre className='pre-error'>{String(message)}</pre>
             ) : null}
-            <div className='spaced-top'>
+            <div className='mt-20'>
                 {children}
                 <Link href='/' className='menu-link'>
                     Take me home!
