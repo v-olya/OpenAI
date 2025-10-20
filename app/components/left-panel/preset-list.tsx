@@ -20,8 +20,9 @@ export default function PresetList({ type }: { type: 'weather' | 'coding' }) {
         </div>
     );
 }
-// Code interpreter with Responses API currently rejects .py files,
-// so pass the contents of /examples .py files as code: "string".
+// File uploading endpoint for Responses API currently rejects non-pdf files,
+// so pass the contents of /examples/file.ext as code: "string" OR
+// convert it to .pdf at runtime before uploading.
 
 const PRESETS = {
     weather: [
