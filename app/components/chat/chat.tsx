@@ -6,7 +6,7 @@ import type { ChatProps } from '@/utils/types';
 import { ChatLayout } from './chat-layout';
 import { useChat } from '@/hooks/useChat';
 import { useRef } from 'react';
-import type { FileRowHandle } from './file-row';
+import type { FileRowHandle } from '@/utils/types';
 
 const FileRow = dynamic(() => import('./file-row'), { ssr: false }) as any;
 
@@ -37,7 +37,8 @@ export function Chat({
             fileRowRef: {
                 setFiles: (files?: File[]) =>
                     fileRowRef.current?.setFiles?.(files),
-            },
+                getFiles: () => fileRowRef.current?.getFiles?.(),
+            } as any,
         }
     );
 
@@ -144,7 +145,11 @@ export function Chat({
     );
 
     return (
-        <ChatLayout messages={messagesContent} inputForm={inputFormContent}>
+        <ChatLayout
+            chatType={chatType}
+            messages={messagesContent}
+            inputForm={inputFormContent}
+        >
             {children}
         </ChatLayout>
     );
