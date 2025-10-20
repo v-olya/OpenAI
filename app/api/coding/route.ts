@@ -42,11 +42,14 @@ export async function POST(request: Request) {
 
         if (sentByClient?.length) {
             for (const entry of sentByClient) {
-                if (!(entry instanceof File)) continue;
-                const file = entry as File;
+                const file: any = entry;
                 try {
                     const body = new FormData();
-                    body.append('file', file, file.name);
+                    body.append(
+                        'file',
+                        file as File,
+                        file.name ?? 'uploaded' + file.size
+                    );
                     body.append('purpose', 'user_data');
 
                     const uploadRes = await fetch(FILES_URL, {
