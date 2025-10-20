@@ -70,9 +70,7 @@ export const useChat = (
     const restartChat = async () => {
         try {
             // Clear files in the FileRow UI if provided
-            await options?.fileRowRef?.setFiles?.(
-                undefined as unknown as File[]
-            );
+            await options?.fileRowRef?.setFiles?.(undefined);
         } finally {
             startNewSession();
             setUserInput('');
@@ -258,12 +256,19 @@ export const useChat = (
         code?: string;
         file?: string;
     }) => {
-        // A preset always starts a new chat.
+        if (isProcessing) {
+            return;
+        }
+        setIsProcessing(true);
+        // A preset always starts a new chat
         await restartChat();
         const composed = `${detail.text}${detail.code || ''}`.trim();
-        if (!composed) return;
+        if (!composed) {
+            setIsProcessing(false);
+            return;
+        }
+        // else setIsProcessing(false) will be called in sendMessage
         appendMessage('user', composed);
-        setIsProcessing(true);
 
         let presetFile: File | undefined;
         if (detail.file) {
