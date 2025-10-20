@@ -23,7 +23,7 @@ export default function ErrorView({
             ) : null}
             <div className='spaced-top'>
                 {children}
-                <Link href='/' className='home-link link-base ml-8'>
+                <Link href='/' className='menu-link'>
                     Take me home!
                 </Link>
             </div>

@@ -96,6 +96,12 @@ export type OnWeatherUpdate =
     | ((update: Partial<WeatherData>) => void)
     | undefined;
 
+export interface FileRowHandle {
+    // setFiles returns a promise that resolves when conversion (if any) completes
+    setFiles: (files?: File[]) => Promise<void>;
+    getFiles: () => File[] | undefined;
+}
+
 export const weatherFunction = {
     name: 'get_weather',
     description: 'Get the current weather for a location',
