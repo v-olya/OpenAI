@@ -40,7 +40,7 @@ const PRESETS = {
             file: 'doc.pdf',
         },
         {
-            text: 'Summarize in a few sentences',
+            text: 'Sum up the letter in one paragraph',
             file: 'letter.pdf',
         },
         {
@@ -65,6 +65,10 @@ const PRESETS = {
         {
             text: 'Create a test file for edge cases',
             file: 'needs_tests.py',
+        },
+        {
+            text: 'Build HTML page from JSON',
+            file: 'form.json',
         },
     ],
 };

@@ -1,0 +1,18 @@
+{
+    "economicEntities": [
+        {
+            "registrationNumber": "01233456",
+            "businessName": "Jane Doe Consulting s.r.o.",
+            "registeredOffice": {
+                "countryCode": "US",
+                "regionName": "Dreamland",
+                "municipalityName": "Springfield",
+                "streetName": "Widen Avenue",
+                "buildingNumber": 111,
+                "orientationNumber": 2
+            },
+            "legalForm": "424",
+            "dateOfEstablishment": "1999-10-10"
+        }
+    ]
+}
