@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import chatStyles from './chat.module.scss';
+import MenuUnderwatch from './menu-underwatch';
 import { ChatProps } from '@/utils/types';
 import { dispatchNewChat } from '@/utils/dispatch-new-chat';
 
@@ -21,7 +22,8 @@ export function ChatLayout({
 }: ChatLayoutProps) {
     return (
         <div className={chatStyles.chat}>
-            <div className={chatStyles['menu-links']}>
+            <div className='top-menu'>
+                <MenuUnderwatch />
                 <Link
                     href='/'
                     className={`${chatStyles['menu-link']} menu-link`}
@@ -44,7 +46,7 @@ export function ChatLayout({
                     </Link>
                 )}
             </div>
-            <div className={chatStyles.messages}>
+            <div id='messages' className={chatStyles.messages}>
                 {messages}
                 {children}
             </div>

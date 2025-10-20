@@ -57,15 +57,6 @@ $btn-hover-shadow: 0 4px var(--space-12) $accent-shadow-strong;
         min-height: 0;
     }
 
-    .menu-links {
-        position: absolute;
-        z-index: 30;
-        display: inline-flex;
-        gap: 8px;
-        align-items: center;
-        left: var(--space-16);
-        top: var(--space-12);
-    }
     .menu-link {
         @include variables.interactive-hover();
     }

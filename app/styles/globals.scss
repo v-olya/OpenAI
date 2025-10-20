@@ -60,6 +60,16 @@ a:active {
     color: #5a8bc4;
 }
 
+.top-menu {
+    position: absolute;
+    z-index: 30;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    left: var(--space-16);
+    top: var(--space-12);
+}
+
 .menu-link {
     font-weight: 500;
     padding: 6px 10px;
@@ -68,12 +78,18 @@ a:active {
     border: 1.5px solid rgba(15, 23, 42, 0.06);
     color: #0b1220;
     box-shadow: 0 1px 4px rgb(90 140 200 / 4%);
-    transition: box-shadow 0.12s ease, background 0.12s ease;
+    transition: all 0.12s ease;
 }
 
 .menu-link:focus {
     outline: 2px solid rgb(107 155 209 / 12%);
     outline-offset: 2px;
+}
+
+[data-under='assistant'] .menu-link {
+    background: #5a8bc4;
+    color: #fff;
+    box-shadow: 0 2px 8px rgb(107 185 209 / 20%);
 }
 
 h2 {

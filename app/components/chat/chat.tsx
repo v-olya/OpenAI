@@ -66,10 +66,11 @@ export function Chat({
                         <div
                             key={msg.id ?? `assistant-main-links-${index}`}
                             className={styles['assistant-message']}
+                            data-role='assistant'
                         >
                             <div className={styles['main-link-message']}>
                                 <div className={styles['main-link-title']}>
-                                    Download files
+                                    Result to download
                                 </div>
                                 <ul>
                                     {files.map((f) => (
@@ -101,6 +102,9 @@ export function Chat({
                     <div
                         key={msg.id ?? `${msg.role}-${index}`}
                         className={combined}
+                        {...(msg.role === 'assistant'
+                            ? { 'data-role': 'assistant' }
+                            : {})}
                     >
                         {msg.text}
                     </div>
