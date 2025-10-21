@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styles from './page.module.scss';
 
 const Home = () => {
@@ -13,13 +14,13 @@ const Home = () => {
             <h2>Examples of the OpenAI and GoogleGenAI APIs usage</h2>
             <div className='container home'>
                 {categories.map(({ url, title }) => (
-                    <a
+                    <Link
                         key={url}
-                        className={`${styles.category}`}
+                        className={styles.category}
                         href={`/pages/${url}`}
                     >
                         {title}
-                    </a>
+                    </Link>
                 ))}
             </div>
         </main>

@@ -1,5 +1,8 @@
 'use client';
-import { Chat } from '../../components/chat/chat';
+import dynamic from 'next/dynamic';
+const Chat = dynamic(() =>
+    import('../../components/chat/chat').then((m) => m.Chat)
+);
 import WeatherWidget from '../../components/widget/weather-widget';
 import { useState } from 'react';
 import type { WeatherData } from '@/utils/types';

@@ -8,7 +8,7 @@ import { useChat } from '@/hooks/useChat';
 import { useRef } from 'react';
 import type { FileRowHandle } from '@/utils/types';
 
-const FileRow = dynamic(() => import('./file-row'), { ssr: false }) as any;
+const FileRow = dynamic(() => import('./file-row'), { ssr: false });
 
 export function Chat({
     chatType = 'basic',
@@ -38,7 +38,7 @@ export function Chat({
                 setFiles: (files?: File[]) =>
                     fileRowRef.current?.setFiles?.(files),
                 getFiles: () => fileRowRef.current?.getFiles?.(),
-            } as any,
+            },
         }
     );
 

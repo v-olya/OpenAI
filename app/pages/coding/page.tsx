@@ -1,4 +1,7 @@
-import { Chat } from '../../components/chat/chat';
+import dynamic from 'next/dynamic';
+const Chat = dynamic(() =>
+    import('../../components/chat/chat').then((m) => m.Chat)
+);
 import Panel from '../../components/left-panel/panel';
 import PresetList from '../../components/left-panel/preset-list';
 

@@ -1,8 +1,11 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useRef, useState } from 'react';
 import styles from './page.module.scss';
-import { Chat } from '../../components/chat/chat';
+const Chat = dynamic(() =>
+    import('../../components/chat/chat').then((m) => m.Chat)
+);
 import type { NewsPreview } from '@/utils/types';
 import Image from 'next/image';
 import Panel from '../../components/left-panel/panel';
