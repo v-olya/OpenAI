@@ -1,55 +1,38 @@
-# Small app to trying out the modern generative AI APIs
+# A demo app to try out the modern generative AI APIs
 
-The app demonstrates OpenAI and Google GenAI integrations for chat, agentic search, image generation and weather lookup. Built with Next.js, TypeScript, and the official OpenAI and Google GenAI SDKs.
+The app demonstrates OpenAI and Google GenAI integrations for chat, code interpreter, agentic search with reasoning, image generation, function calling, etc. Built with Next.js, TypeScript, and the official OpenAI and Google GenAI SDKs.
 
 ## Acknowledgements
 
-This project was inspired by and created from the OpenAI "assistants quickstart" example: https://github.com/openai/openai-assistants-quickstart.
+This project was inspired by OpenAI's "assistants quickstart" example: https://github.com/openai/openai-assistants-quickstart, but does not use the Assistants API due to its deprecated status.
 
 ## Pages
 
--   `/basic-chat` — Chat UI demonstrating streaming chat via OpenAI Chat Completions. Implements a client that sends messages to `/api/basic-chat` and renders partial responses. Related code: `app/pages/basic-chat`, `app/components/chat`.
--   `/news-search` — News search UI that queries `/api/news-search?q={region}`, receives up to 3 structured previews (title, summary, sources, imagePrompt) and displays them. The UI allows requesting images for previews from `/api/gen-image`. Related files: `app/pages/news-search`, `app/components/chat`.
--   `/weather` — Weather lookup page that queries `/api/weather?q={some-text-including-locality}`, displays the canonical weather object and a weather widget. Related files: `app/pages/weather`, `app/components/widget`, and `app/components/left-panel` for layout.
+-   `/news-search` — News search UI that queries `/api/news-search?q={region}` and displays up to 3 structured previews with generated images. The model is instructed to return previews for the **latest well-backed news of top importance for a given region**. Related files: `app/pages/news-search`, `/api/gen-image`, `app/components/chat`.
+-   `/coding` — A page for coding assistance that sends code and context to `/api/coding`. Receives the text output and downloadable links to newly created files, if any. The user can choose one of the **ready-to-use preset inputs** with the files uploaded. Related files: `app/pages/coding`, `app/components/chat`, and `app/components/left-panel` for layout.
+-   `/weather` — Weather lookup page that queries `/api/weather?q={some-text-including-locality}`, receives the canonical wheather object for the detected locality and displays it in a widget. Respects local time to show day and night icons. Related files: `app/pages/weather`, `app/components/widget`.
+-   `/basic-chat` — Chat UI with streaming. Implements a client that sends messages to `/api/basic-chat` and renders partial responses. Related code: `app/pages/basic-chat`, `app/components/chat`.
 -   `/` — Home page. A simple landing page and entry into the app (located at `app/page.tsx`).
 
 These pages wire the API routes to the UI using shared components in `app/components` and hooks in `app/hooks`.
 
 ## Routes
 
-All routes live under `/api` and are implemented as Next.js Route Handlers.
+All routes live under `/api` and are implemented as Next.js App Route Handlers.
 
--   GET /api/news-search?q={region}
+-   GET `/api/news-search?q={region}` — Performs a search (using the OpenAI Responses API web_search tool) for today's news in the specified region. Returns up to 3 previews of well-backed news and generated `imagePrompts` for them.
+-   POST `/api/gen-image` (image generation via Google GenAI) returns base64 data URLs based on the given text prompts.
 
-    -   Description: Performs a web search (via the Responses API web_search tool) for today's news in the specified region and returns up to 3 unrelated news previews. Each preview includes: `title`, `summary`, `sources` (array of `{domain,url}`), and `imagePrompt`.
-    -   Model: Uses the Responses API (model `gpt-5-nano`) with a strict Zod `text` format schema.
-    -   Response: JSON `{ previews: Preview[], error: string | null }` or an `error` object describing parsing/validation issues.
-
-    -   Notes: Image generation is intentionally handled by `POST /api/gen-image` using the `imagePrompt` returned for each preview.
-
--   POST /api/gen-image
-
-    -   Description: Uses `@google/genai` (Gemini image model) to generate an image for a provided `prompt`. Returns a base64 data URL and attempts to persist a PNG to `public/genAI` when possible.
-    -   Input: JSON `{ "prompt": "..." }`
-    -   Response: JSON `{ "image": "data:image/png;base64,..." }` or `{ "error": "IMAGE_GENERATION_FAILED" }` on failure.
-    -   Notes: The server will silently ignore filesystem write errors (so generation still returns a data URL even if saving fails).
-
--   POST /api/basic-chat
-
-    -   Description: Streaming chat endpoint that proxies client chat messages to the OpenAI Chat Completions API and returns a newline-delimited JSON stream of partial content chunks.
-    -   Input: JSON body `{ "messages": [ { role, content, ... } ] }` where `messages` follows OpenAI chat message shape.
-    -   Model: `gpt-4.1` (streaming)
-    -   Response: Stream of lines like `{"type":"content","content":"..."}` followed by newlines. The stream may include a final error chunk if something fails.
-
--   GET /api/weather?q={some-text-including-locality}
-    -   Description: Detects the city from the query using the Responses API with a `function` tool. The server implements `get_weather` which calls Nominatim to geocode and Open-Meteo for current weather.
-    -   Model: `gpt-4.1` (Responses API with function/tool call)
-    -   Response: JSON with the canonical weather object `{ location, resolvedName, temperature, windspeed, weathercode, timezone, error }` or an error explaining issues.
+-   POST `/api/coding` — Handles file uploads via the Responses API and file conversions to PDF (for the inputs to be accepted by the code_interpreter tool). Returns model's text output and downloadable links to the container files.
+-   GET `/api/coding/file?containerId=...&fileId=...` — Used to download generated files from a container.
+-   POST `/api/coding/cleanup` — Used to remove uploaded files from the OpenAI storage when a session ends. Invoked also by navigator.sendBeacon on page hide event.
+-   GET `/api/weather?q={some-text-including-locality}` — Detects and resolves the queried locality (Responses API with function/tool call) and returns canonical weather data by calling geocoding and weather services.
+-   POST `/api/basic-chat` — Forwards client messages to the OpenAI Chat Completions API and streams partial text chunks back to the client.
 
 ## Environment variables
 
--   `OPENAI_API_KEY` — required for the `openai` SDK to authenticate.
--   `GEMINI_API_KEY` — API key accepted by the `@google/genai` integration in this repo (Gemini / Google GenAI).
+-   `OPENAI_API_KEY` — API key required for the `openai` SDK
+-   `GEMINI_API_KEY` — API key required by the `@google/genai`.
 
 ## Scripts
 
