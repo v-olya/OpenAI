@@ -52,7 +52,7 @@ export const handleCoding = async (
                         uploadedFileIds: errBody.uploadedFileIds,
                         containerId: errBody.containerId,
                         previousResponseId: errBody.previousResponseId,
-                    } as any;
+                    };
                 }
             }
             return;
@@ -84,7 +84,7 @@ export const handleCoding = async (
                 uploadedFileIds: data.uploadedFileIds,
                 containerId: data.containerId,
                 previousResponseId: data.previousResponseId,
-            } as any;
+            };
         } catch (err) {
             console.error('Failed to get JSON from /api/coding response', err);
         }

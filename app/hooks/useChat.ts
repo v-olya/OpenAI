@@ -27,7 +27,6 @@ export const useChat = (
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const containerIdRef = useRef<string | undefined>(undefined);
     const previousResponseIdRef = useRef<string | undefined>(undefined);
-    const isNewSession = !containerIdRef.current;
     const uploadedFileIdsRef = useRef<string[] | undefined>(undefined);
     // Metadata for the last-uploaded files so we can detect when the user resubmits the same file(s)
     const uploadedFileMetaRef = useRef<
@@ -70,6 +69,11 @@ export const useChat = (
     };
 
     const restartChat = async () => {
+        const ids = uploadedFileIdsRef.current;
+        if (ids?.length) {
+            await cleanupUploadedFileIds(ids);
+        }
+
         try {
             // Clear files in the FileRow UI if provided
             await options?.fileRowRef?.setFiles?.(undefined);
@@ -124,6 +128,7 @@ export const useChat = (
                     await handleWeather(text, appendMessage, onWeatherUpdate);
                     break;
                 case 'coding': {
+                    const isNewSession = !containerIdRef.current;
                     const result: any = await handleCoding(
                         text,
                         appendMessage,
@@ -213,7 +218,7 @@ export const useChat = (
     }
 
     // When the page is being unloaded, attempt to send a beacon with any remaining uploadedFileIds.
-    const cleanupUploadedFileIds = async (ids: string[]) => {
+    async function cleanupUploadedFileIds(ids: string[]): Promise<void> {
         if (!ids?.length) return;
         try {
             const resp = await fetch('/api/coding/cleanup', {
@@ -235,7 +240,7 @@ export const useChat = (
         } catch (err) {
             console.log('Failed to cleanup uploaded files', err);
         }
-    };
+    }
 
     useEffect(() => {
         if (chatType !== 'coding') return;
@@ -245,9 +250,16 @@ export const useChat = (
             if (!ids || !ids.length) return;
 
             const payload = JSON.stringify({ fileIds: ids });
-            const blob = new Blob([payload], { type: 'application/json' });
-            // Fire-and-forget clean up request.
-            navigator.sendBeacon('/api/coding/cleanup', blob);
+            const queued = navigator.sendBeacon('/api/coding/cleanup', payload);
+            if (!queued) {
+                // best-effort fallback
+                fetch('/api/coding/cleanup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    keepalive: true,
+                    body: payload,
+                }).catch(() => {});
+            }
         };
 
         const onPageHide = () => sendBeaconIfNeeded();

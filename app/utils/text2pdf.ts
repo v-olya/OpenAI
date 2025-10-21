@@ -24,7 +24,7 @@ export async function textFileToPdfBlob(
     const lines = text.split(/\r\n|\n/);
 
     const doc = new jsPDF({ unit: 'pt', format: pageSize });
-    doc.setFont(fontName as any);
+    doc.setFont(fontName);
     doc.setFontSize(fontSize);
 
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -39,7 +39,7 @@ export async function textFileToPdfBlob(
             if (y + lineHeight > pageHeight - margin) {
                 doc.addPage();
                 y = margin;
-                doc.setFont(fontName as any);
+                doc.setFont(fontName);
                 doc.setFontSize(fontSize);
             }
             // text baseline offset

@@ -20,8 +20,8 @@ export default function PresetList({ type }: { type: 'weather' | 'coding' }) {
         </div>
     );
 }
-// File uploading endpoint for Responses API currently rejects non-pdf files,
-// so pass the contents of /examples/file.ext as code: "string" OR
+// With Responses API, file inputs with non-pdf files are currently rejected,
+// so pass the contents of /examples/file.ext as a string OR
 // convert it to .pdf at runtime before uploading.
 
 const PRESETS = {
@@ -35,6 +35,10 @@ const PRESETS = {
         { text: "Why don't I take a trip to Hawaii?" },
     ],
     coding: [
+        {
+            text: 'Build an HTML page with a form',
+            file: 'form.json',
+        },
         {
             text: 'Convert PDF to SVG',
             file: 'doc.pdf',
@@ -65,10 +69,6 @@ const PRESETS = {
         {
             text: 'Create a test file for edge cases',
             file: 'needs_tests.py',
-        },
-        {
-            text: 'Build HTML page from JSON',
-            file: 'form.json',
         },
     ],
 };

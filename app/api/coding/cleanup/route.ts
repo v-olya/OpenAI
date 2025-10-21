@@ -2,13 +2,11 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
     try {
-        // Accept both JSON body and raw blobs sent via navigator.sendBeacon
-        let body: any;
+        let body: any = {};
         const contentType = request.headers.get('content-type') || '';
         if (contentType.includes('application/json')) {
             body = await request.json();
         } else {
-            // Fallback: try to read text and JSON-parse it
             const txt = await request.text();
             try {
                 body = txt ? JSON.parse(txt) : {};
@@ -20,6 +18,16 @@ export async function POST(request: Request) {
         const { fileIds } = body as {
             fileIds?: string[];
         };
+
+        try {
+            console.log('/api/coding/cleanup: incoming', {
+                time: new Date().toISOString(),
+                contentType: contentType,
+                fileCount: Array.isArray(fileIds) ? fileIds.length : 0,
+            });
+        } catch {
+            // noop
+        }
         const apiKey = process.env.OPENAI_API_KEY;
         if (!fileIds || !fileIds.length) {
             return NextResponse.json({ status: 'ok', deleted: [] });

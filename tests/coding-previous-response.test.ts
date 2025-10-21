@@ -39,7 +39,7 @@ describe('coding handler previousResponseId flow', () => {
 
         const res1: any = await handleCoding(
             'input',
-            appendMessage as any,
+            appendMessage,
             undefined,
             undefined,
             undefined,
@@ -57,7 +57,7 @@ describe('coding handler previousResponseId flow', () => {
 
         const res2: any = await handleCoding(
             'input2',
-            appendMessage as any,
+            appendMessage,
             undefined,
             undefined,
             undefined,

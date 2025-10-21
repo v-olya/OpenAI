@@ -10,7 +10,7 @@ const Home = () => {
 
     return (
         <main className={styles.main}>
-            <h2>Examples of the OpenAI and GenAI APIs usage</h2>
+            <h2>Examples of the OpenAI and GoogleGenAI APIs usage</h2>
             <div className='container home'>
                 {categories.map(({ url, title }) => (
                     <a

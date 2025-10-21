@@ -119,7 +119,7 @@ export async function POST(request: Request) {
                             type: 'input_text' as const,
                             text: `Do NOT include any file URLs, local filesystem paths, container identifiers, or sandbox links in the output_text: all that stuff will be processed separately.
                             Examples of forbidden content: sandbox:/..., /mnt/..., file://..., container:..., cntr_... , or markdown links whose hrefs point to such paths.
-                            Prefer to save the result as a container file rather than simply write the code to the output text.
+                            Prefer providing downloadable files rather than just writing the code to the output text.
                             But in any case, in the output_text, you should provide human-readable explanation of what was done.`,
                         },
                     ],
@@ -155,7 +155,7 @@ export async function POST(request: Request) {
                       .map((f: any) => ({
                           file_id: f.id,
                           container_id: f.container_id ?? containerId,
-                          filename: f.path?.split('/').pop() ?? f.id,
+                          filename: f.path?.split('/').pop() || f.id,
                           download: `/api/coding/file?containerId=${encodeURIComponent(
                               f.container_id ?? containerId!
                           )}&fileId=${encodeURIComponent(f.id)}`,
