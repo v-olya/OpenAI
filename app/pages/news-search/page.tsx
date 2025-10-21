@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styles from './page.module.scss';
 import { Chat } from '../../components/chat/chat';
 import type { NewsPreview } from '@/utils/types';
@@ -24,35 +24,59 @@ const imageSrc = (v?: string) => {
 
 export default function SearchExample() {
     const [previews, setPreviews] = useState<NewsPreview[] | null>(null);
+    const fetchGenerationRef = useRef(0);
+    // store AbortController for the current generation to abortwhen a new generation starts
+    const generationControllersRef = useRef<AbortController[] | null>(null);
 
     const handleNewsResults = (newPreviews: any[] | null) => {
-        if (!newPreviews) return setPreviews(null);
+        const generationId = fetchGenerationRef.current + 1;
+        fetchGenerationRef.current = generationId;
+        generationControllersRef.current?.forEach((c) => {
+            c.abort();
+        });
+        generationControllersRef.current = [];
+
+        if (!newPreviews) {
+            setPreviews(null);
+            return;
+        }
 
         const mapped = newPreviews.map(toPreview);
         setPreviews(mapped);
 
-        // fetch generated images concurrently and update state once
-        Promise.allSettled(
-            mapped.map((p) =>
-                fetch('/api/gen-image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: p.imagePrompt }),
+        mapped.forEach((preview, idx) => {
+            if (!preview.imagePrompt) return;
+
+            const controller = new AbortController();
+            const signal = controller.signal;
+            generationControllersRef.current!.push(controller);
+
+            fetch('/api/gen-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: preview.imagePrompt }),
+                signal,
+            })
+                .then((response) => (response.ok ? response.json() : null))
+                .then((payload) => {
+                    // if aborted, fetch will be rejected
+                    if (!payload?.image) return;
+                    if (fetchGenerationRef.current !== generationId) return;
+
+                    setPreviews((prev) => {
+                        if (!prev || prev.length <= idx) return prev;
+
+                        const current = prev[idx];
+                        if (current?.image === payload.image) return prev;
+
+                        const copy = [...prev];
+                        copy[idx] = { ...copy[idx], image: payload.image };
+                        return copy;
+                    });
                 })
-                    .then((r) => (r.ok ? r.json() : null))
-                    .catch(() => null)
-            )
-        ).then((results) => {
-            setPreviews((prev) => {
-                if (!prev) return prev;
-                const copy = [...prev];
-                results.forEach((res, idx) => {
-                    if (res.status === 'fulfilled' && res.value?.image) {
-                        copy[idx] = { ...copy[idx], image: res.value.image };
-                    }
+                .catch((err) => {
+                    if (err?.name === 'AbortError') return;
                 });
-                return copy;
-            });
         });
     };
 

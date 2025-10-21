@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const prompt = body.prompt;
         if (!prompt || typeof prompt !== 'string') {
-            console.error('Gen-image faild', { body });
+            return sendErrorResponse('gen-image: invalid prompt', { body });
         }
 
         const response = await googleGenAI.models.generateContent({
@@ -44,17 +44,13 @@ export async function POST(request: Request) {
 
         // Validate response shape before accessing nested properties
         const candidates = response?.candidates;
-        if (
-            !Array.isArray(candidates) ||
-            candidates.length === 0 ||
-            !candidates[0].content?.parts?.length
-        ) {
-            sendErrorResponse('gen-image: missing candidates', response);
+        if (!candidates?.length || !candidates[0].content?.parts?.length) {
+            return sendErrorResponse('gen-image: missing candidates', response);
         }
 
         // Find first inlineData part
         for (const part of candidates[0].content.parts) {
-            if (part && part.inlineData) {
+            if (part?.inlineData) {
                 const imageData = part.inlineData.data; // base64 string
                 const dataUrl = `data:image/png;base64,${imageData}`;
 
@@ -67,8 +63,8 @@ export async function POST(request: Request) {
                         'genAI'
                     );
                     const filePath = path.join(publicDir, filename);
-                    // write file synchronously; if dir missing this will throw
-                    fs.writeFileSync(
+                    await fs.promises.mkdir(publicDir, { recursive: true });
+                    await fs.promises.writeFile(
                         filePath,
                         Buffer.from(imageData, 'base64')
                     );
@@ -79,13 +75,12 @@ export async function POST(request: Request) {
                 return NextResponse.json({ image: dataUrl });
             }
         }
-
         // No inlineData found in parts
-        sendErrorResponse(
+        return sendErrorResponse(
             'gen-image: no inlineData parts',
             candidates[0].content
         );
     } catch (err) {
-        sendErrorResponse('gen-image: unexpected error', err);
+        return sendErrorResponse('gen-image: unexpected error', err);
     }
 }
