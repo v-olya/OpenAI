@@ -1,4 +1,4 @@
-# A demo app to try out the modern generative AI APIs
+# A demo to try out the modern generative AI APIs
 
 The app demonstrates OpenAI and Google GenAI integrations for chat, code interpreter, agentic search with reasoning, image generation, function calling, etc. Built with Next.js, TypeScript, and the official OpenAI and Google GenAI SDKs.
 
