@@ -38,6 +38,60 @@ export const getWeatherIconName = (
     return iconName;
 };
 
+export const getWeather = async (location: string) => {
+    try {
+        // Geocode location to get lat/lon
+        const geoRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+                location
+            )}`
+        );
+        if (!geoRes.ok) {
+            return {
+                location,
+                error: ErrorMessages.WEATHER_API_ERROR,
+            };
+        }
+        const geoData = await geoRes.json();
+        if (!Array.isArray(geoData) || geoData.length === 0) {
+            return {
+                location,
+                error: ErrorMessages.LOCATION_NOT_FOUND,
+            };
+        }
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
+        const country = geoData[0].address?.country || '';
+        const displayName = geoData[0].display_name || '';
+
+        // Fetch weather from Open-Meteo with timezone
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
+        const weatherRes = await fetch(weatherUrl);
+        if (!weatherRes.ok) {
+            return {
+                location,
+                error: ErrorMessages.WEATHER_API_ERROR,
+            };
+        }
+        const weatherData = await weatherRes.json();
+        if (!weatherData.current_weather) {
+            return { location, error: ErrorMessages.NO_WEATHER_DATA };
+        }
+        return {
+            location: country ? `${location}, ${country}` : location,
+            resolvedName: displayName,
+            temperature: weatherData.current_weather.temperature,
+            unit: 'C',
+            weathercode: weatherData.current_weather.weathercode,
+            windspeed: weatherData.current_weather.windspeed,
+            timezone: weatherData.timezone,
+            error: undefined,
+        };
+    } catch (error) {
+        return { location, error: String(error) };
+    }
+};
+
 // Weather code mappings for displaying weather conditions and icons
 export const weatherIconMap: Record<number, string> = {
     0: 'sun',
@@ -100,53 +154,3 @@ export const weatherCodeMap: Record<number, string> = {
     96: 'Thunderstorm with slight hail',
     99: 'Thunderstorm with heavy hail',
 };
-
-const getWeather = async (location: string) => {
-    try {
-        // Geocode location to get lat/lon
-        const geoRes = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
-                location
-            )}`
-        );
-        const geoData = await geoRes.json();
-        if (!Array.isArray(geoData) || geoData.length === 0) {
-            return {
-                location,
-                error: ErrorMessages.LOCATION_NOT_FOUND,
-            };
-        }
-        const lat = geoData[0].lat;
-        const lon = geoData[0].lon;
-        const country = geoData[0].address?.country || '';
-        const displayName = geoData[0].display_name || '';
-
-        // Fetch weather from Open-Meteo with timezone
-        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
-        const weatherRes = await fetch(weatherUrl);
-        if (!weatherRes.ok) {
-            return {
-                location,
-                error: ErrorMessages.WEATHER_API_ERROR,
-            };
-        }
-        const weatherData = await weatherRes.json();
-        if (!weatherData.current_weather) {
-            return { location, error: ErrorMessages.NO_WEATHER_DATA };
-        }
-        return {
-            location: country ? `${location}, ${country}` : location,
-            resolvedName: displayName,
-            temperature: weatherData.current_weather.temperature,
-            unit: 'C',
-            weathercode: weatherData.current_weather.weathercode,
-            windspeed: weatherData.current_weather.windspeed,
-            timezone: weatherData.timezone,
-            error: undefined,
-        };
-    } catch (error) {
-        return { location, error: String(error) };
-    }
-};
-
-export { getWeather };
