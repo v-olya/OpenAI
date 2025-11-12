@@ -38,10 +38,25 @@ const WeatherWidget = ({ weather }: WeatherWidgetProps) => {
         typeof weather.weathercode === 'number'
             ? weatherCodeMap[weather.weathercode]
             : '';
-    const iconName = getWeatherIconName(
-        weather.weathercode,
-        typeof weather.localHour === 'number' ? weather.localHour : undefined
-    );
+
+    // For the night icons to be shown
+    // Determine local hour for the target locality. Prefer a precomputed `weather.localHour`,
+    // or compute it from the IANA timezone
+    let localHour: number | undefined =
+        typeof weather.localHour === 'number' ? weather.localHour : undefined;
+    if (localHour === undefined && weather.timezone) {
+        try {
+            const hourStr = new Date().toLocaleString('en-US', {
+                hour: '2-digit',
+                hour12: false,
+                timeZone: weather.timezone,
+            });
+            const parsed = parseInt(hourStr, 10);
+            if (!Number.isNaN(parsed)) localHour = parsed;
+        } catch {}
+    }
+
+    const iconName = getWeatherIconName(weather.weathercode, localHour);
 
     return (
         <Panel>
