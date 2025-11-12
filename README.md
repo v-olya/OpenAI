@@ -2,7 +2,7 @@
 
 A small demo application showcasing integrations with OpenAI and Google GenAI for chat, code interpretation, image generation, function calling, and agentic search with reasoning. Built with Next.js, TypeScript, and the official SDKs.
 
-##Features
+## Features
 
 Chat UI with streaming responses
 Coding assistant with file upload and downloadable outputs
@@ -18,19 +18,19 @@ This project was inspired by OpenAI's "assistants quickstart" example: https://g
 
 -   `/news-search` — News search UI that queries `/api/news-search?q={region}` and displays up to 3 structured previews with generated images. The model is instructed to return previews for the **latest well-backed news of top importance for a given region**. Related files: `app/pages/news-search`, `/api/gen-image`, `app/components/chat`.
 
-![Today in the world](https://github.com/v-olya/OpenAI-API/blob/master/public/screenshots/Today-in-Japan.png)
+![Today in the world](https://github.com/v-olya/OpenAI-API/blob/main/public/screenshots/Today-in-Japan.png)
 
 -   `/coding` — A page for coding assistance that sends code and context to `/api/coding`. Receives the text output and downloadable links to newly created files, if any. The user can choose one of the **ready-to-use preset inputs** with the files uploaded. Related files: `app/pages/coding`, `app/components/chat`, and `app/components/left-panel` for layout.
 
-![Code interpreter](https://github.com/v-olya/OpenAI-API/blob/master/public/screenshots/Code-interpreter.png)
+![Code interpreter](https://github.com/v-olya/OpenAI-API/blob/main/public/screenshots/Code-interpreter.png)
 
-### Diagram created from CSV:
+**Diagram created from CSV**:
 
-![Diagram created from CSV](https://github.com/v-olya/OpenAI-API/blob/master/public/screenshots/Diagram-created-from-CSV.png)
+![Diagram created from CSV](https://github.com/v-olya/OpenAI-API/blob/main/public/screenshots/Diagram-created-from-CSV.png)
 
 -   `/weather` — Weather lookup page that queries `/api/weather?q={some-text-including-locality}`, receives the canonical weather object for the detected locality and displays it in a widget. Respects local time to show day and night icons. Related files: `app/pages/weather`, `app/components/widget`.
 
-![Weather widget](https://github.com/v-olya/OpenAI-API/blob/master/public/screenshots/Wheather-widget.png)
+![Weather widget](https://github.com/v-olya/OpenAI-API/blob/main/public/screenshots/Wheather-widget.png)
 
 -   `/basic-chat` — Chat UI with streaming. Implements a client that sends messages to `/api/basic-chat` and renders partial responses. Related code: `app/pages/basic-chat`, `app/components/chat`.
 -   `/` — Home page. A simple landing page and entry into the app (located at `app/page.tsx`).
